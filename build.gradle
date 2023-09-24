@@ -53,6 +53,8 @@ editorconfig {
     excludes = ['build', 'config']
 }
 
+check.dependsOn editorconfigCheck
+
 tasks.withType(Checkstyle) {
     reports {
     }
