@@ -44,9 +44,17 @@ tasks.named('test') {
 }
 
 checkstyle {
-    toolVersion = '10.3.3'
+    toolVersion = '10.12.3'
     maxWarnings 0
     ignoreFailures false
+}
+
+checkstyleMain {
+    source = 'src/main/java'
+}
+
+checkstyleTest {
+    source = 'src/main/test'
 }
 
 editorconfig {
