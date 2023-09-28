@@ -16,7 +16,7 @@ pipeline {
         stage('start') {
             steps {
                 sh 'printenv'
-                slack = CIStart('')
+                def slack = CIStart('')
                 slack.addReaction('typingcat')
             }
         }
