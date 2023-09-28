@@ -2,13 +2,10 @@ def CIStart(name) {
     def message = """
         아아, 슬랙 테스트, 자그마치 3시간이나 걸렸다고 한다.
     """
-    def token = env.MULTICAMPUS_SLACK_TOKEN
-    print('token: ' + token)
     slackSend (
             channel: '#해커톤-jenkins',
             color: '#6499E9',
-            message: message,
-            token: token
+            message: message
     )
 }
 
