@@ -4,10 +4,10 @@ def CIStart() {
     def buildUrl = env.BUILD_URL
 
     def message = """
-        [${workspace} | ID:${env.BUILD_NUMBER}]
-        ${branch} 에 대한 빌드를 수행할게요!
-        잠시만 기다려주시고 작어하시느라 고생하셨습니다 :kirby_dance:    
-        (<${buildUrl}|빌드 상세 확인하러 가기>)
+*[${workspace}]*
+빌드 번호: ${env.BUILD_NUMBER}
+<${buildUrl}|${branch}> 에 대한 빌드를 수행할게요!
+잠시만 기다려주시고 작업하시느라 고생하셨습니다 :kirby_dance:    
     """
 
     def slack = slackSend (
