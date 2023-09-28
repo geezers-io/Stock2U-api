@@ -1,8 +1,8 @@
 def CIStart(name) {
     def message = """
-        아아, 슬랙 테스트, 자그마치 3시간이나 걸렸다고 한다.
+        이모티콘 테스트 귀엽게
     """
-    slackSend (
+    return slackSend (
             channel: '#해커톤-jenkins',
             color: '#6499E9',
             message: message
@@ -16,7 +16,8 @@ pipeline {
         stage('start') {
             steps {
                 sh 'printenv'
-                CIStart('')
+                slack = CIStart('')
+                slack.addReaction('typingcat')
             }
         }
     }
