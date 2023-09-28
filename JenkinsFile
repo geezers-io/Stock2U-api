@@ -1,0 +1,20 @@
+def CIStart(name) {
+    def message = """
+           
+    """
+    slackSend (channel: '#해커톤-jenkins', color: '#6499E9', message: message)
+}
+
+pipeline {
+    agent any
+
+    stages {
+        stage('start') {
+            steps {
+                sh 'printenv'
+                CIStart('')
+            }
+        }
+    }
+}
+    
