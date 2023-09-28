@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    default: local
+
+logging:
+  level:
+    root: debug
+    org.springframework.web: debug
+    org.hibernate: error
+  file:
+    name: 'logback-local.xml'
