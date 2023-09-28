@@ -2,7 +2,12 @@ def CIStart(name) {
     def message = """
            
     """
-    slackSend (channel: '#해커톤-jenkins', color: '#6499E9', message: message)
+    slackSend (
+            channel: '#해커톤-jenkins',
+            color: '#6499E9',
+            message: message,
+            tokenCredentialId: env.MULTICAMPUS_SLACK_TOKEN
+    )
 }
 
 pipeline {
@@ -17,4 +22,4 @@ pipeline {
         }
     }
 }
-    
+
