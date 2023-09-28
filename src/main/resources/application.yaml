@@ -1,11 +1,104 @@
+server:
+  port: 8081
+  tomcat:
+    uri-encoding: UTF-8
+
 spring:
   profiles:
-    default: local
+    group:
+      local:
+        - db-local
+      dev:
+        - db-local
+      prod:
+        - db-prod
+    active:
+      - local
 
 logging:
   level:
-    root: debug
-    org.springframework.web: debug
-    org.hibernate: error
-  file:
-    name: 'logback-local.xml'
+    org.springframework.boot.autoconfigure: ERROR
+
+# local 환경
+---
+spring:
+  config:
+    activate:
+      on-profile: "local"
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      jdbc-url: ${HOME_JDBC_URL}
+      username: ${HOME_MARIADB_USERNAME}
+      password: ${HOME_MARIADB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: mysql
+  data:
+    mongodb:
+      uri: ${HOME_MONGO_URI}
+      database: "stock2u"
+      host: ${HOME_MONGO_HOST}
+      port: 27017
+      password: ${HOME_MONGO_PASSWORD}
+      username: ${HOME_MONGO_USERNAME}
+  redis:
+    host: ${HOME_REDIS_HOST}
+    port: 6379
+
+# dev 환경
+---
+spring:
+  config:
+    activate:
+      on-profile: "dev"
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      jdbc-url: ${HOME_JDBC_URL}
+      username: ${HOME_MARIADB_USERNAME}
+      password: ${HOME_MARIADB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: mysql
+  data:
+    mongodb:
+      uri: ${HOME_MONGO_URI}
+      database: "stock2u"
+      port: 27017
+      password: ${HOME_MONGO_PASSWORD}
+      username: ${HOME_MONGO_USERNAME}
+  redis:
+    host: ${HOME_REDIS_HOST}
+    port: 6379
+
+---
+
+# prod 환경
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    hikari:
+      jdbc-url: ${HOME_JDBC_URL}
+      username: ${HOME_MARIADB_USERNAME}
+      password: ${HOME_MARIADB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: mysql
+  data:
+    mongodb:
+      uri: ${HOME_MONGO_URI}
+      database: "stock2u"
+      host: ${HOME_MONGO_HOST}
+      port: 27017
+      password: ${HOME_MONGO_PASSWORD}
+      username: ${HOME_MONGO_USERNAME}
+  redis:
+    host: ${HOME_REDIS_HOST}
+    port: 6379
