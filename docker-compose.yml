@@ -1,0 +1,18 @@
+version: "3.1"
+
+services:
+  stock2u-api:
+    container_name: stock2u-api
+    image: local
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - "8081:8080"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true
