@@ -57,13 +57,7 @@ checkstyleTest {
     source = 'src/main/test'
 }
 
-editorconfig {
-    excludes = ['build', 'config']
-}
-
-check.dependsOn editorconfigCheck
-
-tasks.withType(Checkstyle) {
+tasks.withType(Checkstyle).configureEach {
     reports {
     }
 }
