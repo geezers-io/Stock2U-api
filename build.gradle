@@ -57,7 +57,7 @@ checkstyleTest {
     source = 'src/main/test'
 }
 
-tasks.withType(Checkstyle) {
+tasks.withType(Checkstyle).configureEach {
     reports {
     }
 }
