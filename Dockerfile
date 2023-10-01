@@ -1,5 +1,5 @@
-FROM amazoncorretto:17
-WORKDIR /
-COPY build/libs/${JAR_NAME} /app.jar
-RUN ls -al
-ENTRYPOINT "java -jar app.jar"
+FROM openjdk:17
+WORKDIR /app
+RUN ["echo", "$JAR_NAME"]
+COPY ./build/libs/${JAR_NAME} app.jar
+ENTRYPOINT ["java", "-jar", "/app.jar"]
