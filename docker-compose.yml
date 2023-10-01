@@ -7,7 +7,7 @@ services:
     build:
       context: .
     env_file:
-      - /home/galaxy4276/script/stock2u/.env
+      - .env
     ports:
       - "8081:8080"
     networks:
