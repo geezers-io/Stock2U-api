@@ -15,6 +15,10 @@ spring:
     active:
       - local
 
+springdoc:
+  api-docs:
+    path: /docs
+
 logging:
   level:
     org.springframework.boot.autoconfigure: ERROR
