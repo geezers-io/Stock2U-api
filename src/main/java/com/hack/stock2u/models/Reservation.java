@@ -1,7 +1,9 @@
 package com.hack.stock2u.models;
 
+import com.hack.stock2u.models.embed.BasicDateColumn;
 import java.util.Date;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -42,4 +44,7 @@ public class Reservation {
   @Column(name = "disabled_at")
   @Temporal(TemporalType.TIMESTAMP)
   private Date disabledAt;
+
+  @Embedded
+  private BasicDateColumn basicDate;
 }
