@@ -1,4 +1,4 @@
-package com.hack.mapstockapi.logback;
+package com.hack.stock2u.logback;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
