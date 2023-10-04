@@ -19,7 +19,6 @@ import org.hibernate.annotations.Comment;
 
 public class Buyer {
   @Id
-  @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 

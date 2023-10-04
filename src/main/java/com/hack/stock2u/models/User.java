@@ -16,8 +16,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,17 +25,17 @@ import lombok.NoArgsConstructor;
 @Entity(name = "users")
 public class User {
   @Id
-  @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column
+  @Column(length = 30, nullable = false)
   private String name;
 
-  @Column
+  @Column(length = 20, nullable = false)
   private String phone;
 
-  @Enumerated(EnumType.ORDINAL)
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private UserRole role;
 
   @Column(name = "avatar_id")
@@ -46,11 +44,10 @@ public class User {
   @Column(name = "withdraw_reason")
   private String withdrawReason;
 
-  @Column(name = "report_count")
+  @Column(name = "report_count", nullable = false)
   private short reportCount;
 
   @Column(name = "disabled_at")
-  @Temporal(TemporalType.TIMESTAMP)
   private Date disabledAt;
 
   @Embedded
@@ -63,7 +60,7 @@ public class User {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "buyer")
   private List<Buyer> buyers;
 
-  @OneToMany(fetch = FetchType.LAZY)
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "user_id")
   private List<Attach> attaches;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")

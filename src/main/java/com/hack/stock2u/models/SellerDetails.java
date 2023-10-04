@@ -15,30 +15,28 @@ import org.hibernate.annotations.Comment;
 @Entity(name = "seller_details")
 public class SellerDetails {
   @Id
-  @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Comment("사업자등록번호")
-  @Column(name = "license_number")
+  @Column(name = "license_number", length = 40)
   private String licenseNumber;
 
   @Comment("업종")
-  @Column
+  @Column(length = 100)
   private String industry;
 
   @Comment("사업지명")
-  @Column(name = "industry_name")
+  @Column(name = "industry_name", length = 50)
   private String industryName;
 
   @Comment("소재지")
-  @Column
   private String location;
 
-  @Column(name = "bank_name")
+  @Column(name = "bank_name", length = 30)
   private String bankName;
 
   @Comment("계좌번호")
-  @Column
+  @Column(length = 50)
   private String account;
 }

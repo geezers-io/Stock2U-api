@@ -23,7 +23,6 @@ import org.hibernate.annotations.Comment;
 @Entity(name = "reservations")
 public class Reservation {
   @Id
-  @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 

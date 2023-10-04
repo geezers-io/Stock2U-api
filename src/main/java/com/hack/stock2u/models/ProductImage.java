@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 @Entity(name = "product_images")
 public class ProductImage {
   @Id
-  @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
