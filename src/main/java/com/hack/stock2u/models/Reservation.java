@@ -30,6 +30,8 @@ public class Reservation {
   @Column(name = "chat_id")
   private String chatId;
 
+
+
   @Comment("판매자(사업자) id")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "seller_id")
