@@ -62,7 +62,7 @@ public class User {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "buyer")
   private List<Buyer> buyers;
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "user_id")
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
   private List<Attach> attaches;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
