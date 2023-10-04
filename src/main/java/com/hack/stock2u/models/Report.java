@@ -18,12 +18,10 @@ import org.hibernate.annotations.Comment;
 @Entity(name = "reports")
 public class Report {
   @Id
-  @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Comment("신고 사유")
-  @Column
   private String reason;
 
   @Comment("신고자 id")
