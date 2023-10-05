@@ -17,8 +17,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,24 +27,21 @@ import org.hibernate.annotations.Comment;
 @Entity(name = "products")
 public class Product {
   @Id
-  @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Comment("판매글 제목")
-  @Column
   private String title;
 
   @Comment("재고 이름")
-  @Column
   private String name;
 
   @Comment("재고 분류")
-  @Enumerated(EnumType.ORDINAL)
+  @Enumerated(EnumType.STRING)
   private ProductType type;
 
   @Comment("재고 설명")
-  @Column
+  @Column(length = 1000)
   private String description;
 
   @Comment("예약 한 건만 받기")
@@ -59,18 +54,15 @@ public class Product {
 
   @Comment("게시 마감 기한")
   @Column(name = "expired_at")
-  @Temporal(TemporalType.TIMESTAMP)
   private Date expiredAt;
 
   @Enumerated(EnumType.ORDINAL)
   private ReservationStatus status;
 
   @Comment("위도")
-  @Column
   private Double latitude;
 
   @Comment("경도")
-  @Column
   private Double longitude;
 
   @ManyToOne(fetch = FetchType.LAZY)

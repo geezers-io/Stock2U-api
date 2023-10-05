@@ -1,6 +1,5 @@
 package com.hack.stock2u.models;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -18,7 +17,6 @@ import org.hibernate.annotations.Comment;
 @Entity(name = "subscriptions")
 public class Subscription {
   @Id
-  @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 

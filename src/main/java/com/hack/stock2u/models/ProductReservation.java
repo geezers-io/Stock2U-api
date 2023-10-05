@@ -1,6 +1,5 @@
 package com.hack.stock2u.models;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,24 +10,23 @@ import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity(name = "attachments")
-public class Attach {
+@Entity(name = "product_reservations")
+public class ProductReservation {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private String name;
-
-  @Column(length = 15)
-  private String ext;
-
-  @Column(name = "upload_path", length = 500)
-  private String uploadPath;
-
+  @Comment("재고 상품 id")
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
+  @JoinColumn(name = "product_id")
+  private Product product;
+
+  @Comment("예약 현황 id")
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "reservation_id")
+  private Reservation reservation;
 }

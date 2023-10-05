@@ -23,13 +23,14 @@ import org.hibernate.annotations.Comment;
 @Entity(name = "reservations")
 public class Reservation {
   @Id
-  @Column
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Comment("MongoDB Chat 식별자")
   @Column(name = "chat_id")
   private String chatId;
+
+
 
   @Comment("판매자(사업자) id")
   @ManyToOne(fetch = FetchType.LAZY)
