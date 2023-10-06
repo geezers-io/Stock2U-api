@@ -18,6 +18,9 @@ public class SecurityConfig {
     return http.build();
   }
 
+  /**
+   * 암호화를 수행하는 PasswordEncoder 객체를 반환합니다.
+   */
   @Bean
   public PasswordEncoder passwordEncoder() {
     String idForEncode = "bcrypt";
