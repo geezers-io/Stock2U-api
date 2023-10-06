@@ -26,7 +26,7 @@ public enum AuthVendor {
           return vendorName.equals(name);
         })
         .findAny()
-        .orElseThrow(IllegalArgumentException::new);
+        .orElseThrow(() -> new IllegalArgumentException("vendor 요청이 잘못되었습니다."));
   }
 
 }
