@@ -30,7 +30,8 @@ public class AuthApi {
       @Parameter(
           name = "vendor",
           description = "외부 인증(OAuth 2.0) 을 담당하는 인증사 벤더 이름을 작성합니다.(google, kakao, naver)",
-          required = true
+          required = true,
+          example = "kakao"
       )
       @RequestParam("vendor") AuthVendor vendor
   ) {
