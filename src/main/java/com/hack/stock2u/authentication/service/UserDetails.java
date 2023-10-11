@@ -19,9 +19,13 @@ public class UserDetails implements org.springframework.security.core.userdetail
     return Collections.singletonList(authority);
   }
 
+  public String getEmail() {
+    return user.getEmail();
+  }
+
   @Override
   public String getPassword() {
-    return user.getPassword();
+    return user.getEmail();
   }
 
   @Override

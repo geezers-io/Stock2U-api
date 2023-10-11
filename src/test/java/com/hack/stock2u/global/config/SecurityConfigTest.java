@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 class SecurityConfigTest {
-  SecurityConfig config = new SecurityConfig();
+  SecurityConfig config = new SecurityConfig(null);
   Logger logger = LoggerFactory.getLogger("SecurityConfigTest");
 
   @Test

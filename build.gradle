@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'checkstyle'
     id 'org.ec4j.editorconfig' version '0.0.3'
+    id("com.google.osdetector") version "1.7.1"
 }
 
 group = 'com.hack'
@@ -40,6 +41,12 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     implementation "org.springdoc:springdoc-openapi-ui:1.6.12"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.session:spring-session-data-redis'
+
+    if (osdetector.classifier == "osx-aarch_64") { // MacOS 일 때 이슈 해결용 의존성 추가
+        runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:${osdetector.classifier}")
+    }
 }
 
 tasks.named('test') {
