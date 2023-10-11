@@ -1,10 +1,14 @@
 package com.hack.stock2u.global.config;
 
+import com.hack.stock2u.authentication.service.UserDetailService;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,14 +20,28 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.reactive.config.CorsRegistry;
 
+@RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
+  private final UserDetailService userDetailService;
+
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.formLogin().disable();
-    http.csrf().disable();
+    disableMvcSettings(http);
+
     http.cors().configurationSource(configurationSource());
+    http.userDetailsService(userDetailService);
+
+    http.authorizeRequests()
+        .antMatchers("/**").permitAll();
+
     return http.build();
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+      throws Exception {
+    return config.getAuthenticationManager();
   }
 
   @Bean
@@ -48,4 +66,11 @@ public class SecurityConfig {
     store.put(idForEncode, bcrypt);
     return new DelegatingPasswordEncoder(idForEncode, store);
   }
+
+  private void disableMvcSettings(HttpSecurity http) throws Exception {
+    http.formLogin().disable();
+    http.csrf().disable();
+    http.logout().disable();
+  }
+
 }
