@@ -15,7 +15,7 @@ public class LoginStrategyBranch {
    */
   public LoginURLCreateStrategy getStrategy(AuthVendor authVendor) {
     if (authVendor.equals(AuthVendor.KAKAO)) {
-      return new KakaoURLStrategy(kakaoProperties);
+      return new KakaoUrlStrategy(kakaoProperties);
     }
     throw new IllegalArgumentException("잘못된 Vendor 값입니다.");
   }
