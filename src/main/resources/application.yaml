@@ -2,6 +2,13 @@ server:
   port: 8081
   tomcat:
     uri-encoding: UTF-8
+  servlet:
+    session:
+      cookie:
+        path: /
+        name: JSESSIONID
+        http-only: true
+      timeout: 3600
 
 spring:
   profiles:
@@ -43,6 +50,13 @@ springdoc:
 logging:
   level:
     org.springframework.boot.autoconfigure: ERROR
+    org.springframework.data.convert: ERROR
+    org.hibernate: INFO
+    org.springframework.beans.factory.support: INFO
+    com.zaxxer.hikari: INFO
+    io.netty: INFO
+    org.springframework.context.annotation: INFO
+
 
 # local 환경
 ---
@@ -51,7 +65,7 @@ spring:
     activate:
       on-profile: "local"
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       jdbc-url: ${HOME_JDBC_URL}
       username: ${HOME_MARIADB_USERNAME}
@@ -71,6 +85,10 @@ spring:
   redis:
     host: ${HOME_REDIS_HOST}
     port: 6379
+  session:
+    store-type: redis
+    redis:
+      namespace: stock2u:session
 
 # dev 환경
 ---
@@ -78,6 +96,10 @@ spring:
   config:
     activate:
       on-profile: "dev"
+  session:
+    store-type: redis
+    redis:
+      namespace: stock2u:session
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     hikari:
@@ -106,6 +128,10 @@ spring:
   config:
     activate:
       on-profile: "prod"
+  session:
+    store-type: redis
+    redis:
+      namespace: stock2u:session
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     hikari:
