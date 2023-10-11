@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum ProductType {
-  FOOD("food"),
-  ACCOMMODATION("accommodation"),
-  TICKET("ticket");
+  FOOD("식품"),
+  ACCOMMODATION("숙박"),
+  TICKET("티켓");
 
   private final String name;
 
