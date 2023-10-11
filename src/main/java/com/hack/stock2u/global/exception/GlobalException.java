@@ -25,4 +25,4 @@ public enum GlobalException implements BasicErrorCase {
     return new BasicException(response);
   }
 
-  }
+}
