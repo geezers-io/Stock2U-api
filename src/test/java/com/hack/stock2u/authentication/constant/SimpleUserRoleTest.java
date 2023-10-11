@@ -12,7 +12,7 @@ class SimpleUserRoleTest {
   @DisplayName("UserRole.GENERAL 의 name 을 성공적으로 가져온다.")
   void getName() {
     String generalName = UserRole.GENERAL.getName();
-    assertThat(generalName).isEqualTo("general");
+    assertThat(generalName).isEqualTo("일반 사용자");
   }
 
 }
