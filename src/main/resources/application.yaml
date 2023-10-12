@@ -21,6 +21,8 @@ spring:
         - db-prod
     active:
       - local
+  config:
+    import: externel.yaml
   security:
     oauth2:
       client:
