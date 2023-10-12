@@ -3,8 +3,9 @@ package com.hack.stock2u.authentication.service.strategy;
 import com.hack.stock2u.authentication.config.KakaoProperties;
 import lombok.RequiredArgsConstructor;
 
+@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @RequiredArgsConstructor
-public class KakaoUrlStrategy implements LoginUrlCreateStrategy {
+public class KakaoURLStrategy implements LoginUrlCreateStrategy {
   private final KakaoProperties properties;
 
   @Override
