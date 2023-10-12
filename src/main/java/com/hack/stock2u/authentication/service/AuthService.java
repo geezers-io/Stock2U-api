@@ -6,7 +6,7 @@ import com.hack.stock2u.authentication.dto.UrlJson;
 import com.hack.stock2u.authentication.service.client.AuthUserDetail;
 import com.hack.stock2u.authentication.service.client.KakaoClient;
 import com.hack.stock2u.authentication.service.strategy.LoginStrategyBranch;
-import com.hack.stock2u.authentication.service.strategy.LoginURLCreateStrategy;
+import com.hack.stock2u.authentication.service.strategy.LoginUrlCreateStrategy;
 import com.hack.stock2u.constant.AuthVendor;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.user.repository.JpaUserRepository;
@@ -31,10 +31,9 @@ public class AuthService {
 
   /**
    * AuthVendor 에 따른 각 Vendor 로그인을 수행하는 URL 을 반환합니다.
-   * @param vendor AuthVendor 인증사 벤더 Enum 객체
    */
   public UrlJson getLoginUrl(AuthVendor vendor) {
-    LoginURLCreateStrategy urlCreateStrategy = loginStrategyBranch.getStrategy(vendor);
+    LoginUrlCreateStrategy urlCreateStrategy = loginStrategyBranch.getStrategy(vendor);
     return new UrlJson(urlCreateStrategy.create());
   }
 

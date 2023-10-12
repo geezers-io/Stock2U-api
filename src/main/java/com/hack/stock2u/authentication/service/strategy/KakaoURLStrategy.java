@@ -4,7 +4,7 @@ import com.hack.stock2u.authentication.config.KakaoProperties;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class KakaoUrlStrategy implements LoginURLCreateStrategy {
+public class KakaoUrlStrategy implements LoginUrlCreateStrategy {
   private final KakaoProperties properties;
 
   @Override
