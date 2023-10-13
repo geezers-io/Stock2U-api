@@ -32,17 +32,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
-    compileOnly 'org.projectlombok:lombok'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.h2database:h2'
     implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.33'
-    annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     implementation "org.springdoc:springdoc-openapi-ui:1.6.12"
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.session:spring-session-data-redis'
+    implementation group: 'com.twilio.sdk', name: 'twilio', version: '9.13.1'
 
     if (osdetector.classifier == "osx-aarch_64") { // MacOS 일 때 이슈 해결용 의존성 추가
         runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.77.Final:${osdetector.classifier}")
@@ -50,6 +51,14 @@ dependencies {
 }
 
 tasks.named('test') {
+    file(".env").eachLine {
+        String[] tokens = it.split("=")
+        if (tokens.length > 1) {
+            String key = tokens[0]
+            String value = tokens[1]
+            environment(key, value)
+        }
+    }
     useJUnitPlatform()
 }
 

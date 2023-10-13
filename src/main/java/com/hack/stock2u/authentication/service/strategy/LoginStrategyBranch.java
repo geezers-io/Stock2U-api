@@ -13,9 +13,9 @@ public class LoginStrategyBranch {
   /**
    * 벤더 전략 클래스(LoginURLCreateStrategy) 에 따른 URL 생성 및 반환을 수행합니다.
    */
-  public LoginURLCreateStrategy getStrategy(AuthVendor authVendor) {
+  public LoginUrlCreateStrategy getStrategy(AuthVendor authVendor) {
     if (authVendor.equals(AuthVendor.KAKAO)) {
-      return new KakaoUrlStrategy(kakaoProperties);
+      return new KakaoURLStrategy(kakaoProperties);
     }
     throw new IllegalArgumentException("잘못된 Vendor 값입니다.");
   }
