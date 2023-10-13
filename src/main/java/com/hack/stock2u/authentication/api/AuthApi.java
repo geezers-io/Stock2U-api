@@ -7,6 +7,7 @@ import com.hack.stock2u.authentication.dto.doro.DoroSearchResponse;
 import com.hack.stock2u.authentication.service.AuthService;
 import com.hack.stock2u.authentication.service.RoadNameAddressService;
 import com.hack.stock2u.constant.AuthVendor;
+import com.hack.stock2u.models.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -31,9 +32,8 @@ public class AuthApi {
   public ResponseEntity<UrlJson> login(
       @Parameter(
           name = "vendor",
-          description = "외부 인증(OAuth 2.0) 을 담당하는 인증사 벤더 이름을 작성합니다.(google, kakao, naver)",
-          required = true,
-          example = "kakao"
+          description = "외부 인증(OAuth 2.0) 을 담당하는 인증사 벤더 이름을 작성합니다.(GOOGLE, KAKAO, NAVER)",
+          required = true
       )
       @RequestParam("vendor") AuthVendor vendor
   ) {

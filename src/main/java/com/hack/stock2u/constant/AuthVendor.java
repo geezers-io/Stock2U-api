@@ -1,13 +1,15 @@
 package com.hack.stock2u.constant;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Arrays;
 import lombok.Getter;
 
+@Schema
 @Getter
 public enum AuthVendor {
-  GOOGLE("google"),
-  KAKAO("kakao"),
-  NAVER("naver");
+  GOOGLE("구글"),
+  KAKAO("카카오"),
+  NAVER("네이버");
 
   private final String name;
 
