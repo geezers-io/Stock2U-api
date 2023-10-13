@@ -47,19 +47,19 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /docs
-    urls-primary-name: Stock2U API
-    oauth:
-      app-name: Stock2U
 
 logging:
   level:
     org.springframework.boot.autoconfigure: ERROR
     org.springframework.data.convert: ERROR
-    org.hibernate: INFO
+    org.hibernate: DEBUG
     org.springframework.beans.factory.support: INFO
     com.zaxxer.hikari: INFO
     io.netty: INFO
     org.springframework.context.annotation: INFO
+    org.hibernate.type.descriptor.sql: DEBUG
+    org.hibernate.sql: DEBUG
+    org.hibernate.type: TRACE
 
 
 # local 환경
@@ -78,6 +78,10 @@ spring:
     hibernate:
       ddl-auto: update
     database: mysql
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
   data:
     mongodb:
 #      uri: ${HOME_MONGO_URI}
@@ -95,6 +99,7 @@ spring:
     store-type: redis
     redis:
       namespace: stock2u:session
+
 
 # dev 환경
 ---
@@ -116,6 +121,10 @@ spring:
     hibernate:
       ddl-auto: update
     database: mysql
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
   data:
     mongodb:
       uri: ${HOME_MONGO_URI}
