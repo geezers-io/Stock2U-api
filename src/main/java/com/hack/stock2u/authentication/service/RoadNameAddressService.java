@@ -15,7 +15,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class RoadNameAddressService {
   private final String url = "https://business.juso.go.kr/addrlink/addrLinkApi.do";
-  private final String parameters = "?confmKey={0}&currentPage={1}&countPerPage={2}&resultType=json&keyword={3}";
+  private final String parameters =
+      "?confmKey={0}&currentPage={1}&countPerPage={2}&resultType=json&keyword={3}";
 
   @Value("${app.doro.accessKey}")
   private String accessKey;
