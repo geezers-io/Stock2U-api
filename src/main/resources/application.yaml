@@ -78,12 +78,14 @@ spring:
     database: mysql
   data:
     mongodb:
-      uri: ${HOME_MONGO_URI}
-      database: "stock2u"
+#      uri: ${HOME_MONGO_URI}
       host: ${HOME_MONGO_HOST}
       port: 27017
+      database: local
       password: ${HOME_MONGO_PASSWORD}
       username: ${HOME_MONGO_USERNAME}
+      authentication-database: admin
+
   redis:
     host: ${HOME_REDIS_HOST}
     port: 6379
