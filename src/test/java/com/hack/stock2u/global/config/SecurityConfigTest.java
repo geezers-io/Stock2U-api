@@ -26,6 +26,6 @@ class SecurityConfigTest {
     PasswordEncoder passwordEncoder = config.passwordEncoder();
     String en = passwordEncoder.encode(password);
     logger.debug("encrypted password: {}", en);
-    assertThat(en).startsWith("{bcrypt}");
+    assertThat(en).startsWith("$2a");
   }
 }
