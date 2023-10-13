@@ -5,6 +5,7 @@ import com.hack.stock2u.authentication.dto.AuthRequestDto;
 import com.hack.stock2u.authentication.dto.LoginResponse;
 import com.hack.stock2u.authentication.dto.TokenSet;
 import com.hack.stock2u.authentication.dto.UrlJson;
+import com.hack.stock2u.authentication.dto.UserDetails;
 import com.hack.stock2u.authentication.service.client.AuthUserDetail;
 import com.hack.stock2u.authentication.service.client.KakaoClient;
 import com.hack.stock2u.authentication.service.strategy.LoginStrategyBranch;
@@ -51,11 +52,11 @@ public class AuthService {
     boolean exists = userOptional.isPresent();
     String email = userDetails.email();
     if (!exists) {
-      return new LoginResponse(false, email);
+      return new LoginResponse(false, email, null);
     }
     User user = userOptional.get();
     processLogin(user);
-    return new LoginResponse(true, email);
+    return new LoginResponse(true, email, UserDetails.user(user));
   }
 
   /**
