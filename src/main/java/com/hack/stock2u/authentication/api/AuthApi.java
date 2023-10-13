@@ -50,6 +50,15 @@ public class AuthApi {
     return ResponseEntity.ok().body(login);
   }
 
+  @Operation(summary = "일반 사용자 회원가입 API", description = "일반 사용자 회원가입을 수행합니다.")
+  @PostMapping("/signup/user")
+  public ResponseEntity<User> signupUserApi(
+      @RequestBody AuthRequestDto.SignupUserRequest signupUserRequest
+  ) {
+    User user = authService.signupUser(signupUserRequest);
+    return ResponseEntity.status(HttpStatus.CREATED).body(user);
+  }
+
   @Operation(summary = "회원가입 인증코드 발송 API", description = "사용자의 스마트폰으로 SMS 인증코드를 발송합니다.")
   @GetMapping("/code")
   public ResponseEntity<Void> sendAuthCodeApi(
