@@ -62,6 +62,16 @@ public class AuthCodeProvider {
     template.expire(key, 10, TimeUnit.MINUTES);
   }
 
+  public boolean checkVerifyComplete(String phone) {
+    ValueOperations<String, String> ops = template.opsForValue();
+    String key = createKey(phone);
+    String value = ops.get(key);
+    if (value == null) {
+      return false;
+    }
+    return value.equals("complete");
+  }
+
   private String createKey(String phone) {
     return keyPrefix + ":" + phone;
   }

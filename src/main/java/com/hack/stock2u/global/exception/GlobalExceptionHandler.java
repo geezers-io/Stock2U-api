@@ -1,6 +1,7 @@
 package com.hack.stock2u.global.exception;
 
 import com.hack.stock2u.user.UserException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -36,6 +38,7 @@ public class GlobalExceptionHandler {
   }
 
   private String getSimpleMessage(String fullText, String exName) {
+    log.error(fullText);
     int startIdx = fullText.indexOf(exName);
     if (startIdx == -1) {
       return fullText;

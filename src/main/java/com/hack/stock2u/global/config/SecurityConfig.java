@@ -1,5 +1,6 @@
 package com.hack.stock2u.global.config;
 
+import com.hack.stock2u.authentication.service.AuthManager;
 import com.hack.stock2u.authentication.service.UserDetailService;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import org.springframework.web.reactive.config.CorsRegistry;
 @EnableWebSecurity
 public class SecurityConfig {
   private final UserDetailService userDetailService;
+  private final AuthManager authManager;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -31,7 +33,7 @@ public class SecurityConfig {
 
     http.cors().configurationSource(configurationSource());
     http.userDetailsService(userDetailService);
-
+    http.authenticationManager(authManager);
     http.authorizeRequests()
         .antMatchers("/**").permitAll();
 
@@ -58,14 +60,19 @@ public class SecurityConfig {
   /**
    * 암호화를 수행하는 PasswordEncoder 객체를 반환합니다.
    */
+  //  @Bean
+  //  public PasswordEncoder passwordEncoder() {
+  //    String idForEncode = "bcrypt";
+  //    BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
+  //    Map<String, PasswordEncoder> store = new HashMap<>();
+  //    store.put(idForEncode, bcrypt);
+  //    return new DelegatingPasswordEncoder(idForEncode, store);
+  //  }
   @Bean
   public PasswordEncoder passwordEncoder() {
-    String idForEncode = "bcrypt";
-    BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
-    Map<String, PasswordEncoder> store = new HashMap<>();
-    store.put(idForEncode, bcrypt);
-    return new DelegatingPasswordEncoder(idForEncode, store);
+    return new BCryptPasswordEncoder();
   }
+
 
   private void disableMvcSettings(HttpSecurity http) throws Exception {
     http.formLogin().disable();
