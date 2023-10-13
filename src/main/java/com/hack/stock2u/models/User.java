@@ -1,5 +1,7 @@
 package com.hack.stock2u.models;
 
+import com.hack.stock2u.authentication.dto.AuthRequestDto;
+import com.hack.stock2u.constant.AuthVendor;
 import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.models.embed.BasicDateColumn;
 import java.util.Date;
@@ -32,6 +34,9 @@ public class User {
   private String name;
 
   private String email;
+
+  @Enumerated(EnumType.STRING)
+  private AuthVendor vendor;
 
   @Column(length = 20, nullable = false)
   private String phone;
@@ -67,4 +72,43 @@ public class User {
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
   private List<Product> products;
+
+  public static User signupUser(AuthRequestDto.SignupUserRequest signupUserRequest) {
+    User user = new User();
+    user.changeName("반려박쥐");
+    user.setEmail(signupUserRequest.email());
+    user.setPhone(signupUserRequest.phone());
+    user.setVendor(signupUserRequest.vendor());
+    user.setRole(UserRole.GENERAL);
+    BasicDateColumn basicDateColumn = new BasicDateColumn();
+    basicDateColumn.setCreatedAt(new Date());
+    basicDateColumn.setRemovedAt(null);
+    user.setBasicDate(basicDateColumn);
+    return user;
+  }
+
+  private void setBasicDate(BasicDateColumn basicDate) {
+    this.basicDate = basicDate;
+  }
+
+  public void changeName(String name) {
+    this.name = name;
+  }
+
+  private void setEmail(String email) {
+    this.email = email;
+  }
+
+  private void setPhone(String phone) {
+    this.phone = phone;
+  }
+
+  private void setVendor(AuthVendor vendor) {
+    this.vendor = vendor;
+  }
+
+  private void setRole(UserRole role) {
+    this.role = role;
+  }
+
 }
