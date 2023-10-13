@@ -22,7 +22,6 @@ public class SmsFactory {
       @Value("${app.twilio.token}") String token,
       @Value("${app.twilio.phone}") String phone
   ) {
-    log.warn("sid: {}, token: {}, phone: {}", sid, token, phone);
     SmsFactory.sid = sid;
     SmsFactory.token = token;
     SmsFactory.phone = phone;
