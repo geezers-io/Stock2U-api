@@ -3,7 +3,8 @@ package com.hack.stock2u.global.exception;
 import org.springframework.http.HttpStatus;
 
 public enum GlobalException implements BasicErrorCase {
-  ILLEGAL_ARGUMENT(HttpStatus.BAD_REQUEST, "FAULT_ARG", "잘못된 인자 값입니다.");
+  ILLEGAL_ARGUMENT(HttpStatus.BAD_REQUEST, "FAULT_ARG", "잘못된 인자 값입니다."),
+  SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SERVER_ERROR", "서버 에러가 발생하였습니다.");
 
   private final HttpStatus httpStatus;
   private final String errorCode;
