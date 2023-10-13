@@ -7,4 +7,11 @@ public class AuthRequestDto {
 
   public record Token(@NotNull @NotBlank String token) {}
 
+  public record AuthCode(
+      @NotNull @NotBlank
+      String authCode,
+      @NotNull @NotBlank
+      String phone
+  ) {}
+
 }

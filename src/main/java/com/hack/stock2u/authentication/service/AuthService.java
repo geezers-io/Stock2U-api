@@ -1,5 +1,6 @@
 package com.hack.stock2u.authentication.service;
 
+import com.hack.stock2u.authentication.dto.AuthRequestDto;
 import com.hack.stock2u.authentication.dto.LoginResponse;
 import com.hack.stock2u.authentication.dto.TokenSet;
 import com.hack.stock2u.authentication.dto.UrlJson;
@@ -28,6 +29,7 @@ public class AuthService {
   private final KakaoClient kakaoClient;
   private final JpaUserRepository userRepository;
   private final AuthenticationManager authManager;
+  private final AuthCodeProvider authCodeProvider;
 
   /**
    * AuthVendor 에 따른 각 Vendor 로그인을 수행하는 URL 을 반환합니다.
@@ -55,7 +57,17 @@ public class AuthService {
     return new LoginResponse(true, email);
   }
 
-  public void signup() {}
+  public void signup() {
+
+  }
+
+  public void sendCode(String phone) {
+    authCodeProvider.save(phone, 10);
+  }
+
+  public void verifyCode(String phone, String authCode) {
+    authCodeProvider.verifyCode(phone, authCode);
+  }
 
   private void processLogin(User user) {
     UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(

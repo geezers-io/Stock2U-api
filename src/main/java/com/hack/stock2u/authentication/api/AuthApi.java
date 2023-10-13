@@ -54,7 +54,8 @@ public class AuthApi {
       @Parameter(
           name = "phone",
           description = "대상자의 핸드폰 번호",
-          required = true
+          required = true,
+          example = "01012341234"
       )
       @RequestParam("phone") String phone
   ) {
