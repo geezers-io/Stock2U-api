@@ -47,7 +47,9 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /docs
-
+    urls-primary-name: Stock2U API
+    oauth:
+      app-name: Stock2U
 
 logging:
   level:
