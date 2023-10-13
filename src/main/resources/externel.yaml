@@ -3,3 +3,5 @@ app:
     sid: ${TWILIO_SID}
     token: ${TWILIO_TOKEN}
     phone: +12295454689
+  doro:
+    accessKey: ${DORO_ACCESS_KEY}
