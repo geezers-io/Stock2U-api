@@ -1,11 +1,7 @@
 package com.hack.stock2u.authentication.service;
 
 import com.hack.stock2u.authentication.AuthException;
-import com.hack.stock2u.authentication.dto.doro.DoroSearchResponse;
-import com.hack.stock2u.authentication.dto.doro.DoroAddressItem;
-import com.hack.stock2u.authentication.dto.doro.DoroPageDetails;
-import com.hack.stock2u.authentication.dto.doro.DoroResponse;
-import com.hack.stock2u.authentication.dto.doro.DoroResult;
+import com.hack.stock2u.authentication.dto.doro.*;
 import com.hack.stock2u.global.exception.GlobalException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -18,8 +14,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Slf4j
 @Service
 public class RoadNameAddressService {
-
-  @SuppressWarnings("checkstyle:Indentation")
   private final String url = "https://business.juso.go.kr/addrlink/addrLinkApi.do";
   private final String parameters = "?confmKey={0}&currentPage={1}&countPerPage={2}&resultType=json&keyword={3}";
 
