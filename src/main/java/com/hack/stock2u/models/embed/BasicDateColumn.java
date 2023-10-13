@@ -4,11 +4,17 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @Embeddable
 public class BasicDateColumn {
 
+  @CreatedDate
   @Column(name = "created_at")
   private Date createdAt;
 
