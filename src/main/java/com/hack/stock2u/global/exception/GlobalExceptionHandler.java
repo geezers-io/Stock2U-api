@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -17,7 +18,8 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(res.httpStatus()).body(res);
   }
 
-  @ExceptionHandler({MethodArgumentTypeMismatchException.class, IllegalArgumentException.class})
+  @ExceptionHandler({MethodArgumentTypeMismatchException.class, IllegalArgumentException.class,
+      MissingServletRequestParameterException.class})
   protected ResponseEntity<BasicErrorResponse> handleIllegalArgsException(Exception ex) {
     String message = ex.getLocalizedMessage();
     String errorMessage = getSimpleMessage(message, IllegalArgumentException.class.getName());
@@ -40,5 +42,4 @@ public class GlobalExceptionHandler {
     }
     return fullText.substring(startIdx + exName.length() + 2);
   }
-
 }
