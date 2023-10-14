@@ -2,15 +2,16 @@ package com.hack.stock2u.authentication.service;
 
 import com.hack.stock2u.authentication.AuthException;
 import com.hack.stock2u.authentication.dto.AuthRequestDto;
-import com.hack.stock2u.authentication.dto.LoginResponse;
+import com.hack.stock2u.authentication.dto.SignInResponse;
 import com.hack.stock2u.authentication.dto.TokenSet;
 import com.hack.stock2u.authentication.dto.UrlJson;
 import com.hack.stock2u.authentication.dto.UserDetails;
 import com.hack.stock2u.authentication.service.client.AuthUserDetail;
 import com.hack.stock2u.authentication.service.client.KakaoClient;
-import com.hack.stock2u.authentication.service.strategy.LoginStrategyBranch;
-import com.hack.stock2u.authentication.service.strategy.LoginUrlCreateStrategy;
+import com.hack.stock2u.authentication.service.strategy.SignInStrategyBranch;
+import com.hack.stock2u.authentication.service.strategy.SignInUrlCreateStrategy;
 import com.hack.stock2u.constant.AuthVendor;
+import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
@@ -20,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthService {
 
-  private final LoginStrategyBranch loginStrategyBranch;
+  private final SignInStrategyBranch signInStrategyBranch;
   private final KakaoClient kakaoClient;
   private final JpaUserRepository userRepository;
   private final AuthCodeProvider authCodeProvider;
@@ -39,14 +39,14 @@ public class AuthService {
    * AuthVendor 에 따른 각 Vendor 로그인을 수행하는 URL 을 반환합니다.
    */
   public UrlJson getLoginUrl(AuthVendor vendor) {
-    LoginUrlCreateStrategy urlCreateStrategy = loginStrategyBranch.getStrategy(vendor);
+    SignInUrlCreateStrategy urlCreateStrategy = signInStrategyBranch.getStrategy(vendor);
     return new UrlJson(urlCreateStrategy.create());
   }
 
   /**
    * 인증 코드를 기반으로 Resource Server 에 토큰 정보를 갱신하고 사용자 정보를 조회하여 LoginResponse 객체를 반환합니다.
    */
-  public LoginResponse login(String authCode) {
+  public SignInResponse signIn(String authCode) {
     TokenSet tokenSet = kakaoClient.getToken(authCode);
     AuthUserDetail userDetails = kakaoClient.getUserDetails(tokenSet.accessToken());
     Optional<User> userOptional = userRepository.findByEmail(userDetails.email());
@@ -54,11 +54,12 @@ public class AuthService {
     boolean exists = userOptional.isPresent();
     String email = userDetails.email();
     if (!exists) {
-      return new LoginResponse(false, email, null);
+      String uuid = authCodeProvider.saveAvailableSignup();
+      return new SignInResponse(false, email, uuid, null);
     }
     User user = userOptional.get();
     processLogin(user);
-    return new LoginResponse(true, email, UserDetails.user(user));
+    return new SignInResponse(true, email, null, UserDetails.user(user));
   }
 
   public void withdraw(String reason) {
@@ -74,6 +75,12 @@ public class AuthService {
    */
   @Transactional
   public UserDetails signupUser(AuthRequestDto.SignupUserRequest signupUserRequest) {
+    String uuid = signupUserRequest.verification();
+    boolean readySignup = authCodeProvider.isReadySignup(uuid);
+    if (!readySignup) {
+      throw GlobalException.BAD_REQUEST.create();
+    }
+
     String phone = signupUserRequest.phone();
     AuthVendor vendor = signupUserRequest.vendor();
 
@@ -81,7 +88,6 @@ public class AuthService {
     Optional<User> user = userRepository.findByEmailAndVendor(signupUserRequest.email(), vendor);
 
     if (user.isPresent()) {
-      log.warn("isPresnent: {}", user.isPresent());
       throw AuthException.ALREADY_EXISTS_USER.create();
     }
 

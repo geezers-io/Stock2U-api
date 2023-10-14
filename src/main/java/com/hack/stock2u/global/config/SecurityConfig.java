@@ -1,5 +1,6 @@
 package com.hack.stock2u.global.config;
 
+import com.hack.stock2u.authentication.service.AuthAccessDeniedHandler;
 import com.hack.stock2u.authentication.service.AuthManager;
 import com.hack.stock2u.authentication.service.UserDetailService;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
   private final UserDetailService userDetailService;
   private final AuthManager authManager;
+  private final AuthAccessDeniedHandler accessDeniedHandler;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -31,8 +33,13 @@ public class SecurityConfig {
     http.authenticationManager(authManager);
     http.authorizeRequests()
         .antMatchers("/auth/withdraw").hasAnyAuthority("GENERAL", "SELLER")
-        .antMatchers("/auth/login").permitAll()
-        .antMatchers("/auth/signup/*").permitAll();
+        .antMatchers("/auth/signin").permitAll()
+        .antMatchers("/auth/signup/*").permitAll()
+        .antMatchers("/test/admin").hasRole("ADMIN");
+
+    http
+        .exceptionHandling()
+        .accessDeniedHandler(accessDeniedHandler);
 
     return http.build();
   }

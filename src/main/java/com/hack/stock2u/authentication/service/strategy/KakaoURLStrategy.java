@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 @RequiredArgsConstructor
-public class KakaoURLStrategy implements LoginUrlCreateStrategy {
+public class KakaoURLStrategy implements SignInUrlCreateStrategy {
   private final KakaoProperties properties;
 
   @Override
