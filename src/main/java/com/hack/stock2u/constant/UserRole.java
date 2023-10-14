@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum UserRole {
-  GENERAL("일반 사용자"),
+  GENERAL("구매자"),
   SELLER("판매자"),
   ADMIN("관리자");
 
