@@ -10,9 +10,16 @@ import com.hack.stock2u.constant.AuthVendor;
 import com.hack.stock2u.models.User;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import java.net.http.HttpResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,6 +81,30 @@ public class AuthApi {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
+  @Operation(summary = "회원 탈퇴 API", description = "회원 탈퇴를 수행합니다.")
+  @GetMapping("/withdraw")
+  public ResponseEntity<Void> withdrawApi(
+      @Parameter(
+          name = "reason",
+          description = "탈퇴 사유",
+          example = "서비스가 마음에 안들어서"
+      )
+      @RequestParam(value = "reason", required = false) String reason,
+      HttpServletRequest request,
+      HttpServletResponse response
+  ) {
+    authService.withdraw(reason);
+    logout(request, response);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @Operation(summary = "로그아웃 API", description = "세션 로그아웃을 수행합니다.")
+  @GetMapping("/logout")
+  public ResponseEntity<Void> logoutApi(HttpServletRequest request, HttpServletResponse response) {
+    logout(request, response);
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
   @Operation(
       summary = "회원가입 인증코드 검증 API",
       description = "발송된 회원 인증코드를 검증합니다. 해당 API 에서 검증 이후 회원가입이 가능합니다."
@@ -117,6 +148,13 @@ public class AuthApi {
   ) {
     DoroSearchResponse address = addressService.getAddress(keyword, page, size);
     return ResponseEntity.ok(address);
+  }
+
+  private void logout(HttpServletRequest request, HttpServletResponse response) {
+    new SecurityContextLogoutHandler().logout(
+        request, response,
+        SecurityContextHolder.getContext().getAuthentication()
+    );
   }
 
 }

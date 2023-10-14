@@ -1,5 +1,6 @@
 package com.hack.stock2u.authentication.service;
 
+import com.hack.stock2u.constant.AuthVendor;
 import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.models.User;
 import java.util.Collection;
@@ -21,6 +22,10 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
   public String getEmail() {
     return user.getEmail();
+  }
+
+  public AuthVendor getVendor() {
+    return user.getVendor();
   }
 
   @Override
@@ -54,4 +59,5 @@ public class UserDetails implements org.springframework.security.core.userdetail
     Date disabledAt = user.getDisabledAt();
     return removedAt == null && disabledAt == null;
   }
+
 }

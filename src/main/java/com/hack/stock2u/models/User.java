@@ -21,10 +21,12 @@ import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "users")
+@Where(clause = "removed_at IS NULL")
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,7 +64,7 @@ public class User {
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "seller_details_id")
-  private SellerDetails sellerDetails;
+  private SellerDetails sellerDetails;  
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "buyer")
   private List<Buyer> buyers;
@@ -109,6 +111,13 @@ public class User {
 
   private void setRole(UserRole role) {
     this.role = role;
+  }
+
+  public void remove(String reason) {
+    this.withdrawReason = reason;
+    BasicDateColumn dateSet = this.getBasicDate();
+    dateSet.setRemovedAt(new Date());
+    setBasicDate(dateSet);
   }
 
 }
