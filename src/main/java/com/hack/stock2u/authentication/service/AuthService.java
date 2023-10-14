@@ -73,7 +73,7 @@ public class AuthService {
    * 일반 사용자 회원가입 요청을 처리합니다.
    */
   @Transactional
-  public User signupUser(AuthRequestDto.SignupUserRequest signupUserRequest) {
+  public UserDetails signupUser(AuthRequestDto.SignupUserRequest signupUserRequest) {
     String phone = signupUserRequest.phone();
     AuthVendor vendor = signupUserRequest.vendor();
 
@@ -88,7 +88,7 @@ public class AuthService {
     User newUser = userRepository.save(User.signupUser(signupUserRequest));
     processLogin(newUser);
 
-    return newUser;
+    return UserDetails.user(newUser);
   }
 
   /**

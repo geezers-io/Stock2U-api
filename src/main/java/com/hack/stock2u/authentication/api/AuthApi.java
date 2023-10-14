@@ -3,6 +3,7 @@ package com.hack.stock2u.authentication.api;
 import com.hack.stock2u.authentication.dto.AuthRequestDto;
 import com.hack.stock2u.authentication.dto.LoginResponse;
 import com.hack.stock2u.authentication.dto.UrlJson;
+import com.hack.stock2u.authentication.dto.UserDetails;
 import com.hack.stock2u.authentication.dto.doro.DoroSearchResponse;
 import com.hack.stock2u.authentication.service.AuthService;
 import com.hack.stock2u.authentication.service.RoadNameAddressService;
@@ -59,10 +60,10 @@ public class AuthApi {
 
   @Operation(summary = "일반 사용자 회원가입 API", description = "일반 사용자 회원가입을 수행합니다.")
   @PostMapping("/signup/user")
-  public ResponseEntity<User> signupUserApi(
+  public ResponseEntity<UserDetails> signupUserApi(
       @RequestBody AuthRequestDto.SignupUserRequest signupUserRequest
   ) {
-    User user = authService.signupUser(signupUserRequest);
+    UserDetails user = authService.signupUser(signupUserRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
