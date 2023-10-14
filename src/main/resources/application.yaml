@@ -9,6 +9,7 @@ server:
         name: JSESSIONID
         http-only: true
       timeout: 3600
+    context-path: /api
 
 spring:
   profiles:
@@ -60,8 +61,11 @@ logging:
     org.hibernate.type.descriptor.sql: DEBUG
     org.hibernate.sql: DEBUG
     org.hibernate.type: TRACE
+    org.hibernate.hql.internal.ast: WARN
     org.mongodb.driver.cluster: ERROR
     org.mongodb.driver.protocol: ERROR
+    org.springframework.data.redis.core.RedisConnectionUtils: WARN
+    io.lettuce.core.protocol: WARN
 
 
 # local 환경
@@ -82,7 +86,7 @@ spring:
     database: mysql
     properties:
       hibernate:
-        show_sql: true
+#        show_sql: true
         format_sql: true
   data:
     mongodb:
