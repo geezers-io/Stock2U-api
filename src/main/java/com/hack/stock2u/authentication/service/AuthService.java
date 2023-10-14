@@ -70,7 +70,7 @@ public class AuthService {
   }
 
   /**
-   * 일반 사용자 회원가입 요청을 처리합니다.
+   * 구매자 회원가입 요청을 처리합니다.
    */
   @Transactional
   public UserDetails signupUser(AuthRequestDto.SignupUserRequest signupUserRequest) {

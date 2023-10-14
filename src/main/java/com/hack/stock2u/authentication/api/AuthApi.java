@@ -58,7 +58,7 @@ public class AuthApi {
     return ResponseEntity.ok().body(login);
   }
 
-  @Operation(summary = "일반 사용자 회원가입 API", description = "일반 사용자 회원가입을 수행합니다.")
+  @Operation(summary = "구매자 회원가입 API", description = "구매자 회원가입을 수행합니다.")
   @PostMapping("/signup/user")
   public ResponseEntity<UserDetails> signupUserApi(
       @RequestBody AuthRequestDto.SignupUserRequest signupUserRequest
