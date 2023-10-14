@@ -60,6 +60,8 @@ logging:
     org.hibernate.type.descriptor.sql: DEBUG
     org.hibernate.sql: DEBUG
     org.hibernate.type: TRACE
+    org.mongodb.driver.cluster: ERROR
+    org.mongodb.driver.protocol: ERROR
 
 
 # local 환경
