@@ -52,14 +52,16 @@ public class AuthApi {
 
   @Operation(summary = "로그인 API", description = "로그인을 수행합니다.")
   @PostMapping("/signin")
-  public ResponseEntity<SignInResponse> getTokenApi(@RequestBody AuthRequestDto.Token tokenRequest) {
-    String token = tokenRequest.token();
-    SignInResponse login = authService.login(token);
-    return ResponseEntity.ok().body(login);
+  public ResponseEntity<SignInResponse> signInApi(
+      @RequestBody AuthRequestDto.SignInRequest signInRequest
+  ) {
+    String authCode = signInRequest.authCode();
+    SignInResponse signIn = authService.signIn(authCode);
+    return ResponseEntity.ok().body(signIn);
   }
 
   @Operation(summary = "구매자 회원가입 API", description = "구매자 회원가입을 수행합니다.")
-  @PostMapping("/signup/user")
+  @PostMapping("/signup/purchaser")
   public ResponseEntity<UserDetails> signupUserApi(
       @RequestBody AuthRequestDto.SignupUserRequest signupUserRequest
   ) {

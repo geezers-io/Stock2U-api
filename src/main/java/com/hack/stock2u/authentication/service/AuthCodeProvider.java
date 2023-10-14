@@ -1,10 +1,12 @@
 package com.hack.stock2u.authentication.service;
 
 import com.hack.stock2u.authentication.AuthException;
+import com.hack.stock2u.authentication.service.client.AuthUserDetail;
 import com.hack.stock2u.global.factory.SmsFactory;
 import com.hack.stock2u.utils.Convertor;
 import com.hack.stock2u.utils.OneTimeCodeGenerator;
 import java.text.MessageFormat;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +43,22 @@ public class AuthCodeProvider {
     template.expire(key, minutes, TimeUnit.MINUTES);
   }
 
+  public String saveAvailableSignup() {
+    ValueOperations<String, String> ops = template.opsForValue();
+    String uuid = UUID.randomUUID().toString();
+    String key = createSignupKey(uuid);
+    ops.set(key, "ready");
+    template.expire(key, 1, TimeUnit.HOURS);
+    return uuid;
+  }
+
+  public boolean isReadySignup(String uuid) {
+    ValueOperations<String, String> ops = template.opsForValue();
+    String signupKey = createSignupKey(uuid);
+    String ready = ops.get(signupKey);
+    return ready != null;
+  }
+
   public void verifyCode(String phone, String code) {
     ValueOperations<String, String> ops = template.opsForValue();
     String key = createKey(phone);
@@ -74,6 +92,10 @@ public class AuthCodeProvider {
 
   private String createKey(String phone) {
     return keyPrefix + ":" + phone;
+  }
+
+  private String createSignupKey(String id) {
+    return "signup" + ":" + id;
   }
 
 }
