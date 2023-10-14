@@ -1,6 +1,7 @@
 package com.hack.stock2u.authentication.api;
 
 import com.hack.stock2u.authentication.dto.AuthRequestDto;
+import com.hack.stock2u.authentication.dto.Bank;
 import com.hack.stock2u.authentication.dto.LoginResponse;
 import com.hack.stock2u.authentication.dto.UrlJson;
 import com.hack.stock2u.authentication.dto.UserDetails;
@@ -8,17 +9,16 @@ import com.hack.stock2u.authentication.dto.doro.DoroSearchResponse;
 import com.hack.stock2u.authentication.service.AuthService;
 import com.hack.stock2u.authentication.service.RoadNameAddressService;
 import com.hack.stock2u.constant.AuthVendor;
-import com.hack.stock2u.models.User;
+import com.hack.stock2u.constant.BankCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -149,6 +149,13 @@ public class AuthApi {
   ) {
     DoroSearchResponse address = addressService.getAddress(keyword, page, size);
     return ResponseEntity.ok(address);
+  }
+
+  @Operation(summary = "은행 코드/이름 리스트 조회 API", description = "각 은행사의 코드와 이름 리스트를 조회합니다.")
+  @GetMapping("/bank/list")
+  public ResponseEntity<List<Bank>> getBankListApi() {
+    List<Bank> list = Arrays.stream(BankCode.values()).map(Bank::from).toList();
+    return ResponseEntity.ok(list);
   }
 
   private void logout(HttpServletRequest request, HttpServletResponse response) {
