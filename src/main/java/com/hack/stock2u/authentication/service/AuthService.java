@@ -12,6 +12,7 @@ import com.hack.stock2u.authentication.service.strategy.LoginStrategyBranch;
 import com.hack.stock2u.authentication.service.strategy.LoginUrlCreateStrategy;
 import com.hack.stock2u.constant.AuthVendor;
 import com.hack.stock2u.models.User;
+import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +59,14 @@ public class AuthService {
     User user = userOptional.get();
     processLogin(user);
     return new LoginResponse(true, email, UserDetails.user(user));
+  }
+
+  public void withdraw(String reason) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Long userId = (Long) authentication.getCredentials();
+    User user = userRepository.findById(userId).orElseThrow(UserException.NOT_FOUND_USER::create);
+    user.remove(reason);
+    userRepository.save(user);
   }
 
   /**
