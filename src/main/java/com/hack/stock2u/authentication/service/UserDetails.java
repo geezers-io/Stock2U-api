@@ -24,7 +24,9 @@ public class UserDetails implements org.springframework.security.core.userdetail
     return user.getEmail();
   }
 
-  public AuthVendor getVendor() { return user.getVendor(); }
+  public AuthVendor getVendor() {
+    return user.getVendor();
+  }
 
   @Override
   public String getPassword() {
@@ -57,4 +59,5 @@ public class UserDetails implements org.springframework.security.core.userdetail
     Date disabledAt = user.getDisabledAt();
     return removedAt == null && disabledAt == null;
   }
+
 }
