@@ -2,7 +2,7 @@ package com.hack.stock2u.authentication.api;
 
 import com.hack.stock2u.authentication.dto.AuthRequestDto;
 import com.hack.stock2u.authentication.dto.Bank;
-import com.hack.stock2u.authentication.dto.LoginResponse;
+import com.hack.stock2u.authentication.dto.SignInResponse;
 import com.hack.stock2u.authentication.dto.UrlJson;
 import com.hack.stock2u.authentication.dto.UserDetails;
 import com.hack.stock2u.authentication.dto.doro.DoroSearchResponse;
@@ -36,8 +36,8 @@ public class AuthApi {
   private final RoadNameAddressService addressService;
 
   @Operation(summary = "로그인 URL API", description = "각 벤더 요청에 따른 로그인 URL 을 반환합니다.")
-  @GetMapping("/login-url")
-  public ResponseEntity<UrlJson> login(
+  @GetMapping("/signin-url")
+  public ResponseEntity<UrlJson> getSignInUrlApi(
       @Parameter(
           name = "vendor",
           description = "외부 인증(OAuth 2.0) 을 담당하는 인증사 벤더 이름을 작성합니다.(GOOGLE, KAKAO, NAVER)",
@@ -51,10 +51,10 @@ public class AuthApi {
   }
 
   @Operation(summary = "로그인 API", description = "로그인을 수행합니다.")
-  @PostMapping("/login")
-  public ResponseEntity<LoginResponse> getTokenApi(@RequestBody AuthRequestDto.Token tokenRequest) {
+  @PostMapping("/signin")
+  public ResponseEntity<SignInResponse> getTokenApi(@RequestBody AuthRequestDto.Token tokenRequest) {
     String token = tokenRequest.token();
-    LoginResponse login = authService.login(token);
+    SignInResponse login = authService.login(token);
     return ResponseEntity.ok().body(login);
   }
 

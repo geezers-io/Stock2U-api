@@ -1,6 +1,6 @@
 package com.hack.stock2u.authentication.service.strategy;
 
-public interface LoginUrlCreateStrategy {
+public interface SignInUrlCreateStrategy {
   String urlTemplate = "https://kauth.kakao.com/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code";
 
   String create();
