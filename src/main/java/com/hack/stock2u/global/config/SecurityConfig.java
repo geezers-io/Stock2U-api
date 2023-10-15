@@ -32,9 +32,10 @@ public class SecurityConfig {
     http.userDetailsService(userDetailService);
     http.authenticationManager(authManager);
     http.authorizeRequests()
-        .antMatchers("/auth/withdraw").hasAnyAuthority("GENERAL", "SELLER")
+        .antMatchers("/auth/withdraw").hasAnyAuthority("PURCHASER", "SELLER")
         .antMatchers("/auth/signin").permitAll()
-        .antMatchers("/auth/signup/*").permitAll()
+        .antMatchers("/auth/signup/*").hasAnyAuthority("PURCHASER", "SELLER", "ADMIN")
+        .antMatchers("/upload/*").hasAnyRole("")
         .antMatchers("/test/admin").hasRole("ADMIN");
 
     http
@@ -53,6 +54,8 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource configurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowCredentials(true);
+    configuration.setExposedHeaders(List.of("*"));
     configuration.setAllowedOrigins(List.of("*"));
     configuration.setAllowedMethods(List.of("*"));
     UrlBasedCorsConfigurationSource source =
