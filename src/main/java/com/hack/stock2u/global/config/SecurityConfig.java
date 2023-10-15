@@ -34,8 +34,8 @@ public class SecurityConfig {
     http.authorizeRequests()
         .antMatchers("/auth/withdraw").hasAnyAuthority("PURCHASER", "SELLER")
         .antMatchers("/auth/signin").permitAll()
-        .antMatchers("/auth/signup/*").hasAnyAuthority("PURCHASER", "SELLER", "ADMIN")
-        .antMatchers("/upload/*").hasAnyRole("")
+        .antMatchers("/auth/signup/*").permitAll()
+        .antMatchers("/upload/*").hasAnyRole("PURCHASER", "SELLER", "ADMIN")
         .antMatchers("/test/admin").hasRole("ADMIN");
 
     http
@@ -56,7 +56,7 @@ public class SecurityConfig {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.setAllowCredentials(true);
     configuration.setExposedHeaders(List.of("*"));
-    configuration.setAllowedOriginPatterns(List.of("http://localhost:[3000]"));
+    configuration.setAllowedOriginPatterns(List.of("*"));
     configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
     UrlBasedCorsConfigurationSource source =
         new UrlBasedCorsConfigurationSource();
