@@ -2,7 +2,6 @@ package com.hack.stock2u.chat.controller;
 
 
 import com.hack.stock2u.models.ChatMessage;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -14,8 +13,7 @@ public class MessageController {
   private final SimpMessageSendingOperations simpMessageSendingOperations;
 
   @MessageMapping("/chat/message")
-  public void message(ChatMessage chatMessage){
-
-    simpMessageSendingOperations.convertAndSend("/queue/"+chatMessage.getId(),chatMessage);
+  public void message(ChatMessage chatMessage) {
+    simpMessageSendingOperations.convertAndSend("/queue/" + chatMessage.getId(), chatMessage);
   }
 }
