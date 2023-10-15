@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -39,4 +40,16 @@ public class SellerDetails {
   @Comment("계좌번호")
   @Column(length = 50)
   private String account;
+
+  @Builder
+  public SellerDetails(String licenseNumber, String industry, String industryName, String location,
+                       String bankName, String account) {
+    this.licenseNumber = licenseNumber;
+    this.industry = industry;
+    this.industryName = industryName;
+    this.location = location;
+    this.bankName = bankName;
+    this.account = account;
+  }
+
 }

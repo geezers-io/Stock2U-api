@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
@@ -32,7 +33,7 @@ public class User {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(length = 30, nullable = false)
+  @Column(length = 15, nullable = false)
   private String name;
 
   private String email;
@@ -75,18 +76,63 @@ public class User {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
   private List<Product> products;
 
-  public static User signupUser(AuthRequestDto.SignupUserRequest signupUserRequest) {
-    User user = new User();
-    user.changeName("반려박쥐");
-    user.setEmail(signupUserRequest.email());
-    user.setPhone(signupUserRequest.phone());
-    user.setVendor(signupUserRequest.vendor());
-    user.setRole(UserRole.GENERAL);
-    BasicDateColumn basicDateColumn = new BasicDateColumn();
-    basicDateColumn.setCreatedAt(new Date());
-    basicDateColumn.setRemovedAt(null);
-    user.setBasicDate(basicDateColumn);
+  @Builder
+  public User(String name, String email, AuthVendor vendor, String phone, BasicDateColumn basicDate,
+              SellerDetails sellerDetails) {
+    this.name = name;
+    this.email = email;
+    this.vendor = vendor;
+    this.phone = phone;
+    this.basicDate = basicDate;
+    this.sellerDetails = sellerDetails;
+  }
+
+  public static User signupPurchaser(AuthRequestDto.SignupPurchaserRequest signupUserRequest) {
+    BasicDateColumn date = new BasicDateColumn();
+    date.setCreatedAt(new Date());
+    date.setRemovedAt(null);
+
+    User user = User.builder()
+        .name(signupUserRequest.username())
+        .email(signupUserRequest.email())
+        .phone(signupUserRequest.phone())
+        .vendor(signupUserRequest.vendor())
+        .build();
+
+    user.setRole(UserRole.PURCHASER);
+
     return user;
+  }
+
+  public static User signupSeller(AuthRequestDto.SignupSellerRequest signupSellerRequest) {
+    BasicDateColumn date = new BasicDateColumn();
+    date.setCreatedAt(new Date());
+
+    SellerDetails sellerDetails = SellerDetails.builder()
+        .licenseNumber(signupSellerRequest.licenseNumber())
+        .industry(signupSellerRequest.industry())
+        .industryName(signupSellerRequest.industryName())
+        .location(signupSellerRequest.location())
+        .bankName(signupSellerRequest.bankName())
+        .account(signupSellerRequest.account())
+        .build();
+
+    User user = User.builder()
+        .name(signupSellerRequest.username())
+        .email(signupSellerRequest.email())
+        .vendor(signupSellerRequest.vendor())
+        .phone(signupSellerRequest.phone())
+        .basicDate(date)
+        .sellerDetails(sellerDetails)
+        .build();
+
+    user.setRole(UserRole.SELLER);
+
+    return user;
+  }
+
+  private void setName(String name) {
+    this.name = name;
   }
 
   private void setBasicDate(BasicDateColumn basicDate) {

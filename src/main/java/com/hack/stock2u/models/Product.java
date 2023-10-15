@@ -36,6 +36,8 @@ public class Product {
   @Comment("재고 이름")
   private String name;
 
+  private int price;
+
   @Comment("재고 분류")
   @Enumerated(EnumType.STRING)
   private ProductType type;
