@@ -24,7 +24,7 @@ public enum AuthVendor {
   public static AuthVendor findByName(String name) {
     return Arrays.stream(AuthVendor.values())
         .filter(vendor -> {
-          String vendorName = vendor.getName();
+          String vendorName = vendor.name();
           return vendorName.equals(name);
         })
         .findAny()
