@@ -55,7 +55,6 @@ public class AuthRequestDto {
       @Size(message = "닉네임은 최소 3글자 이상 15글자 이하입니다.", min = 3, max = 15)
       String username,
       @Schema(required = true, description = "이메일")
-
       @Pattern(
           regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
           message = "이메일 형식이 아닙니다."
