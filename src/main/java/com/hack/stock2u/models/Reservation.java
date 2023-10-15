@@ -2,6 +2,7 @@ package com.hack.stock2u.models;
 
 import com.hack.stock2u.models.embed.BasicDateColumn;
 import java.util.Date;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -14,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -21,6 +24,7 @@ import org.hibernate.annotations.Comment;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "reservations")
+@AllArgsConstructor
 public class Reservation {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,4 +50,5 @@ public class Reservation {
 
   @Embedded
   private BasicDateColumn basicDate;
+
 }
