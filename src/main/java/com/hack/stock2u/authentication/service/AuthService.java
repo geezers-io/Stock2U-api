@@ -1,6 +1,5 @@
 package com.hack.stock2u.authentication.service;
 
-import com.hack.stock2u.authentication.AuthException;
 import com.hack.stock2u.authentication.dto.AuthRequestDto;
 import com.hack.stock2u.authentication.dto.SignInResponse;
 import com.hack.stock2u.authentication.dto.TokenSet;
@@ -11,7 +10,6 @@ import com.hack.stock2u.authentication.service.client.KakaoClient;
 import com.hack.stock2u.authentication.service.strategy.SignInStrategyBranch;
 import com.hack.stock2u.authentication.service.strategy.SignInUrlCreateStrategy;
 import com.hack.stock2u.constant.AuthVendor;
-import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
@@ -34,6 +32,7 @@ public class AuthService {
   private final JpaUserRepository userRepository;
   private final AuthCodeProvider authCodeProvider;
   private final AuthManager authManager;
+  private final SignupValidator validator;
 
   /**
    * AuthVendor 에 따른 각 Vendor 로그인을 수행하는 URL 을 반환합니다.
@@ -74,24 +73,26 @@ public class AuthService {
    * 구매자 회원가입 요청을 처리합니다.
    */
   @Transactional
-  public UserDetails signupUser(AuthRequestDto.SignupUserRequest signupUserRequest) {
-    String uuid = signupUserRequest.verification();
-    boolean readySignup = authCodeProvider.isReadySignup(uuid);
-    if (!readySignup) {
-      throw GlobalException.BAD_REQUEST.create();
-    }
-
-    String phone = signupUserRequest.phone();
+  public UserDetails signupPurchaser(AuthRequestDto.SignupPurchaserRequest signupUserRequest) {
+    validator.validReadyForSignup(signupUserRequest.verification(), signupUserRequest.phone());
     AuthVendor vendor = signupUserRequest.vendor();
 
-    validPhoneCheck(phone);
-    Optional<User> user = userRepository.findByEmailAndVendor(signupUserRequest.email(), vendor);
+    validator.validExistsUser(signupUserRequest.email(), vendor);
 
-    if (user.isPresent()) {
-      throw AuthException.ALREADY_EXISTS_USER.create();
-    }
+    User newUser = userRepository.save(User.signupPurchaser(signupUserRequest));
+    processLogin(newUser);
 
-    User newUser = userRepository.save(User.signupUser(signupUserRequest));
+    return UserDetails.user(newUser);
+  }
+
+  public UserDetails signupSeller(AuthRequestDto.SignupSellerRequest signupSellerRequest) {
+    validator.validReadyForSignup(signupSellerRequest.verification(), signupSellerRequest.phone());
+    String email = signupSellerRequest.email();
+    AuthVendor vendor = signupSellerRequest.vendor();
+
+    validator.validExistsUser(email, vendor);
+
+    User newUser = userRepository.save(User.signupSeller(signupSellerRequest));
     processLogin(newUser);
 
     return UserDetails.user(newUser);
@@ -117,13 +118,6 @@ public class AuthService {
     );
     Authentication authenticate = authManager.authenticate(token);
     SecurityContextHolder.getContext().setAuthentication(authenticate);
-  }
-
-  private void validPhoneCheck(String phone) {
-    boolean authCodeComplete = authCodeProvider.checkVerifyComplete(phone);
-    if (!authCodeComplete) {
-      throw AuthException.INCOMPLETE_AUTH_CODE.create();
-    }
   }
 
 }

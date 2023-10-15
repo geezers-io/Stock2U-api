@@ -11,7 +11,7 @@ class SimpleUserRoleTest {
   @Test
   @DisplayName("UserRole.GENERAL 의 name 을 성공적으로 가져온다.")
   void getName() {
-    String generalName = UserRole.GENERAL.getName();
+    String generalName = UserRole.PURCHASER.getName();
     assertThat(generalName).isEqualTo("구매자");
   }
 

@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class AuthApi {
   @Operation(summary = "로그인 API", description = "로그인을 수행합니다.")
   @PostMapping("/signin")
   public ResponseEntity<SignInResponse> signInApi(
-      @RequestBody AuthRequestDto.SignInRequest signInRequest
+      @RequestBody @Valid AuthRequestDto.SignInRequest signInRequest
   ) {
     String authCode = signInRequest.authCode();
     SignInResponse signIn = authService.signIn(authCode);
@@ -62,10 +63,19 @@ public class AuthApi {
 
   @Operation(summary = "구매자 회원가입 API", description = "구매자 회원가입을 수행합니다.")
   @PostMapping("/signup/purchaser")
-  public ResponseEntity<UserDetails> signupUserApi(
-      @RequestBody AuthRequestDto.SignupUserRequest signupUserRequest
+  public ResponseEntity<UserDetails> signupPurchaserApi(
+      @RequestBody @Valid AuthRequestDto.SignupPurchaserRequest signupPurchaserRequest
   ) {
-    UserDetails user = authService.signupUser(signupUserRequest);
+    UserDetails user = authService.signupPurchaser(signupPurchaserRequest);
+    return ResponseEntity.status(HttpStatus.CREATED).body(user);
+  }
+
+  @Operation(summary = "판매자 회원가입 API", description = "판매자 회원가입을 수행합니다.")
+  @PostMapping("/signup/seller")
+  public ResponseEntity<UserDetails> signupSellerApi(
+      @RequestBody @Valid AuthRequestDto.SignupSellerRequest signupSellerRequest
+  ) {
+    UserDetails user = authService.signupSeller(signupSellerRequest);
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
@@ -114,7 +124,7 @@ public class AuthApi {
   )
   @PostMapping("/code/verify")
   public ResponseEntity<Void> verifyAuthCodeApi(
-      @RequestBody AuthRequestDto.AuthCode authCodeRequest
+      @RequestBody @Valid AuthRequestDto.AuthCode authCodeRequest
   ) {
     String authCode = authCodeRequest.authCode();
     String phone = authCodeRequest.phone();
