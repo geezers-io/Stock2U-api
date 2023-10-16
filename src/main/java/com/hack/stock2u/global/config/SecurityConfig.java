@@ -31,6 +31,8 @@ public class SecurityConfig {
     http.logout().disable();
     http.cors().configurationSource(configurationSource());
     http.userDetailsService(userDetailService);
+    http.exceptionHandling()
+            .accessDeniedHandler(accessDeniedHandler);
     http.authenticationManager(authManager);
 
     http.authorizeRequests()
@@ -54,7 +56,6 @@ public class SecurityConfig {
   public CorsConfigurationSource configurationSource() {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
-    config.setExposedHeaders(List.of("*"));
     config.setAllowedOrigins(List.of(
         "http://localhost:3000",
         "https://stock2u-front.vercel.app/"
