@@ -26,20 +26,22 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    disableMvcSettings(http);
-
+    http.formLogin().disable();
+    http.csrf().disable();
+    http.logout().disable();
     http.cors().configurationSource(configurationSource());
     http.userDetailsService(userDetailService);
+    http.exceptionHandling()
+            .accessDeniedHandler(accessDeniedHandler);
     http.authenticationManager(authManager);
-    http.authorizeRequests()
-        .antMatchers("/auth/withdraw").hasAnyAuthority("GENERAL", "SELLER")
-        .antMatchers("/auth/signin").permitAll()
-        .antMatchers("/auth/signup/*").permitAll()
-        .antMatchers("/test/admin").hasRole("ADMIN");
 
-    http
-        .exceptionHandling()
-        .accessDeniedHandler(accessDeniedHandler);
+    http.authorizeRequests()
+            .antMatchers(
+                "/auth/signin", "/auth/signup/**", "/auth/signin-url",
+                "/swagger-ui/*", "/docs", "/api-docs*", "/swagger-ui/**"
+            ).permitAll()
+            .antMatchers("/test/admin").hasRole("ADMIN")
+            .anyRequest().authenticated();
 
     return http.build();
   }
@@ -52,12 +54,16 @@ public class SecurityConfig {
 
   @Bean
   public CorsConfigurationSource configurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(List.of("*"));
-    configuration.setAllowedMethods(List.of("*"));
-    UrlBasedCorsConfigurationSource source =
-        new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowCredentials(true);
+    config.addAllowedHeader("*");
+    config.setAllowedOrigins(List.of(
+        "http://localhost:3000",
+        "https://stock2u-front.vercel.app/"
+    ));
+    config.setAllowedMethods(List.of("*"));
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
     return source;
   }
 
@@ -74,6 +80,7 @@ public class SecurityConfig {
     http.formLogin().disable();
     http.csrf().disable();
     http.logout().disable();
+    http.cors().configurationSource(configurationSource());
   }
 
 }
