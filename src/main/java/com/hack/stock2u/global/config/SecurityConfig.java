@@ -1,9 +1,12 @@
 package com.hack.stock2u.global.config;
 
+import static com.hack.stock2u.constant.UserRole.*;
+
 import com.hack.stock2u.authentication.service.AuthAccessDeniedHandler;
 import com.hack.stock2u.authentication.service.AuthManager;
 import com.hack.stock2u.authentication.service.AuthEntryPoint;
 import com.hack.stock2u.authentication.service.UserDetailService;
+import com.hack.stock2u.constant.UserRole;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -38,9 +41,9 @@ public class SecurityConfig {
     http.authorizeRequests()
             .antMatchers(
                 "/auth/signin", "/auth/signup/**", "/auth/signin-url",
-                "/swagger-ui/*", "/docs", "/api-docs/**", "/swagger-ui/**"
+                "/docs/**", "/api-docs/**", "/swagger-ui/**"
             ).permitAll()
-            .antMatchers("/test/admin").hasRole("ADMIN")
+            .antMatchers("/test/admin").hasRole(ADMIN.name())
             .anyRequest().authenticated();
 
     return http.build();
