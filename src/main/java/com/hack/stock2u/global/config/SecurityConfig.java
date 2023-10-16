@@ -56,6 +56,7 @@ public class SecurityConfig {
   public CorsConfigurationSource configurationSource() {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
+    config.addAllowedHeader("*");
     config.setAllowedOrigins(List.of(
         "http://localhost:3000",
         "https://stock2u-front.vercel.app/"
