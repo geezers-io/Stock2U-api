@@ -45,10 +45,6 @@ public class SecurityConfig {
         .anyRequest()
         .authenticated();
 
-    http
-        .exceptionHandling()
-        .accessDeniedHandler(accessDeniedHandler);
-
     return http.build();
   }
 
