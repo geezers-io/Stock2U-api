@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
@@ -39,6 +40,7 @@ public class SecurityConfig {
             "/auth/signin", "/auth/signup/**", "/auth/signin-url",
             "/swagger-ui/*", "/docs", "/api-docs*"
         ).permitAll()
+        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
         .antMatchers("/test/admin").hasRole("ADMIN")
         .anyRequest()
         .authenticated();
