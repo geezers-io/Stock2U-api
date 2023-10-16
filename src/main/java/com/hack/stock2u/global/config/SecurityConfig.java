@@ -80,7 +80,7 @@ public class SecurityConfig {
     http.formLogin().disable();
     http.csrf(AbstractHttpConfigurer::disable);
     http.logout().disable();
-    http.cors(withDefaults());
+    http.cors().configurationSource(configurationSource());
   }
 
 }
