@@ -6,6 +6,7 @@ import com.hack.stock2u.authentication.service.UserDetailService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,11 +33,12 @@ public class SecurityConfig {
     http.userDetailsService(userDetailService);
     http.authenticationManager(authManager);
     http.authorizeRequests()
-        .antMatchers("/auth/withdraw").hasAnyAuthority("PURCHASER", "SELLER")
-        .antMatchers("/auth/signin").permitAll()
-        .antMatchers("/auth/signup/*").permitAll()
-        .antMatchers("/upload/*").hasAnyRole("PURCHASER", "SELLER", "ADMIN")
-        .antMatchers("/test/admin").hasRole("ADMIN");
+        .antMatchers(
+            "/auth/signin", "/auth/signup/*"
+        ).permitAll()
+        .antMatchers("/test/admin").hasRole("ADMIN")
+        .anyRequest()
+        .authenticated();
 
     http
         .exceptionHandling()
@@ -57,7 +59,14 @@ public class SecurityConfig {
     configuration.setAllowCredentials(true);
     configuration.setExposedHeaders(List.of("*"));
     configuration.setAllowedOriginPatterns(List.of("*"));
-    configuration.setAllowedMethods(List.of("*"));
+    configuration.setAllowedMethods(List.of(
+        HttpMethod.OPTIONS.name(),
+        HttpMethod.GET.name(),
+        HttpMethod.POST.name(),
+        HttpMethod.PATCH.name(),
+        HttpMethod.DELETE.name(),
+        HttpMethod.HEAD.name()
+    ));
     UrlBasedCorsConfigurationSource source =
         new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
