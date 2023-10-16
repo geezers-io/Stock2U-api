@@ -1,5 +1,7 @@
 package com.hack.stock2u.global.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import com.hack.stock2u.authentication.service.AuthAccessDeniedHandler;
 import com.hack.stock2u.authentication.service.AuthManager;
 import com.hack.stock2u.authentication.service.UserDetailService;
@@ -8,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +22,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.reactive.config.CorsRegistry;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -54,7 +58,7 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource configurationSource() {
     CorsConfiguration config = new CorsConfiguration();
-//    config.setAllowCredentials(true);
+    config.setAllowCredentials(false);
     config.setExposedHeaders(List.of("*"));
     config.setAllowedOriginPatterns(List.of("*"));
     config.setAllowedMethods(List.of("*"));
@@ -74,9 +78,9 @@ public class SecurityConfig {
 
   private void disableMvcSettings(HttpSecurity http) throws Exception {
     http.formLogin().disable();
-    http.csrf().disable();
+    http.csrf(AbstractHttpConfigurer::disable);
     http.logout().disable();
-    http.cors().configurationSource(configurationSource());
+    http.cors(withDefaults());
   }
 
 }
