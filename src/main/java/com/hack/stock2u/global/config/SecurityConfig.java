@@ -34,8 +34,8 @@ public class SecurityConfig {
     http.authenticationManager(authManager);
     http.authorizeRequests()
         .antMatchers(
-            "/auth/signin", "/auth/signup/*", "auth/signin-url*",
-            "/swagger-ui/*", "/docs"
+            "/auth/signin", "/auth/signup/**", "/auth/signin-url",
+            "/swagger-ui/*", "/docs", "/api-docs*"
         ).permitAll()
         .antMatchers("/test/admin").hasRole("ADMIN")
         .anyRequest()
