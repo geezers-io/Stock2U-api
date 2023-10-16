@@ -36,14 +36,16 @@ public class SecurityConfig {
     http.authenticationManager(authManager);
     http.headers().frameOptions().disable();
     http.authorizeRequests()
-        .antMatchers(
-            "/auth/signin", "/auth/signup/**", "/auth/signin-url",
-            "/swagger-ui/*", "/docs", "/api-docs*"
-        ).permitAll()
-        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-        .antMatchers("/test/admin").hasRole("ADMIN")
         .anyRequest()
-        .authenticated();
+        .permitAll();
+
+    //        .antMatchers(
+    //            "/auth/signin", "/auth/signup/**", "/auth/signin-url",
+    //            "/swagger-ui/*", "/docs", "/api-docs*", "/swagger-ui/**"
+    //        ).permitAll()
+    //        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+    //        .antMatchers("/test/admin").hasRole("ADMIN")
+    //        .authenticated();
 
     return http.build();
   }
