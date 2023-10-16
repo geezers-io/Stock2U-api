@@ -30,11 +30,13 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     disableMvcSettings(http);
 
-    http.cors().configurationSource(configurationSource());
-    http.csrf().disable();
+    http.cors()
+        .disable()
+        .csrf().disable();
+    //        .configurationSource(configurationSource())
+    //        .and()
     http.userDetailsService(userDetailService);
     http.authenticationManager(authManager);
-    http.headers().frameOptions().disable();
     http.authorizeRequests()
         .anyRequest()
         .permitAll();
@@ -63,7 +65,6 @@ public class SecurityConfig {
     configuration.setExposedHeaders(List.of("*"));
     configuration.setAllowedOriginPatterns(List.of("*"));
     configuration.setAllowedMethods(List.of(
-        HttpMethod.OPTIONS.name(),
         HttpMethod.GET.name(),
         HttpMethod.POST.name(),
         HttpMethod.PATCH.name(),
