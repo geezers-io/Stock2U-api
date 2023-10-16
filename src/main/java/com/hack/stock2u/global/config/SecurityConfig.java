@@ -3,10 +3,9 @@ package com.hack.stock2u.global.config;
 import static com.hack.stock2u.constant.UserRole.*;
 
 import com.hack.stock2u.authentication.service.AuthAccessDeniedHandler;
-import com.hack.stock2u.authentication.service.AuthManager;
 import com.hack.stock2u.authentication.service.AuthEntryPoint;
+import com.hack.stock2u.authentication.service.AuthManager;
 import com.hack.stock2u.authentication.service.UserDetailService;
-import com.hack.stock2u.constant.UserRole;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
