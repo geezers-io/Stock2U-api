@@ -42,9 +42,7 @@ public class SecurityConfig {
                 "/auth/signin", "/auth/signup/**", "/auth/signin-url",
                 "/swagger-ui/*", "/docs", "/api-docs*", "/swagger-ui/**"
             ).permitAll()
-            .antMatchers("/test/admin").hasRole("ADMIN")
-            .anyRequest()
-            .authenticated();
+            .antMatchers("/test/admin").hasRole("ADMIN");
 
     return http.build();
   }
@@ -78,7 +76,7 @@ public class SecurityConfig {
 
   private void disableMvcSettings(HttpSecurity http) throws Exception {
     http.formLogin().disable();
-    http.csrf(AbstractHttpConfigurer::disable);
+    http.csrf().disable();
     http.logout().disable();
     http.cors().configurationSource(configurationSource());
   }
