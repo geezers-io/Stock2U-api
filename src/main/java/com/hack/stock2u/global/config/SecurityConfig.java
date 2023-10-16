@@ -6,18 +6,15 @@ import com.hack.stock2u.authentication.service.UserDetailService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
@@ -29,12 +26,10 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    disableMvcSettings(http);
-
-    http.cors()
-        .configurationSource(configurationSource());
-
-    http.csrf(AbstractHttpConfigurer::disable);
+    http.formLogin().disable();
+    http.csrf().disable();
+    http.logout().disable();
+//    http.cors().configurationSource(configurationSource());
 
     http.userDetailsService(userDetailService);
     http.authenticationManager(authManager);
@@ -43,7 +38,6 @@ public class SecurityConfig {
                 "/auth/signin", "/auth/signup/**", "/auth/signin-url",
                 "/swagger-ui/*", "/docs", "/api-docs*", "/swagger-ui/**"
             ).permitAll()
-            .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
             .antMatchers("/test/admin").hasRole("ADMIN")
             .anyRequest()
             .authenticated();
@@ -59,14 +53,13 @@ public class SecurityConfig {
 
   @Bean
   public CorsConfigurationSource configurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowCredentials(true);
-    configuration.setExposedHeaders(List.of("*"));
-    configuration.setAllowedOriginPatterns(List.of("*"));
-    configuration.setAllowedMethods(List.of("*"));
-    UrlBasedCorsConfigurationSource source =
-        new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowCredentials(true);
+    config.setExposedHeaders(List.of("*"));
+    config.setAllowedOriginPatterns(List.of("*"));
+    config.setAllowedMethods(List.of("*"));
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
     return source;
   }
 
@@ -76,13 +69,6 @@ public class SecurityConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
-  }
-
-
-  private void disableMvcSettings(HttpSecurity http) throws Exception {
-    http.formLogin().disable();
-    http.csrf().disable();
-    http.logout().disable();
   }
 
 }
