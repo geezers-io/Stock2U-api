@@ -33,6 +33,7 @@ public class SecurityConfig {
     http.csrf().disable();
     http.userDetailsService(userDetailService);
     http.authenticationManager(authManager);
+    http.headers().frameOptions().disable();
     http.authorizeRequests()
         .antMatchers(
             "/auth/signin", "/auth/signup/**", "/auth/signin-url",
