@@ -11,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -31,23 +32,21 @@ public class SecurityConfig {
     disableMvcSettings(http);
 
     http.cors()
-        .configurationSource(configurationSource())
-        .and()
-        .csrf().disable();
+        .configurationSource(configurationSource());
+
+    http.csrf(AbstractHttpConfigurer::disable);
 
     http.userDetailsService(userDetailService);
     http.authenticationManager(authManager);
     http.authorizeRequests()
-        .anyRequest()
-        .permitAll();
-
-    //        .antMatchers(
-    //            "/auth/signin", "/auth/signup/**", "/auth/signin-url",
-    //            "/swagger-ui/*", "/docs", "/api-docs*", "/swagger-ui/**"
-    //        ).permitAll()
-    //        .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-    //        .antMatchers("/test/admin").hasRole("ADMIN")
-    //        .authenticated();
+            .antMatchers(
+                "/auth/signin", "/auth/signup/**", "/auth/signin-url",
+                "/swagger-ui/*", "/docs", "/api-docs*", "/swagger-ui/**"
+            ).permitAll()
+            .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+            .antMatchers("/test/admin").hasRole("ADMIN")
+            .anyRequest()
+            .authenticated();
 
     return http.build();
   }
@@ -64,13 +63,7 @@ public class SecurityConfig {
     configuration.setAllowCredentials(true);
     configuration.setExposedHeaders(List.of("*"));
     configuration.setAllowedOriginPatterns(List.of("*"));
-    configuration.setAllowedMethods(List.of(
-        HttpMethod.GET.name(),
-        HttpMethod.POST.name(),
-        HttpMethod.PATCH.name(),
-        HttpMethod.DELETE.name(),
-        HttpMethod.HEAD.name()
-    ));
+    configuration.setAllowedMethods(List.of("*"));
     UrlBasedCorsConfigurationSource source =
         new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
