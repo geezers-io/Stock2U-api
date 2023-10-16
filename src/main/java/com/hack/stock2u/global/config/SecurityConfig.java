@@ -30,6 +30,7 @@ public class SecurityConfig {
     disableMvcSettings(http);
 
     http.cors().configurationSource(configurationSource());
+    http.csrf().disable();
     http.userDetailsService(userDetailService);
     http.authenticationManager(authManager);
     http.authorizeRequests()
