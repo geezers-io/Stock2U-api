@@ -1,14 +1,11 @@
 package com.hack.stock2u.chat.service;
 
 import com.hack.stock2u.chat.dto.request.ChatMessageRequest;
-import com.hack.stock2u.chat.dto.response.ChatMessageResponse;
-import com.hack.stock2u.models.ChatMessage;
-import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.chat.repository.JpaChatRoomRepository;
 import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
+import com.hack.stock2u.models.ChatMessage;
+import com.hack.stock2u.models.Reservation;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
