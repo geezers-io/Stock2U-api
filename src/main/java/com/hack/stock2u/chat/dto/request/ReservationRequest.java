@@ -20,7 +20,6 @@ public record ReservationRequest(
         .chatId(reservation.getChatId())
         .productId(reservation.getProduct())
         .seller(reservation.getSeller())
-        .customer(reservation.getCustomer())
         .build();
   }
 }

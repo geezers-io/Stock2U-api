@@ -44,10 +44,10 @@ public class Reservation {
   @JoinColumn(name = "seller_id")
   private User seller;
 
-  @Comment("구매자(예약자) id")
+  @Comment("구매자 id")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id")
-  private User customer;
+  private User purchaser;
 
   @Column(name = "disabled_at")
   @Temporal(TemporalType.TIMESTAMP)

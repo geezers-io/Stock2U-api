@@ -69,7 +69,7 @@ public class Product {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
-  private User user;
+  private User seller;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
   private List<ProductImage> productImages;
