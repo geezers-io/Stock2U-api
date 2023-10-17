@@ -1,5 +1,6 @@
 package com.hack.stock2u.models.embed;
 
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -12,7 +13,7 @@ import org.springframework.data.annotation.CreatedDate;
 @Setter
 @NoArgsConstructor
 @Embeddable
-public class BasicDateColumn {
+public class BasicDateColumn implements Serializable {
 
   @CreatedDate
   @Column(name = "created_at")
