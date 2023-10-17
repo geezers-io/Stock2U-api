@@ -52,7 +52,7 @@ public class AuthRequestDto {
   public record SignupSellerRequest(
       @Schema(required = true, description = "회원이름")
       @NotNull @NotBlank
-      @Pattern(regexp = "/^[a-zA-Z0-9ㄱ-ㅎ가-힣]{3,15}$/", message = "닉네임은 최소 3글자 이상 15글자 이하입니다.")
+      @Pattern(regexp = "^[a-zA-Z0-9ㄱ-ㅎ가-힣]{3,15}$", message = "닉네임은 최소 3글자 이상 15글자 이하입니다.")
       String username,
       @Schema(required = true, description = "이메일", example = "email@naver.com")
       @Pattern(
