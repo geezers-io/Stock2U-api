@@ -12,13 +12,13 @@ public class AuthRequestDto {
 
   public record SignInRequest(
       @Schema(required = true, description = "OAuth 인증 코드")
-      @NotBlank
+      @Size(min = 6, max = 6, message = "인증코드 형식이 유효하지 않습니다. (6자리)")
       String authCode
   ) {}
 
   public record AuthCode(
       @Schema(required = true, description = "OAuth 인증 코드")
-      @NotBlank
+      @Size(min = 6, max = 6, message = "인증코드 형식이 유효하지 않습니다. (6자리)")
       String authCode,
       @Schema(required = true, description = "휴대폰 번호")
       @Pattern(regexp = "^[0-9]{11}", message = "휴대폰 번호는 010XXXXXXXX 형식이어야 합니다.")
@@ -29,12 +29,12 @@ public class AuthRequestDto {
   public record SignupPurchaserRequest(
       @Schema(required = true, description = "회원이름")
       @NotNull @NotBlank
-      @Pattern(regexp = "/^[a-zA-Z0-9ㄱ-ㅎ가-힣]{3,15}$/", message = "닉네임은 최소 3글자 이상 15글자 이하입니다.")
+      @Pattern(regexp = "^[a-zA-Z0-9ㄱ-ㅎ가-힣]{3,15}$", message = "닉네임은 최소 3글자 이상 15글자 이하입니다.")
       String username,
       @Schema(required = true, description = "이메일", example = "email@naver.com")
       @Pattern(
-          regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
-          message = "이메일 형식이 아닙니다."
+          message = "이메일 형식이 아닙니다.",
+          regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
       )
       String email,
       @Schema(required = true, description = "휴대폰 번호")
@@ -56,8 +56,8 @@ public class AuthRequestDto {
       String username,
       @Schema(required = true, description = "이메일", example = "email@naver.com")
       @Pattern(
-          regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
-          message = "이메일 형식이 아닙니다."
+          message = "이메일 형식이 아닙니다.",
+          regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
       )
       String email,
 
