@@ -2,7 +2,6 @@ package com.hack.stock2u.models;
 
 import com.hack.stock2u.models.embed.BasicDateColumn;
 import java.util.Date;
-import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -25,6 +24,7 @@ import org.hibernate.annotations.Comment;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "reservations")
 @AllArgsConstructor
+@Builder
 public class Reservation {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +33,11 @@ public class Reservation {
   @Comment("MongoDB Chat 식별자")
   @Column(name = "chat_id")
   private String chatId;
+
+  @Comment("잔여 재고")
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id")
+  private Product product;
 
   @Comment("판매자(사업자) id")
   @ManyToOne(fetch = FetchType.LAZY)

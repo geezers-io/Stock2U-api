@@ -14,6 +14,6 @@ public class MessageController {
 
   @MessageMapping("/chat/message")
   public void message(ChatMessage chatMessage) {
-    simpMessageSendingOperations.convertAndSend("/queue/" + chatMessage.getId(), chatMessage);
+    simpMessageSendingOperations.convertAndSend("/queue/chat/room" + chatMessage.getId(), chatMessage);
   }
 }

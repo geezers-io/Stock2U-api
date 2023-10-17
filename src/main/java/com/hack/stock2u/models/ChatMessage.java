@@ -24,11 +24,14 @@ public class ChatMessage {
   @Field(name = "room_id")
   private Long roomId;
 
+  @Field(name = "user_name")
+  private String userName;
+
   @Field(name = "message")
   private String message;
 
   @Field(name = "timestamp")
-  private Date timestamp;
+  private Date timeStamp;
 
 
 }
