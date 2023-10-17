@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 @Getter
 @Setter
@@ -21,4 +23,5 @@ public class BasicDateColumn implements Serializable {
 
   @Column(name = "removed_at")
   private Date removedAt;
+
 }
