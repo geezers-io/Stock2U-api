@@ -28,7 +28,7 @@ public class AuthCodeProvider {
     String newCode = OneTimeCodeGenerator.createDigit(6);
 
     String key = createKey(phone);
-    ops.append(key, newCode);
+    ops.set(key, newCode);
 
     String message = MessageFormat.format(SmsMessage.SEND_CODE.getMessage(), newCode);
     String korPhone = new Convertor().phone(phone);

@@ -1,6 +1,9 @@
 package com.hack.stock2u.global.config;
 
+import static com.hack.stock2u.constant.UserRole.*;
+
 import com.hack.stock2u.authentication.service.AuthAccessDeniedHandler;
+import com.hack.stock2u.authentication.service.AuthEntryPoint;
 import com.hack.stock2u.authentication.service.AuthManager;
 import com.hack.stock2u.authentication.service.UserDetailService;
 import java.util.List;
@@ -13,34 +16,37 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
+@EnableRedisHttpSession
 public class SecurityConfig {
   private final UserDetailService userDetailService;
   private final AuthManager authManager;
+  private final AuthEntryPoint authEntryPoint;
   private final AuthAccessDeniedHandler accessDeniedHandler;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.formLogin().disable();
-    http.csrf().disable();
-    http.logout().disable();
-    http.cors().configurationSource(configurationSource());
+    disableMvcSettings(http);
     http.userDetailsService(userDetailService);
-    http.exceptionHandling()
-            .accessDeniedHandler(accessDeniedHandler);
     http.authenticationManager(authManager);
+    http.exceptionHandling()
+        .accessDeniedHandler(accessDeniedHandler)
+        .authenticationEntryPoint(authEntryPoint);
 
     http.authorizeRequests()
             .antMatchers(
-                "/auth/signin", "/auth/signup/**", "/auth/signin-url",
-                "/swagger-ui/*", "/docs", "/api-docs*", "/swagger-ui/**"
+                "/auth/**",
+                "/docs/**", "/api-docs/**", "/swagger-ui/**"
             ).permitAll()
-            .antMatchers("/test/admin").hasRole("ADMIN")
+            .antMatchers("/auth/withdraw", "/auth/logout")
+            .authenticated()
+            .antMatchers("/test/admin").hasRole(ADMIN.name())
             .anyRequest().authenticated();
 
     return http.build();

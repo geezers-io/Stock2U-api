@@ -4,6 +4,7 @@ import com.hack.stock2u.authentication.dto.AuthRequestDto;
 import com.hack.stock2u.constant.AuthVendor;
 import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.models.embed.BasicDateColumn;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
@@ -28,7 +29,7 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "users")
 @Where(clause = "removed_at IS NULL")
-public class User {
+public class User implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -41,7 +42,7 @@ public class User {
   @Enumerated(EnumType.STRING)
   private AuthVendor vendor;
 
-  @Column(length = 20, nullable = false)
+  @Column(length = 11, nullable = false)
   private String phone;
 
   @Column(nullable = false)
@@ -147,7 +148,7 @@ public class User {
     this.email = email;
   }
 
-  private void setPhone(String phone) {
+  public void changePhone(String phone) {
     this.phone = phone;
   }
 
@@ -164,6 +165,10 @@ public class User {
     BasicDateColumn dateSet = this.getBasicDate();
     dateSet.setRemovedAt(new Date());
     setBasicDate(dateSet);
+  }
+
+  public void changeAvatarId(Long id) {
+    this.avatarId = id;
   }
 
 }

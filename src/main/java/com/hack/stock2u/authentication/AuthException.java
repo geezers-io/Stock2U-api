@@ -13,6 +13,7 @@ public enum AuthException implements BasicErrorCase {
   ALREADY_PASS_AUTH_CODE(HttpStatus.BAD_REQUEST, "ALREADY_PASS", "이미 검증 완료된 사용자입니다."),
   INCOMPLETE_AUTH_CODE(HttpStatus.UNAUTHORIZED, "INCOMPLETE_AUTH_CODE", "휴대폰 인증 절차를 수행해주세요."),
   ALREADY_EXISTS_USER(HttpStatus.BAD_REQUEST, "ALREADY_EXISTS_USER", "중복된 사용자입니다."),
+  IS_ANONYMOUS_USER(HttpStatus.UNAUTHORIZED, "ANONYMOUS_USER", "인증되지 않는 요청입니다."),
 
   DORO_TOO_LONG(HttpStatus.BAD_REQUEST, "TOO_LONG_SEARCH", "검색어가 너무 깁니다. (한글40자, 영문,숫자 80자 이하)"),
   DORO_CHARACTER(HttpStatus.BAD_REQUEST, "BAD_CHARACTER", "검색어는 문자와 숫자 같이 입력되어야 합니다. (숫자만 검색 불가)"),

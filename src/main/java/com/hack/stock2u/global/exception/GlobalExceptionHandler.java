@@ -1,16 +1,20 @@
 package com.hack.stock2u.global.exception;
 
+import com.hack.stock2u.authentication.AuthException;
+import com.hack.stock2u.file.exception.FileException;
 import com.hack.stock2u.user.UserException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentTypeMismatchException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Slf4j
 @RestControllerAdvice
@@ -20,6 +24,24 @@ public class GlobalExceptionHandler {
   protected ResponseEntity<BasicErrorResponse> handleBasicException(BasicException ex) {
     BasicErrorResponse res = ex.getErrorResponse();
     return ResponseEntity.status(res.httpStatus()).body(res);
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  protected ResponseEntity<BasicErrorResponse> handleAccessDeniedException(
+      AccessDeniedException ex
+  ) {
+    BasicException basicEx = GlobalException.FORBIDDEN.create();
+    return ResponseEntity.status(basicEx.getErrorResponse().httpStatus()).body(
+        basicEx.getErrorResponse()
+    );
+  }
+
+  @ExceptionHandler(MissingServletRequestPartException.class)
+  protected ResponseEntity<BasicErrorResponse> handleMissingServletRequestPartException(
+      Exception ex
+  ) {
+    BasicException res = FileException.NOT_INCLUDE_FILE.create();
+    return ResponseEntity.status(res.getErrorResponse().httpStatus()).body(res.getErrorResponse());
   }
 
   @ExceptionHandler({MethodArgumentTypeMismatchException.class, IllegalArgumentException.class,
