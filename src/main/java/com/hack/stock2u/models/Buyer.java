@@ -24,7 +24,12 @@ public class Buyer {
   @Comment("구매자 id")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "buyer_id")
-  private User buyer;
+  private User purchaser;
+
+  @Comment("판매자 id")
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "seller_id")
+  private User seller;
 
   @Comment("재고 판매글 id")
   @ManyToOne(fetch = FetchType.LAZY)
