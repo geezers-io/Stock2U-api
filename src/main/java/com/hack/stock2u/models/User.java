@@ -41,7 +41,7 @@ public class User {
   @Enumerated(EnumType.STRING)
   private AuthVendor vendor;
 
-  @Column(length = 20, nullable = false)
+  @Column(length = 11, nullable = false)
   private String phone;
 
   @Column(nullable = false)
