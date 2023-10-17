@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,10 @@ public class S3Service {
         .withCannedAcl(CannedAccessControlList.PublicReadWrite);
     s3.putObject(request);
     return s3.getUrl(bucket, filename).toString();
+  }
+
+  public S3Object getObject(String key) {
+    return s3.getObject(bucket, key);
   }
 
   public String getKey(String url) {
