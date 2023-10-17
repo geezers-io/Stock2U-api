@@ -74,7 +74,7 @@ public class User implements Serializable {
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
   private List<Attach> attaches;
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "seller")
   private List<Product> products;
 
   @Builder
