@@ -33,6 +33,7 @@ public class AuthService {
   private final AuthCodeProvider authCodeProvider;
   private final AuthManager authManager;
   private final SignupValidator validator;
+  private final SessionManager sessionManager;
 
   /**
    * AuthVendor 에 따른 각 Vendor 로그인을 수행하는 URL 을 반환합니다.
@@ -62,9 +63,7 @@ public class AuthService {
   }
 
   public void withdraw(String reason) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long userId = (Long) authentication.getCredentials();
-    User user = userRepository.findById(userId).orElseThrow(UserException.NOT_FOUND_USER::create);
+    User user = sessionManager.getSessionUser();
     user.remove(reason);
     userRepository.save(user);
   }

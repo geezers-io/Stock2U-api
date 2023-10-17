@@ -10,11 +10,15 @@ import com.hack.stock2u.global.exception.BasicException;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.Attach;
 import com.hack.stock2u.models.User;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.List;
+import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
@@ -59,6 +63,22 @@ public class FileUploadService {
     );
 
     return new SimpleFile(attach.getId(), uploadPath);
+  }
+
+  public InputStream resize(String key) {
+    try {
+      InputStream stream = s3Service.getObject(key).getObjectContent().getDelegateStream();
+      BufferedImage image = ImageIO.read(stream);
+      BufferedImage bufferedImage = new BufferedImage(169, 120, image.getType());
+      Graphics2D graphics = bufferedImage.createGraphics();
+      graphics.drawImage(image, 0, 0, 169, 120, null);
+      graphics.dispose();
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      ImageIO.write(image, "png", os);
+      return new ByteArrayInputStream(os.toByteArray());
+    } catch (IOException ex) {
+      throw GlobalException.SERVER_ERROR.create();
+    }
   }
 
   public void remove(Long id) {

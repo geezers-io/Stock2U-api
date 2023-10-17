@@ -2,6 +2,7 @@ package com.hack.stock2u.authentication.dto;
 
 import com.hack.stock2u.constant.AuthVendor;
 import io.swagger.v3.oas.annotations.media.Schema;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
@@ -12,13 +13,12 @@ public class AuthRequestDto {
 
   public record SignInRequest(
       @Schema(required = true, description = "OAuth 인증 코드")
-      @Size(min = 6, max = 6, message = "인증코드 형식이 유효하지 않습니다. (6자리)")
       String authCode
   ) {}
 
   public record AuthCode(
       @Schema(required = true, description = "OAuth 인증 코드")
-      @Size(min = 6, max = 6, message = "인증코드 형식이 유효하지 않습니다. (6자리)")
+      @Min(value = 6, message = "인증코드 형식이 유효하지 않습니다. (6자리)")
       String authCode,
       @Schema(required = true, description = "휴대폰 번호")
       @Pattern(regexp = "^[0-9]{11}", message = "휴대폰 번호는 010XXXXXXXX 형식이어야 합니다.")

@@ -1,9 +1,11 @@
 package com.hack.stock2u.authentication.service;
 
 import com.hack.stock2u.constant.AuthVendor;
+import com.hack.stock2u.models.User;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +20,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class AuthManager implements AuthenticationManager {
   private final UserDetailsService userDetailsService;
-  private final RedisTemplate<String, AuthVendor> redisTemplate;
+  private final SessionManager sessionManager;
+  private final RedisTemplate<String, User> redisTemplate;
+
+  @Value("${spring.session.timeout}")
+  private Integer timeout;
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -27,11 +33,11 @@ public class AuthManager implements AuthenticationManager {
 
     UserDetails userDetails = (UserDetails) userDetailsService.loadUserByUsername((String) phone);
 
-    ValueOperations<String, AuthVendor> ops = redisTemplate.opsForValue();
-    // FIX: 미완성 로직
-    String key = "session:" + phone + ":" + id;
-    ops.set(key, userDetails.getVendor());
-    redisTemplate.expire(key, 1, TimeUnit.HOURS);
+    ValueOperations<String, User> ops = redisTemplate.opsForValue();
+
+    String key = sessionManager.getKey(phone, id);
+    ops.set(key, userDetails.getUser());
+    redisTemplate.expire(key, timeout, TimeUnit.MILLISECONDS);
 
     return new UsernamePasswordAuthenticationToken(phone, id, userDetails.getAuthorities());
   }
