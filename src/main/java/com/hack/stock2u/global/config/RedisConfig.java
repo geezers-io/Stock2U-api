@@ -30,9 +30,9 @@ public class RedisConfig {
     StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
     RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
     redisTemplate.setConnectionFactory(redisConnectionFactory());
-    redisTemplate.setKeySerializer(stringRedisSerializer);
-    redisTemplate.setHashKeySerializer(stringRedisSerializer);
-    redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+//    redisTemplate.setKeySerializer(stringRedisSerializer);
+//    redisTemplate.setHashKeySerializer(stringRedisSerializer);
+//    redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
     return redisTemplate;
   }
 
