@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,4 +32,12 @@ public class Attach {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
+
+  @Builder
+  public Attach(String name, String ext, String uploadPath, User user) {
+    this.name = name;
+    this.ext = ext;
+    this.uploadPath = uploadPath;
+    this.user = user;
+  }
 }
