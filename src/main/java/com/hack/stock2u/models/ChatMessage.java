@@ -31,7 +31,7 @@ public class ChatMessage {
   private String message;
 
   @Field(name = "timestamp")
-  private Date timeStamp;
+  private Date createdAt;
 
 
 }

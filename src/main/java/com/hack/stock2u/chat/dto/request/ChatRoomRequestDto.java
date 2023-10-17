@@ -9,14 +9,11 @@ import javax.validation.constraints.NotNull;
 public class ChatRoomRequestDto {
   public record CreateReservationRequest(
       @Schema(required = true, description = "제품 정보")
-      @NotNull @NotBlank
-      Product product,
-      @Schema(required = true, description = "판매자")
-      @NotNull @NotBlank
-      User seller,
+      @NotNull
+      Long productId,
       @Schema(required = true, description = "구매자")
-      @NotNull @NotBlank
-      User customer
+      @NotNull
+      Long purchaserId
   ){}
 
   public record FindMyReservationRequest(

@@ -35,7 +35,7 @@ public class ChatMessageService {
         .roomId(reservation.getId())
         .userName(chatMessageRequest.name())
         .message(chatMessageRequest.message())
-        .timeStamp(new Date())
+        .createdAt(new Date())
         .build();
     //생성한 메세지 저장
     return this.messageChatMongoRepository.save(chatMessage).getRoomId();

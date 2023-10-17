@@ -7,6 +7,6 @@ public record ChatMessageResponse(
     String name,
     Long roomId,
     String message,
-    Date timeStamp
+    Date createdAt
 ) {
 }
