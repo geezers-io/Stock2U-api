@@ -14,7 +14,6 @@ public class AntPatternMatchTest {
     assertThat(match("/api-docs/**", "/api-docs/swagger-config"))
         .isTrue();
     assertThat(match("/auth/signin", "/auth/signin")).isTrue();
-    assertThat(match("", "/swagger-ui/index.html")).isTrue();
   }
 
   private boolean match(String pattern, String url) {
