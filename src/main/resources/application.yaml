@@ -67,6 +67,8 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /docs
+    tags-sorter: alpha
+    operations-sorter: alpha
 
 logging:
   level:
@@ -123,6 +125,7 @@ spring:
     store-type: redis
     redis:
       namespace: stock2u:session
+    timeout: 36000
 
 
 # dev 환경

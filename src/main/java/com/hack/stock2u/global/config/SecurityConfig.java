@@ -16,12 +16,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
+@EnableRedisHttpSession
 public class SecurityConfig {
   private final UserDetailService userDetailService;
   private final AuthManager authManager;
@@ -39,9 +41,11 @@ public class SecurityConfig {
 
     http.authorizeRequests()
             .antMatchers(
-                "/auth/signin", "/auth/signup/**", "/auth/signin-url",
+                "/auth/**",
                 "/docs/**", "/api-docs/**", "/swagger-ui/**"
             ).permitAll()
+            .antMatchers("/auth/withdraw", "/auth/logout")
+            .authenticated()
             .antMatchers("/test/admin").hasRole(ADMIN.name())
             .anyRequest().authenticated();
 
