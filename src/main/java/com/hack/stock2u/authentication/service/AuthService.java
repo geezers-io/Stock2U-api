@@ -63,7 +63,7 @@ public class AuthService {
   }
 
   public void withdraw(String reason) {
-    User user = sessionManager.getSessionUser();
+    User user = sessionManager.getSessionUserByRdb();
     user.remove(reason);
     userRepository.save(user);
   }
