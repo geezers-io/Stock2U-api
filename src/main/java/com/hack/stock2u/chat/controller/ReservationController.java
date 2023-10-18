@@ -32,7 +32,7 @@ public class ReservationController {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
-  @Operation(summary = "예약 삭제 API", description = "예약을 위한 채팅방을 삭제할때 사용하는 API")
+  @Operation(summary = "예약 취소 API", description = "예약을 위한 채팅방을 삭제할때 사용하는 API")
   @DeleteMapping("/room/{id}")
   public ResponseEntity<Void> removeReservationApi(@PathVariable("id") Long id) {
     reservationService.remove(id);
