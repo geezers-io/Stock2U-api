@@ -1,4 +1,4 @@
-package com.hack.stock2u.product.dto;
+package com.hack.stock2u.user.dto;
 
 import com.hack.stock2u.models.User;
 import lombok.Builder;
