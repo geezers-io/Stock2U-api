@@ -18,9 +18,8 @@ public record ReservationResponse(
     int price,
     Date expiredAt,
     Long sellerId,
-    Long customerId,
+    Long purchaserId,
     String status,
-    String uploadPath,
     List<SimpleFile> productImages
 ) {
   public static ReservationResponse reserv(Reservation reservation, List<Attach> attaches) {
@@ -32,7 +31,8 @@ public record ReservationResponse(
         .price(reservation.getProduct().getPrice())
         .expiredAt(reservation.getProduct().getExpiredAt())
         .sellerId(reservation.getSeller().getId())
-        .customerId(reservation.getPurchaser().getId())
+        .purchaserId(reservation.getPurchaser().getId())
+        .status(reservation.getProduct().getStatus().getName())
         .productImages(simpleFiles)
         .build();
   }

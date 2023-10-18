@@ -56,4 +56,7 @@ public class Reservation {
   @Embedded
   private BasicDateColumn basicDate;
 
+  public void setDisabledAt() {
+    basicDate.setRemovedAt(new Date());
+  }
 }
