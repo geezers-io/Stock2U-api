@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -56,10 +57,14 @@ public class AuthApi {
   @Operation(summary = "로그인 API", description = "로그인을 수행합니다.")
   @PostMapping("/signin")
   public ResponseEntity<SignInResponse> signInApi(
-      @RequestBody @Valid AuthRequestDto.SignInRequest signInRequest
+      @RequestBody @Valid AuthRequestDto.SignInRequest signInRequest,
+      HttpSession session
   ) {
     String authCode = signInRequest.authCode();
     SignInResponse signIn = authService.signIn(authCode);
+    session.setAttribute("vendor", signIn.user().vendor().name());
+    session.setAttribute("userId", signIn.user().id());
+    session.setAttribute("role", signIn.user().role().name());
     return ResponseEntity.ok().body(signIn);
   }
 
