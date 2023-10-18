@@ -68,6 +68,7 @@ springdoc:
     path: /docs
     tags-sorter: alpha
     operations-sorter: alpha
+    with-credentials: true
 
 logging:
   level:
@@ -89,6 +90,8 @@ logging:
     com.amazonaws.util.EC2MetadataUtils: ERROR
     com.amazonaws.internal.EC2ResourceFetcher: ERROR
     org.apache.http.wire: WARN
+  config: classpath:logback-spring.xml
+
 # local 환경
 ---
 spring:
