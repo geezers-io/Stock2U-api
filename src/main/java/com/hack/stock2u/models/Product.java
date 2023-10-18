@@ -3,6 +3,7 @@ package com.hack.stock2u.models;
 import com.hack.stock2u.constant.ProductType;
 import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.models.embed.BasicDateColumn;
+import com.hack.stock2u.product.dto.ProductRequest;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -65,7 +67,7 @@ public class Product {
   private Double latitude;
 
   @Comment("경도")
-  private Double longitude;
+  private Double longtitude;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
@@ -79,4 +81,46 @@ public class Product {
 
   @Embedded
   private BasicDateColumn basicDate;
+
+  @Builder
+  public Product(String title, String name, int price, ProductType type, String description,
+                 boolean onlyOneReserve, boolean showAccountDetails, Date expiredAt,
+                 Double latitude, Double longtitude, User seller) {
+    this.title = title;
+    this.name = name;
+    this.price = price;
+    this.type = type;
+    this.seller = seller;
+    this.description = description;
+    this.onlyOneReserve = onlyOneReserve;
+    this.showAccountDetails = showAccountDetails;
+    this.expiredAt = expiredAt;
+    this.latitude = latitude;
+    this.longtitude = longtitude;
+  }
+
+  public static Product fromRequest(ProductRequest.Create create, User u) {
+    return Product.builder()
+        .title(create.title())
+        .name(create.name())
+        .price(create.price())
+        .type(create.type())
+        .description(create.description())
+        .onlyOneReserve(create.onlyOneReserve())
+        .showAccountDetails(create.showAccountDetails())
+        .expiredAt(create.expiredAt())
+        .latitude(create.latitude())
+        .longtitude(create.longtitude())
+        .seller(u)
+        .build();
+  }
+
+  public void changeStatus(ReservationStatus status) {
+    this.status = status;
+  }
+
+  public void setProductImages(List<ProductImage> productImages) {
+    this.productImages = productImages;
+  }
+
 }

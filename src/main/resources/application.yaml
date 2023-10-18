@@ -8,7 +8,6 @@ server:
         path: /
         name: JSESSIONID
         http-only: true
-      timeout: 3600
     context-path: /api
 
 cloud:
@@ -125,7 +124,7 @@ spring:
     store-type: redis
     redis:
       namespace: stock2u:session
-    timeout: 36000
+    timeout: 1h
 
 
 # dev 환경

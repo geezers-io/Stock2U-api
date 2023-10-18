@@ -68,7 +68,7 @@ public class User implements Serializable {
   @JoinColumn(name = "seller_details_id")
   private SellerDetails sellerDetails;  
 
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "buyer")
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "purchaser")
   private List<Buyer> buyers;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")

@@ -25,6 +25,15 @@ public class ProductImage {
   private Product product;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
+  @JoinColumn(name = "attach_id")
+  private Attach attach;
+
+  public ProductImage(Product product, Attach attach) {
+    this.product = product;
+    this.attach = attach;
+  }
+
+  public static ProductImage create(Product product, Attach attach) {
+    return new ProductImage(product, attach);
+  }
 }
