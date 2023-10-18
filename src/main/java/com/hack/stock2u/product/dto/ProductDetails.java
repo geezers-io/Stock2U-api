@@ -21,7 +21,7 @@ public record ProductDetails(
     boolean onlyOneReserve,
     boolean showAccountDetails,
     Date expiredAt,
-    @Schema(description = "예약 상태(예약 한 건만 받기 체크 && 예약 진행 중일 시 표기 됨)",nullable = true)
+    @Schema(description = "예약 상태(예약 한 건만 받기 체크 && 예약 진행 중일 시 표기 됨)", nullable = true)
     ReservationStatus status,
     Double latitude,
     Double longtitude,
