@@ -5,7 +5,7 @@ import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.file.dto.FileIdListResponse;
 import com.hack.stock2u.file.dto.SimpleFile;
 import com.hack.stock2u.file.exception.FileException;
-import com.hack.stock2u.file.repository.AttachRepository;
+import com.hack.stock2u.file.repository.JpaAttachRepository;
 import com.hack.stock2u.global.exception.BasicException;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.Attach;
@@ -31,14 +31,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileUploadService {
   private final S3Service s3Service;
-  private final AttachRepository attachRepository;
+  private final JpaAttachRepository attachRepository;
   private final SessionManager sessionManager;
   private final Tika tika = new Tika();
   private final FileNameProvider fileNameProvider = new FileNameProvider();
 
   @Transactional
   public FileIdListResponse uploadFiles(List<MultipartFile> files) {
-    User user = sessionManager.getSessionUser();
+    User user = sessionManager.getSessionUserByRdb();
     List<SimpleFile> ret = files.stream().map(f -> upload(f, user)).toList();
     return new FileIdListResponse(ret);
   }
@@ -109,7 +109,6 @@ public class FileUploadService {
     } catch (IOException e) {
       throw GlobalException.SERVER_ERROR.create();
     }
-
   }
 
   private File multipartFileToFile(MultipartFile file) {

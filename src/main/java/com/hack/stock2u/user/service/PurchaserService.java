@@ -19,7 +19,7 @@ public class PurchaserService {
 
   public void update(PurchaserRequest.Update updateRequest) {
     authCodeProvider.verifyCode(updateRequest.phone(), updateRequest.authCode());
-    User user = sessionManager.getSessionUser();
+    User user = sessionManager.getSessionUserByRdb();
     user.changePhone(updateRequest.phone());
     userRepository.save(user);
   }
