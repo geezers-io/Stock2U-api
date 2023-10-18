@@ -17,7 +17,7 @@ public class MyService {
   private final JpaUserRepository userRepository;
 
   public SimpleFile uploadAvatarImage(MultipartFile multipartFile) {
-    User user = sessionManager.getSessionUser();
+    User user = sessionManager.getSessionUserByRdb();
     SimpleFile simpleFile = fileUploadService.upload(multipartFile, user);
     user.changeAvatarId(simpleFile.id());
     userRepository.save(user);

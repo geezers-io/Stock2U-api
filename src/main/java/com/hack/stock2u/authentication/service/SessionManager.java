@@ -1,6 +1,7 @@
 package com.hack.stock2u.authentication.service;
 
 import com.hack.stock2u.authentication.AuthException;
+import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
@@ -17,12 +18,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class SessionManager {
   private final JpaUserRepository userRepository;
-  private final RedisTemplate<String, User> redisTemplate;
+  private final RedisTemplate<String, SessionUser> redisTemplate;
 
-  public User getSessionUser() {
+  public SessionUser getSessionUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     validate(authentication);
-    ValueOperations<String, User> ops = redisTemplate.opsForValue();
+    ValueOperations<String, SessionUser> ops = redisTemplate.opsForValue();
 
     String key = getKey(authentication.getPrincipal(), authentication.getCredentials());
     return ops.get(key);
