@@ -32,7 +32,6 @@ public class AuthManager implements AuthenticationManager {
     SessionUser user = SessionUser.user(userDetails.getUser());
 
     String key = sessionManager.getKey(phone, id);
-    log.error("redis session key: {}", key);
     ops.set(key, user);
     redisTemplate.expire(key, 1, TimeUnit.HOURS);
 

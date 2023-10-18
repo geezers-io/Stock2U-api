@@ -1,8 +1,10 @@
 package com.hack.stock2u.product.api;
 
+import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.product.dto.ProductDetails;
 import com.hack.stock2u.product.dto.ProductRequest;
 import com.hack.stock2u.product.service.ProductService;
+import com.hack.stock2u.utils.RoleGuard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductApi {
   private final ProductService productService;
 
+  @RoleGuard(roles = UserRole.SELLER)
   @Operation(summary = "잔여 재고 게시글 생성 API", description = "잔여 재고 게시글을 생성하고 생성된 객체를 반환합니다.")
   @PostMapping
   public ResponseEntity<ProductDetails> createProductApi(
