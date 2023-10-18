@@ -62,9 +62,11 @@ public class AuthApi {
   ) {
     String authCode = signInRequest.authCode();
     SignInResponse signIn = authService.signIn(authCode);
-    session.setAttribute("vendor", signIn.user().vendor().name());
-    session.setAttribute("userId", signIn.user().id());
-    session.setAttribute("role", signIn.user().role().name());
+    if (signIn.user() != null) {
+      session.setAttribute("vendor", signIn.user().vendor().name());
+      session.setAttribute("userId", signIn.user().id());
+      session.setAttribute("role", signIn.user().role().name());
+    }
     return ResponseEntity.ok().body(signIn);
   }
 
