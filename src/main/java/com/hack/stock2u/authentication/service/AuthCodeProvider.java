@@ -56,6 +56,9 @@ public class AuthCodeProvider {
     ValueOperations<String, String> ops = template.opsForValue();
     String signupKey = createSignupKey(uuid);
     String ready = ops.get(signupKey);
+    if (ready != null) {
+      template.delete(signupKey);
+    }
     return ready != null;
   }
 

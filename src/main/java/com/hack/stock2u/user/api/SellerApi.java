@@ -48,6 +48,7 @@ public class SellerApi {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
+  @RoleGuard(roles = UserRole.SELLER)
   @Operation(
       summary = "판매자 은행정보 변경 API",
       description = "은행 정보 API 에서 제공하는 이름과 계좌번호로 판매자의 은행정보를 수정합니다."
