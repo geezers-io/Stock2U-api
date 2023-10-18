@@ -5,7 +5,6 @@ import com.hack.stock2u.models.SellerDetails;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.user.dto.SellerResponse;
 import com.hack.stock2u.user.repository.JpaBuyerRepository;
-import com.hack.stock2u.user.repository.JpaSellerRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class SellerService {
   private final JpaUserRepository userRepository;
   private final JpaBuyerRepository buyerRepository;
-  private final JpaSellerRepository sellerRepository;
   private final SessionManager sessionManager;
 
   public SellerResponse.BankDetails getBankDetails() {
@@ -37,7 +35,6 @@ public class SellerService {
     User u = sessionManager.getSessionUserByRdb();
     SellerDetails details = u.getSellerDetails();
     details.changeLocation(location);
-    sellerRepository.save(details);
     u.changeSellerDetails(details);
     userRepository.save(u);
   }
@@ -47,7 +44,6 @@ public class SellerService {
     SellerDetails details = u.getSellerDetails();
     details.changeBankName(bankName);
     details.changeAccount(account);
-    sellerRepository.save(details);
     userRepository.save(u);
   }
 
