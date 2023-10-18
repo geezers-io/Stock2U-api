@@ -53,4 +53,16 @@ public class SellerDetails implements Serializable {
     this.account = account;
   }
 
+  public void changeLocation(String location) {
+    this.location = location;
+  }
+
+  public void changeBankName(String bankName) {
+    this.bankName = bankName;
+  }
+
+  public void changeAccount(String account) {
+    this.account = account;
+  }
+
 }
