@@ -23,10 +23,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.Where;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "products")
+@Where(clause = "removed_at IS NULL")
 public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -115,12 +117,30 @@ public class Product {
         .build();
   }
 
+  public void update(ProductRequest.Create request, List<ProductImage> images) {
+    this.title = request.title();
+    this.name = request.name();
+    this.price = request.price();
+    this.type = request.type();
+    this.description = request.description();
+    this.onlyOneReserve = request.onlyOneReserve();
+    this.showAccountDetails = request.showAccountDetails();
+    this.expiredAt = request.expiredAt();
+    this.latitude = request.latitude();
+    this.longtitude = request.longtitude();
+    this.productImages = images;
+  }
+
   public void changeStatus(ReservationStatus status) {
     this.status = status;
   }
 
   public void setProductImages(List<ProductImage> productImages) {
     this.productImages = productImages;
+  }
+
+  public void remove() {
+    basicDate.setRemovedAt(new Date());
   }
 
 }

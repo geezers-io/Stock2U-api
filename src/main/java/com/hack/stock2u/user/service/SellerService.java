@@ -25,4 +25,10 @@ public class SellerService {
     return buyerRepository.countBySeller(u);
   }
 
+  // FIX: 리뷰 미구현으로 갯수 0 고정
+  public com.hack.stock2u.user.dto.SellerDetails getSellerDetails(User u) {
+    int salesCount = getSalesCount(u);
+    return com.hack.stock2u.user.dto.SellerDetails.create(u, salesCount, 0);
+  }
+
 }
