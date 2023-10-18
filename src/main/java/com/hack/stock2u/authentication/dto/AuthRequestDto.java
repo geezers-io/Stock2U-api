@@ -61,7 +61,7 @@ public class AuthRequestDto {
       String email,
 
       @Schema(required = true, description = "사업자등록번호")
-      @NotBlank
+      @Pattern(regexp = "^[0-9]{10}$", message = "올바른 사업자 번호가 아닙니다")
       String licenseNumber,
       @Schema(required = true, description = "업종")
       @NotBlank
@@ -76,7 +76,7 @@ public class AuthRequestDto {
       @NotBlank
       String bankName,
       @Schema(required = true, description = "계좌번호")
-      @NotBlank
+      @Pattern(regexp = "^[0-9-]+$", message = "올바른 계좌번호 형식이 아닙니다")
       String account,
       @Schema(required = true, description = "휴대폰 번호")
       @NotBlank
