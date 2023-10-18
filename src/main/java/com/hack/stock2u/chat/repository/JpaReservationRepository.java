@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JpaChatRoomRepository extends JpaRepository<Reservation, Long> {
+public interface JpaReservationRepository extends JpaRepository<Reservation, Long> {
 
 
 //  List<Reservation> findAllByName(String name, Sort sort);
