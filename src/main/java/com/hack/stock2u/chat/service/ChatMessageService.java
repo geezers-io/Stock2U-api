@@ -1,7 +1,7 @@
 package com.hack.stock2u.chat.service;
 
 import com.hack.stock2u.chat.dto.request.ChatMessageRequest;
-import com.hack.stock2u.chat.repository.JpaChatRoomRepository;
+import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
 import com.hack.stock2u.models.ChatMessage;
 import com.hack.stock2u.models.Reservation;
@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ChatMessageService {
   private final MessageChatMongoRepository messageChatMongoRepository;
-  private final JpaChatRoomRepository jpaChatRoomRepository;
+  private final JpaReservationRepository reservationRepository;
 
 
   /**
@@ -26,7 +26,7 @@ public class ChatMessageService {
   @Transactional
   public Long save(ChatMessageRequest chatMessageRequest) {
     //roomId 있는지 체크
-    Reservation reservation = jpaChatRoomRepository.findById(chatMessageRequest.roomId())
+    Reservation reservation = reservationRepository.findById(chatMessageRequest.roomId())
         .orElseThrow(() -> new IllegalArgumentException("채팅방 없어서 저장못해:"
             + chatMessageRequest.roomId()));
 
