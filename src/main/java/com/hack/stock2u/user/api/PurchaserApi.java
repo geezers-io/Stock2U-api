@@ -20,13 +20,5 @@ import org.springframework.web.bind.annotation.RestController;
 public class PurchaserApi {
   private final PurchaserService userService;
 
-  @Operation(summary = "구매자 회원정보 수정 API", description = "판매자 회원정보를 수정합니다. (only phone)")
-  @PutMapping
-  public ResponseEntity<Void> updateUser(
-      @RequestBody @Valid PurchaserRequest.Update updateRequest
-  ) {
-    userService.update(updateRequest);
-    return ResponseEntity.status(HttpStatus.OK).build();
-  }
 
 }
