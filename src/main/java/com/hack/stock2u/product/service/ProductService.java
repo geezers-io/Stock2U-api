@@ -8,8 +8,9 @@ import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.ProductImage;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.dto.ProductDetails;
+import com.hack.stock2u.product.dto.ProductImageSet;
 import com.hack.stock2u.product.dto.ProductRequest;
-import com.hack.stock2u.product.dto.SellerDetails;
+import com.hack.stock2u.user.dto.SellerDetails;
 import com.hack.stock2u.product.exception.ProductException;
 import com.hack.stock2u.product.repository.JpaProductImageRepository;
 import com.hack.stock2u.product.repository.JpaProductRepository;
@@ -30,31 +31,74 @@ public class ProductService {
   private final JpaProductImageRepository piRepository;
   private final SellerService sellerService;
 
-  @Transactional
-  public ProductDetails create(ProductRequest.Create createRequest) {
-    List<Long> fileIds = createRequest.fileIds();
-    if (fileIds.size() > 5) {
-      throw ProductException.FILE_UPLOAD_LIMIT.create();
-    }
+  public ProductDetails getProductDetails(Long id) {
+    Product p = getProduct(id);
+    User u = p.getSeller();
+    SellerDetails sellerDetails = sellerService.getSellerDetails(u);
+    List<Attach> attaches = p.getProductImages().stream()
+        .map(ProductImage::getAttach)
+        .toList();
 
-    User u = sessionManager.getSessionUserByRdb();
-    int salesCount = sellerService.getSalesCount(u);
-    SellerDetails sellerDetails = SellerDetails.create(u, salesCount, 0);
-
-    Product product = Product.fromRequest(createRequest, u);
-    List<Attach> attaches = fileIds.stream().map(this::getAttachById).toList();
-    List<ProductImage> productImages =
-        piRepository.saveAll(attaches.stream().map(o -> ProductImage.create(product, o)).toList());
-
-    product.setProductImages(productImages);
-    productRepository.save(product);
-
-    return ProductDetails.create(product, sellerDetails, attaches);
+    return ProductDetails.create(p, sellerDetails, attaches);
   }
 
-  private Attach getAttachById(Long id) {
+  @Transactional
+  public ProductDetails create(ProductRequest.Create createRequest) {
+    validate(createRequest);
+
+    User u = sessionManager.getSessionUserByRdb();
+    SellerDetails sellerDetails = sellerService.getSellerDetails(u);
+
+    Product product = Product.fromRequest(createRequest, u);
+    ProductImageSet set = getImageSet(createRequest, product);
+    product.setProductImages(set.productImages());
+    productRepository.save(product);
+
+    return ProductDetails.create(product, sellerDetails, set.attaches());
+  }
+
+
+  public void remove(Long id) {
+    Product p = getProduct(id);
+    p.remove();
+    productRepository.save(p);
+  }
+
+  @Transactional
+  public ProductDetails update(Long id, ProductRequest.Create updateRequest) {
+    validate(updateRequest);
+    Product p = getProduct(id);
+    ProductImageSet set = getImageSet(updateRequest, p);
+    User u = p.getSeller();
+
+    p.update(updateRequest, set.productImages());
+    productRepository.save(p);
+    SellerDetails sellerDetails = sellerService.getSellerDetails(u);
+
+    return ProductDetails.create(p, sellerDetails, set.attaches());
+  }
+
+  protected Attach getAttachById(Long id) {
     return attachRepository.findById(id)
         .orElseThrow(GlobalException.NOT_FOUND::create);
+  }
+
+  protected ProductImageSet getImageSet(ProductRequest.Create request, Product p) {
+    List<Attach> attaches = request.fileIds().stream().map(this::getAttachById).toList();
+    List<ProductImage> productImages =
+        piRepository.saveAll(attaches.stream().map(o -> ProductImage.create(p, o)).toList());
+    return new ProductImageSet(attaches, productImages);
+  }
+
+
+  protected Product getProduct(Long id) {
+    return productRepository.findById(id).orElseThrow(GlobalException.NOT_FOUND::create);
+  }
+
+  private void validate(ProductRequest.Create req) {
+    if (req.fileIds().size() > 5) {
+      throw ProductException.FILE_UPLOAD_LIMIT.create();
+    }
   }
 
 }

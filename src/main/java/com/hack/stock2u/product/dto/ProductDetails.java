@@ -1,11 +1,11 @@
 package com.hack.stock2u.product.dto;
 
-import com.hack.stock2u.authentication.dto.UserDetails;
 import com.hack.stock2u.constant.ProductType;
 import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.file.dto.SimpleFile;
 import com.hack.stock2u.models.Attach;
 import com.hack.stock2u.models.Product;
+import com.hack.stock2u.user.dto.SellerDetails;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.List;
