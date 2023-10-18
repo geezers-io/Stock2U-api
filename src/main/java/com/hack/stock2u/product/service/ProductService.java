@@ -38,7 +38,6 @@ public class ProductService {
     List<Attach> attaches = p.getProductImages().stream()
         .map(ProductImage::getAttach)
         .toList();
-
     return ProductDetails.create(p, sellerDetails, attaches);
   }
 
@@ -48,7 +47,6 @@ public class ProductService {
 
     User u = sessionManager.getSessionUserByRdb();
     SellerDetails sellerDetails = sellerService.getSellerDetails(u);
-
     Product product = Product.fromRequest(createRequest, u);
     ProductImageSet set = getImageSet(createRequest, product);
     product.setProductImages(set.productImages());

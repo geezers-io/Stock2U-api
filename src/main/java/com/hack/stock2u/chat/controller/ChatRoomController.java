@@ -1,7 +1,7 @@
 package com.hack.stock2u.chat.controller;
 
 import com.hack.stock2u.chat.dto.request.ChatRoomRequestDto;
-import com.hack.stock2u.chat.dto.request.ReservationRequest;
+import com.hack.stock2u.chat.dto.response.ReservationResponse;
 import com.hack.stock2u.chat.service.ChatRoomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,11 +23,11 @@ public class ChatRoomController {
 
   @Operation(summary = "채팅방 생성 API", description = "클라이언트가 구매예약 요청을 보냈을때 채팅방 생성")
   @PostMapping("/room")
-  public ResponseEntity<ReservationRequest> createReservation(
+  public ResponseEntity<ReservationResponse> createReservation(
       @RequestBody @Valid ChatRoomRequestDto.CreateReservationRequest createReservationRequest
   ) {
-    ReservationRequest reservationRequest = chatRoomService.createRoom(createReservationRequest);
-    return ResponseEntity.status(HttpStatus.CREATED).body(reservationRequest);
+    ReservationResponse reservationResponse = chatRoomService.createRoom(createReservationRequest);
+    return ResponseEntity.status(HttpStatus.CREATED).body(reservationResponse);
   }
 
   //  @Operation(summary = "채팅방 조회 API", description = "특정 이용자의 채팅 내역 조회")
