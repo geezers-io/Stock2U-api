@@ -50,9 +50,10 @@ public class HttpLogger extends OncePerRequestFilter {
       log.debug("[{}] {}", method, requestUri);
       response.setHeader("X-Trace-Id", traceId);
       MDC.clear();
-      filterChain.doFilter(request, response);
     } catch (Exception ex) {
       log.error("error: {}\n{}", ex.getMessage(), ex.getStackTrace());
+    } finally {
+      filterChain.doFilter(request, response);
     }
 
   }
