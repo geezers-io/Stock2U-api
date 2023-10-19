@@ -80,6 +80,20 @@ public class ProductService {
         .orElseThrow(GlobalException.NOT_FOUND::create);
   }
 
+  public Attach getProductAttach(Product p) {
+    List<ProductImage> productImages = p.getProductImages();
+    if (productImages.size() == 0) {
+      return null;
+    }
+    return productImages.get(0).getAttach();
+  }
+
+  public List<Attach> getProductAttaches(Product p) {
+    return p.getProductImages().stream()
+        .map(ProductImage::getAttach)
+        .toList();
+  }
+  
   protected ProductImageSet getImageSet(ProductRequest.Create request, Product p) {
     List<Attach> attaches = request.fileIds().stream().map(this::getAttachById).toList();
     List<ProductImage> productImages =

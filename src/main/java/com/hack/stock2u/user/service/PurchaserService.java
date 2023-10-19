@@ -1,9 +1,6 @@
 package com.hack.stock2u.user.service;
 
-import com.hack.stock2u.authentication.service.AuthCodeProvider;
 import com.hack.stock2u.authentication.service.SessionManager;
-import com.hack.stock2u.models.User;
-import com.hack.stock2u.user.dto.PurchaserRequest;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
