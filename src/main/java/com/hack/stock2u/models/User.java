@@ -7,6 +7,7 @@ import com.hack.stock2u.models.embed.BasicDateColumn;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -64,7 +65,7 @@ public class User implements Serializable {
   @Embedded
   private BasicDateColumn basicDate;
 
-  @OneToOne(fetch = FetchType.LAZY)
+  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
   @JoinColumn(name = "seller_details_id")
   private SellerDetails sellerDetails;  
 
@@ -132,10 +133,6 @@ public class User implements Serializable {
     return user;
   }
 
-  private void setName(String name) {
-    this.name = name;
-  }
-
   private void setBasicDate(BasicDateColumn basicDate) {
     this.basicDate = basicDate;
   }
@@ -144,7 +141,7 @@ public class User implements Serializable {
     this.name = name;
   }
 
-  private void setEmail(String email) {
+  private void changeEmail(String email) {
     this.email = email;
   }
 
@@ -152,9 +149,6 @@ public class User implements Serializable {
     this.phone = phone;
   }
 
-  private void setVendor(AuthVendor vendor) {
-    this.vendor = vendor;
-  }
 
   private void setRole(UserRole role) {
     this.role = role;
@@ -165,6 +159,10 @@ public class User implements Serializable {
     BasicDateColumn dateSet = this.getBasicDate();
     dateSet.setRemovedAt(new Date());
     setBasicDate(dateSet);
+  }
+
+  public void changeSellerDetails(SellerDetails sellerDetails) {
+    this.sellerDetails = sellerDetails;
   }
 
   public void changeAvatarId(Long id) {

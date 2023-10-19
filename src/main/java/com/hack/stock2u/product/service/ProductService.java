@@ -55,7 +55,6 @@ public class ProductService {
     return ProductDetails.create(product, sellerDetails, set.attaches());
   }
 
-
   public void remove(Long id) {
     Product p = getProduct(id);
     p.remove();

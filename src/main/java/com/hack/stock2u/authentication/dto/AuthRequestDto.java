@@ -1,6 +1,7 @@
 package com.hack.stock2u.authentication.dto;
 
 import com.hack.stock2u.constant.AuthVendor;
+import com.hack.stock2u.user.validator.BankName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -61,7 +62,7 @@ public class AuthRequestDto {
       String email,
 
       @Schema(required = true, description = "사업자등록번호")
-      @NotBlank
+      @Pattern(regexp = "^[0-9]{10}$", message = "올바른 사업자 번호가 아닙니다")
       String licenseNumber,
       @Schema(required = true, description = "업종")
       @NotBlank
@@ -73,10 +74,10 @@ public class AuthRequestDto {
       @NotBlank
       String location,
       @Schema(required = true, description = "은행 이름(은행 리스트 조회 API 로 기입바람)")
-      @NotBlank
+      @BankName
       String bankName,
       @Schema(required = true, description = "계좌번호")
-      @NotBlank
+      @Pattern(regexp = "^[0-9-]+$", message = "올바른 계좌번호 형식이 아닙니다")
       String account,
       @Schema(required = true, description = "휴대폰 번호")
       @NotBlank

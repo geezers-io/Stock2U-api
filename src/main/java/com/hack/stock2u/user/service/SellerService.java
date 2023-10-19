@@ -31,4 +31,20 @@ public class SellerService {
     return com.hack.stock2u.user.dto.SellerDetails.create(u, salesCount, 0);
   }
 
+  public void updateLocation(String location) {
+    User u = sessionManager.getSessionUserByRdb();
+    SellerDetails details = u.getSellerDetails();
+    details.changeLocation(location);
+    u.changeSellerDetails(details);
+    userRepository.save(u);
+  }
+
+  public void updateBank(String bankName, String account) {
+    User u = sessionManager.getSessionUserByRdb();
+    SellerDetails details = u.getSellerDetails();
+    details.changeBankName(bankName);
+    details.changeAccount(account);
+    userRepository.save(u);
+  }
+
 }

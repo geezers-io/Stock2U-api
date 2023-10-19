@@ -1,8 +1,8 @@
 package com.hack.stock2u.global.exception;
 
-import com.hack.stock2u.authentication.AuthException;
 import com.hack.stock2u.file.exception.FileException;
 import com.hack.stock2u.user.UserException;
+import javax.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +42,17 @@ public class GlobalExceptionHandler {
   ) {
     BasicException res = FileException.NOT_INCLUDE_FILE.create();
     return ResponseEntity.status(res.getErrorResponse().httpStatus()).body(res.getErrorResponse());
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  protected ResponseEntity<BasicErrorResponse> handleConstraintViolationException(
+      ConstraintViolationException ex
+  ) {
+    String message = ex.getMessage();
+    String fieldMessage = getFieldMessage(message, ":");
+    BasicErrorResponse res =
+        new BasicErrorResponse("PARAM_VIOLATION", fieldMessage, HttpStatus.BAD_REQUEST);
+    return ResponseEntity.status(res.httpStatus()).body(res);
   }
 
   @ExceptionHandler({MethodArgumentTypeMismatchException.class, IllegalArgumentException.class,
@@ -84,5 +95,13 @@ public class GlobalExceptionHandler {
       return fullText;
     }
     return fullText.substring(startIdx + exName.length() + 2);
+  }
+
+  private String getFieldMessage(String message, String delimeter) {
+    int startIdx = message.indexOf(delimeter);
+    if (startIdx == -1) {
+      return message;
+    }
+    return message.substring(startIdx + 2);
   }
 }

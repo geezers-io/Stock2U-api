@@ -15,13 +15,5 @@ import org.springframework.stereotype.Service;
 public class PurchaserService {
   private final JpaUserRepository userRepository;
   private final SessionManager sessionManager;
-  private final AuthCodeProvider authCodeProvider;
-
-  public void update(PurchaserRequest.Update updateRequest) {
-    authCodeProvider.verifyCode(updateRequest.phone(), updateRequest.authCode());
-    User user = sessionManager.getSessionUserByRdb();
-    user.changePhone(updateRequest.phone());
-    userRepository.save(user);
-  }
 
 }
