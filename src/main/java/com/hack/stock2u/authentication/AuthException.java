@@ -21,7 +21,8 @@ public enum AuthException implements BasicErrorCase {
   DORO_NOT_INPUT(HttpStatus.BAD_REQUEST, "NOT_INPUT", "검색어가 입력되지 않았습니다."),
   DORO_OVER_SEARCHING(HttpStatus.BAD_REQUEST, "OVERSEARCHING", "검색 범위를 초과하였습니다."),
   DORO_BAD_FORM(HttpStatus.BAD_REQUEST, "BAD_FORM", "특수문자+숫자만으로는 검색이 불가능 합니다."),
-  DORO_KEY_EXPIRED(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "키 기간이 만료되어 서비스를 이용하실 수 없습니다.");
+  DORO_KEY_EXPIRED(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "키 기간이 만료되어 서비스를 이용하실 수 없습니다."),
+  DORO_ADDRESS_SHORT(HttpStatus.BAD_REQUEST, "ADDRESS_SHORT", "주소를 상세히 입력해 주시기 바랍니다.");
 
   private final HttpStatus httpStatus;
   private final String errorCode;
