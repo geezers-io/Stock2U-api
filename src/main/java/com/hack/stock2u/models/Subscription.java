@@ -29,4 +29,10 @@ public class Subscription {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "target_id")
   private User target;
+
+  public Subscription(User subscriber, User target) {
+    this.subscriber = subscriber;
+    this.target = target;
+  }
+
 }
