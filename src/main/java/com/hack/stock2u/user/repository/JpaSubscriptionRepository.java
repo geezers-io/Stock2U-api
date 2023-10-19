@@ -11,7 +11,8 @@ public interface JpaSubscriptionRepository extends JpaRepository<Subscription, L
 
   /**
    * 구매자와 판매자 아이디로 존재하는 대상의 ID 를 반환합니다.
-   * @param uid 구매자 ID
+
+   * @param uid 구매자 Id
    * @param sellerId 판매자 ID
    */
   @Query("""
