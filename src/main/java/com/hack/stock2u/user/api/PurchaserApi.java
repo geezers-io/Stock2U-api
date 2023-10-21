@@ -45,6 +45,7 @@ public class PurchaserApi {
   }
 
   @RoleGuard(roles = UserRole.PURCHASER)
+  @Operation(summary = "판매자 구독 API")
   @PostMapping("/subscribe")
   public ResponseEntity<Void> subscribeApi(
       @Schema(description = "판매자 ID", required = true)
@@ -55,6 +56,7 @@ public class PurchaserApi {
   }
 
   @RoleGuard(roles = UserRole.PURCHASER)
+  @Operation(summary = "판매자 구독 취소 API")
   @DeleteMapping("/unsubscribe")
   public ResponseEntity<Void> unsubscribeApi(
       @Schema(description = "판매자 ID", required = true)

@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MyApi {
   private final MyService myService;
 
+  @Operation(summary = "사용자 - 아바타 이미지 변경 API")
   @PostMapping(value = "/avatar", consumes = "multipart/form-data")
   public ResponseEntity<SimpleFile> changeAvatarImageApi(
       @Parameter(
