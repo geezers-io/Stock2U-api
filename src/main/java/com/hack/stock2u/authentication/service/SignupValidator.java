@@ -18,7 +18,7 @@ public class SignupValidator {
   public void validReadyForSignup(String verification, String phone) {
     boolean readySignup = authCodeProvider.isReadySignup(verification);
     if (!readySignup) {
-      throw GlobalException.BAD_REQUEST.create();
+      throw AuthException.EXPIRED_SIGNUP.create();
     }
     validPhoneCheck(phone);
   }
