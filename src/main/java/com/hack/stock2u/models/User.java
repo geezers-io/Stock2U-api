@@ -99,6 +99,7 @@ public class User implements Serializable {
         .email(signupUserRequest.email())
         .phone(signupUserRequest.phone())
         .vendor(signupUserRequest.vendor())
+        .basicDate(date)
         .build();
 
     user.setRole(UserRole.PURCHASER);
