@@ -1,7 +1,6 @@
 package com.hack.stock2u.user.api;
 
 import com.hack.stock2u.constant.UserRole;
-import com.hack.stock2u.user.dto.PurchaserRequest;
 import com.hack.stock2u.user.dto.SellerSubscribeDetails;
 import com.hack.stock2u.user.service.PurchaserService;
 import com.hack.stock2u.user.service.SubscriptionService;
@@ -10,19 +9,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -51,6 +45,7 @@ public class PurchaserApi {
   }
 
   @RoleGuard(roles = UserRole.PURCHASER)
+  @Operation(summary = "판매자 구독 API")
   @PostMapping("/subscribe")
   public ResponseEntity<Void> subscribeApi(
       @Schema(description = "판매자 ID", required = true)
@@ -61,6 +56,7 @@ public class PurchaserApi {
   }
 
   @RoleGuard(roles = UserRole.PURCHASER)
+  @Operation(summary = "판매자 구독 취소 API")
   @DeleteMapping("/unsubscribe")
   public ResponseEntity<Void> unsubscribeApi(
       @Schema(description = "판매자 ID", required = true)

@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(BasicException.class)
   protected ResponseEntity<BasicErrorResponse> handleBasicException(BasicException ex) {
+    ex.printStackTrace();
     BasicErrorResponse res = ex.getErrorResponse();
     return ResponseEntity.status(res.httpStatus()).body(res);
   }
@@ -30,6 +31,7 @@ public class GlobalExceptionHandler {
   protected ResponseEntity<BasicErrorResponse> handleAccessDeniedException(
       AccessDeniedException ex
   ) {
+    ex.printStackTrace();
     BasicException basicEx = GlobalException.FORBIDDEN.create();
     return ResponseEntity.status(basicEx.getErrorResponse().httpStatus()).body(
         basicEx.getErrorResponse()
@@ -40,6 +42,7 @@ public class GlobalExceptionHandler {
   protected ResponseEntity<BasicErrorResponse> handleMissingServletRequestPartException(
       Exception ex
   ) {
+    ex.printStackTrace();
     BasicException res = FileException.NOT_INCLUDE_FILE.create();
     return ResponseEntity.status(res.getErrorResponse().httpStatus()).body(res.getErrorResponse());
   }
@@ -48,6 +51,7 @@ public class GlobalExceptionHandler {
   protected ResponseEntity<BasicErrorResponse> handleConstraintViolationException(
       ConstraintViolationException ex
   ) {
+    ex.printStackTrace();
     String message = ex.getMessage();
     String fieldMessage = getFieldMessage(message, ":");
     BasicErrorResponse res =
@@ -58,6 +62,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler({MethodArgumentTypeMismatchException.class, IllegalArgumentException.class,
       MissingServletRequestParameterException.class})
   protected ResponseEntity<BasicErrorResponse> handleIllegalArgsException(Exception ex) {
+    ex.printStackTrace();
     String message = ex.getLocalizedMessage();
     String errorMessage = getSimpleMessage(message, IllegalArgumentException.class.getName());
     BasicErrorResponse res =
@@ -69,6 +74,7 @@ public class GlobalExceptionHandler {
   protected ResponseEntity<BasicErrorResponse> handleMethodArgNotValidException(
       MethodArgumentNotValidException ex
   ) {
+    ex.printStackTrace();
     FieldError fieldError = ex.getFieldError();
     String message;
     if (fieldError != null) {
