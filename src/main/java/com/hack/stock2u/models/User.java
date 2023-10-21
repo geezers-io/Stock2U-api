@@ -40,6 +40,9 @@ public class User implements Serializable {
 
   private String email;
 
+  @Column(name = "oauth_id", nullable = false)
+  private String oauthId;
+
   @Enumerated(EnumType.STRING)
   private AuthVendor vendor;
 
@@ -80,13 +83,14 @@ public class User implements Serializable {
 
   @Builder
   public User(String name, String email, AuthVendor vendor, String phone, BasicDateColumn basicDate,
-              SellerDetails sellerDetails) {
+              SellerDetails sellerDetails, String oauthId) {
     this.name = name;
     this.email = email;
     this.vendor = vendor;
     this.phone = phone;
     this.basicDate = basicDate;
     this.sellerDetails = sellerDetails;
+    this.oauthId = oauthId;
   }
 
   public static User signupPurchaser(AuthRequestDto.SignupPurchaserRequest signupUserRequest) {
@@ -97,6 +101,7 @@ public class User implements Serializable {
     User user = User.builder()
         .name(signupUserRequest.username())
         .email(signupUserRequest.email())
+        .oauthId(signupUserRequest.verification())
         .phone(signupUserRequest.phone())
         .vendor(signupUserRequest.vendor())
         .basicDate(date)
@@ -126,6 +131,7 @@ public class User implements Serializable {
         .vendor(signupSellerRequest.vendor())
         .phone(signupSellerRequest.phone())
         .basicDate(date)
+        .oauthId(signupSellerRequest.verification())
         .sellerDetails(sellerDetails)
         .build();
 
