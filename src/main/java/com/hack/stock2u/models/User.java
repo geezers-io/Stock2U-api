@@ -65,7 +65,7 @@ public class User implements Serializable {
   @Embedded
   private BasicDateColumn basicDate;
 
-  @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+  @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
   @JoinColumn(name = "seller_details_id")
   private SellerDetails sellerDetails;  
 
