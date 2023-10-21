@@ -28,7 +28,6 @@ public class AuthRequestDto {
 
   public record SignupPurchaserRequest(
       @Schema(required = true, description = "회원이름")
-      @NotNull @NotBlank
       @Pattern(regexp = "^[a-zA-Z0-9ㄱ-ㅎ가-힣]{3,15}$", message = "닉네임은 최소 3글자 이상 15글자 이하입니다.")
       String username,
       @Schema(required = true, description = "이메일", example = "email@naver.com")
@@ -38,11 +37,9 @@ public class AuthRequestDto {
       )
       String email,
       @Schema(required = true, description = "휴대폰 번호")
-      @NotNull @NotBlank
       @Pattern(regexp = "^[0-9]{11}", message = "휴대폰 번호는 010XXXXXXXX 형식이어야 합니다.")
       String phone,
       @Schema(required = true, description = "회원가입 인증코드")
-      @NotNull @NotBlank
       String verification,
 
       @Schema(required = true, description = "외부 인증업체")
