@@ -65,12 +65,6 @@ public class Product {
   @Enumerated(EnumType.ORDINAL)
   private ReservationStatus status;
 
-  @Comment("위도")
-  private Double latitude;
-
-  @Comment("경도")
-  private Double longtitude;
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User seller;
@@ -87,7 +81,7 @@ public class Product {
   @Builder
   public Product(String title, String name, int price, ProductType type, String description,
                  boolean onlyOneReserve, boolean showAccountDetails, Date expiredAt,
-                 Double latitude, Double longtitude, User seller) {
+                 User seller) {
     this.title = title;
     this.name = name;
     this.price = price;
@@ -97,8 +91,6 @@ public class Product {
     this.onlyOneReserve = onlyOneReserve;
     this.showAccountDetails = showAccountDetails;
     this.expiredAt = expiredAt;
-    this.latitude = latitude;
-    this.longtitude = longtitude;
   }
 
   public static Product fromRequest(ProductRequest.Create create, User u) {
@@ -111,8 +103,6 @@ public class Product {
         .onlyOneReserve(create.onlyOneReserve())
         .showAccountDetails(create.showAccountDetails())
         .expiredAt(create.expiredAt())
-        .latitude(create.latitude())
-        .longtitude(create.longtitude())
         .seller(u)
         .build();
   }
@@ -126,8 +116,6 @@ public class Product {
     this.onlyOneReserve = request.onlyOneReserve();
     this.showAccountDetails = request.showAccountDetails();
     this.expiredAt = request.expiredAt();
-    this.latitude = request.latitude();
-    this.longtitude = request.longtitude();
     this.productImages = images;
   }
 

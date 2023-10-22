@@ -1,5 +1,6 @@
 package com.hack.stock2u.models;
 
+import com.hack.stock2u.user.dto.SellerRequest;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,15 +43,25 @@ public class SellerDetails implements Serializable {
   @Column(length = 50)
   private String account;
 
+  @Column(precision = 18, scale = 10)
+  @Comment("위도")
+  private Double latitude;
+
+  @Column(precision = 18, scale = 10)
+  @Comment("경도")
+  private Double longtitude;
+
   @Builder
   public SellerDetails(String licenseNumber, String industry, String industryName, String location,
-                       String bankName, String account) {
+                       String bankName, String account, Double latitude, Double longtitude) {
     this.licenseNumber = licenseNumber;
     this.industry = industry;
     this.industryName = industryName;
     this.location = location;
     this.bankName = bankName;
     this.account = account;
+    this.latitude = latitude;
+    this.longtitude = longtitude;
   }
 
   public void changeLocation(String location) {
@@ -65,4 +76,13 @@ public class SellerDetails implements Serializable {
     this.account = account;
   }
 
+  public void changePosition(Double latitude, Double longtitude) {
+    this.latitude = latitude;
+    this.longtitude = longtitude;
+  }
+
+  public void changePosition(SellerRequest.LocationUpdate locationUpdateRequest) {
+    this.latitude = locationUpdateRequest.latitude();
+    this.longtitude = locationUpdateRequest.longtitude();
+  }
 }

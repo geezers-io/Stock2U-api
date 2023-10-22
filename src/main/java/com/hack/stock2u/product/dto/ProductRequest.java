@@ -36,12 +36,6 @@ public class ProductRequest {
       boolean showAccountDetails,
       @Schema(description = "게시 마감 기한", required = true)
       @NotNull
-      Date expiredAt,
-      @Schema(description = "위도", required = true)
-      @NotNull
-      Double latitude,
-      @Schema(description = "경도", required = true)
-      @NotNull
-      Double longtitude
+      Date expiredAt
   ) {}
 }
