@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-public class AuthRequestDto {
+public class    AuthRequestDto {
 
   public record SignInRequest(
       @Schema(required = true, description = "OAuth 인증 코드")
@@ -36,7 +36,7 @@ public class AuthRequestDto {
           regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
       )
       String email,
-      @Schema(required = true, description = "휴대폰 번호")
+      @Schema(required = true,  description = "휴대폰 번호")
       @Pattern(regexp = "^[0-9]{11}", message = "휴대폰 번호는 010XXXXXXXX 형식이어야 합니다.")
       String phone,
       @Schema(required = true, description = "회원가입 인증코드")
@@ -85,7 +85,15 @@ public class AuthRequestDto {
       String verification,
 
       @Schema(required = true, description = "외부 인증업체")
-      @NotNull AuthVendor vendor
+      @NotNull AuthVendor vendor,
+
+      @Schema(description = "위도", required = true)
+      @NotNull
+      Double latitude,
+
+      @Schema(description = "경도", required = true)
+      @NotNull
+      Double longtitude
   ) {}
 
 }
