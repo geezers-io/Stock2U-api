@@ -12,6 +12,7 @@ import com.hack.stock2u.models.Attach;
 import com.hack.stock2u.models.User;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,6 +22,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.tika.Tika;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +52,6 @@ public class FileUploadService {
 
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.addUserMetadata("extension", contentType);
-    metadata.addUserMetadata("filename", filename);
 
     String uploadPath = s3Upload(filename, file, metadata);
     Attach attach = attachRepository.save(
@@ -88,8 +89,9 @@ public class FileUploadService {
 
   private String s3Upload(String filename, MultipartFile file, ObjectMetadata metadata) {
     try (InputStream inputStream = file.getInputStream()) {
-      validateImage(inputStream);
-      return s3Service.uploadAndReturnUrl(filename, inputStream, metadata);
+      BufferedInputStream bfStream = new BufferedInputStream(inputStream);
+      validateImage(bfStream);
+      return s3Service.uploadAndReturnUrl(filename, bfStream, metadata);
     } catch (BasicException ex) {
       throw ex;
     } catch (Exception ex) {
