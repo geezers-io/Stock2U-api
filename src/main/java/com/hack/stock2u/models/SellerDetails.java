@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -49,7 +50,10 @@ public class SellerDetails implements Serializable {
 
   @Column(precision = 18, scale = 10)
   @Comment("경도")
-  private Double longtitude;
+  private Double longitude;
+
+  @OneToOne(mappedBy = "sellerDetails")
+  private User user;
 
   @Builder
   public SellerDetails(String licenseNumber, String industry, String industryName, String location,
@@ -61,7 +65,7 @@ public class SellerDetails implements Serializable {
     this.bankName = bankName;
     this.account = account;
     this.latitude = latitude;
-    this.longtitude = longtitude;
+    this.longitude = longtitude;
   }
 
   public void changeLocation(String location) {
@@ -76,13 +80,13 @@ public class SellerDetails implements Serializable {
     this.account = account;
   }
 
-  public void changePosition(Double latitude, Double longtitude) {
+  public void changePosition(Double latitude, Double longitude) {
     this.latitude = latitude;
-    this.longtitude = longtitude;
+    this.longitude = longitude;
   }
 
   public void changePosition(SellerRequest.LocationUpdate locationUpdateRequest) {
     this.latitude = locationUpdateRequest.latitude();
-    this.longtitude = locationUpdateRequest.longtitude();
+    this.longitude = locationUpdateRequest.longitude();
   }
 }

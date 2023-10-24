@@ -14,6 +14,6 @@ public class SellerRequest {
 
       @Schema(description = "경도", required = true)
       @NotNull
-      Double longtitude
+      Double longitude
   ) {}
 }
