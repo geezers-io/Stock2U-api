@@ -88,7 +88,11 @@ configurations {
 }
 
 sourceSets {
-    main.java.srcDir querydslDir
+    main {
+        java {
+            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated", querydslDir]
+        }
+    }
 }
 
 tasks.named('test') {
@@ -119,6 +123,10 @@ clean {
 
 checkstyleTest {
     source = 'src/main/test'
+}
+
+tasks.withType(JavaCompile) {
+    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
 
 tasks.withType(Checkstyle).configureEach {
