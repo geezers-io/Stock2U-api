@@ -97,6 +97,9 @@ compileQuerydsl.doFirst {
     delete(file(querydslDir))
 }
 
+tasks.compileQuerydslJava.dependsOn tasks.compileQuerydsl
+tasks.compileQuerydslJava.mustRunAfter tasks.compileQuerydsl
+
 tasks.named('test') {
     file(".env").eachLine {
         String[] tokens = it.split("=")
