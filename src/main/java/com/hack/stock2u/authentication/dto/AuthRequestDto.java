@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import lombok.Builder;
 
 public class    AuthRequestDto {
 
@@ -26,6 +27,7 @@ public class    AuthRequestDto {
       String phone
   ) {}
 
+  @Builder
   public record SignupPurchaserRequest(
       @Schema(required = true, description = "회원이름")
       @Pattern(regexp = "^[a-zA-Z0-9ㄱ-ㅎ가-힣]{3,15}$", message = "닉네임은 최소 3글자 이상 15글자 이하입니다.")
@@ -46,6 +48,7 @@ public class    AuthRequestDto {
       @NotNull AuthVendor vendor
   ) {}
 
+  @Builder
   public record SignupSellerRequest(
       @Schema(required = true, description = "회원이름")
       @NotNull @NotBlank
@@ -93,7 +96,7 @@ public class    AuthRequestDto {
 
       @Schema(description = "경도", required = true)
       @NotNull
-      Double longtitude
+      Double longitude
   ) {}
 
 }
