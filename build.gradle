@@ -26,6 +26,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -69,34 +70,29 @@ dependencies {
     }
 }
 
-//def querydslDir = "$buildDir/generated/querydsl"
-//
-//querydsl {
-//    jpa = true
-//    querydslSourcesDir = querydslDir
-//}
+def querydslDir = "$buildDir/generated/querydsl"
 
-//compileQuerydsl {
-//    options.annotationProcessorPath = configurations.querydsl
-//}
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
 
-//configurations {
-//    querydsl.extendsFrom compileClasspath
-//}
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
 
 sourceSets {
     main {
         java {
-//            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated", querydslDir]
-            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
+            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated", querydslDir]
         }
     }
 }
 
-//compileQuerydsl.doFirst {
-//    if (file(querydslDir).exists() )
-//    delete(file(querydslDir))
-//}
+compileQuerydsl.doFirst {
+    if (file(querydslDir).exists() )
+    delete(file(querydslDir))
+}
 
 
 tasks.named('test') {
