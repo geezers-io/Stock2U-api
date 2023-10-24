@@ -95,10 +95,17 @@ public class HttpLogger extends OncePerRequestFilter {
     String queryString = reqWrapper.getQueryString();
     String method = reqWrapper.getMethod();
     String requestUri = reqWrapper.getRequestURI();
+    String contentType = reqWrapper.getContentType();
     log.debug("[{}] {}", method, requestUri);
+    log.debug("Content-Type: {}", contentType);
     log.debug("URL Params: {}", queryString);
 
+
+
     if (method.equalsIgnoreCase("POST")) {
+      if (contentType.startsWith("multipart/form-data")) {
+        return;
+      }
       try {
         String body = getBody(reqWrapper);
         log.debug("Body: {}", body);
