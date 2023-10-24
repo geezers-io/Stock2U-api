@@ -76,14 +76,11 @@ querydsl {
     querydslSourcesDir = querydslDir
 }
 
-//compileQuerydsl {
-//    options.annotationProcessorPath = configurations.querydsl
-//}
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
 
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
     querydsl.extendsFrom compileClasspath
 }
 
@@ -93,6 +90,11 @@ sourceSets {
             srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated", querydslDir]
         }
     }
+}
+
+compileQuerydsl.doFirst {
+    if (file(querydslDir).exists() )
+    delete(file(querydslDir))
 }
 
 tasks.named('test') {
