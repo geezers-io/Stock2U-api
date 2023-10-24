@@ -88,11 +88,7 @@ configurations {
 }
 
 sourceSets {
-    main {
-        java {
-            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated", querydslDir]
-        }
-    }
+    main.java.srcDir querydslDir
 }
 
 tasks.named('test') {
