@@ -76,9 +76,9 @@ querydsl {
     querydslSourcesDir = querydslDir
 }
 
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl
-}
+//compileQuerydsl {
+//    options.annotationProcessorPath = configurations.querydsl
+//}
 
 configurations {
     compileOnly {
@@ -123,10 +123,6 @@ clean {
 
 checkstyleTest {
     source = 'src/main/test'
-}
-
-tasks.withType(JavaCompile) {
-    options.annotationProcessorGeneratedSourcesDirectory = file(querydslDir)
 }
 
 tasks.withType(Checkstyle).configureEach {
