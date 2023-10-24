@@ -4,7 +4,6 @@ import com.hack.stock2u.constant.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.List;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -12,12 +11,12 @@ public class ProductRequest {
   public record Create(
       @Schema(description = "게시글에 업로드할 이미지 아이디 리스트", required = true)
       @NotNull
-      List<Long> fileIds,
+      List<Long> imageIds,
       @Schema(description = "판매글 제목", required = true)
-      @Size(min = 5, max = 50) @NotNull
+      @Size(min = 4, max = 50, message = "제목은 최소 4글자 이상입니다.")
       String title,
       @Schema(description = "재고 이름", required = true)
-      @Size(min = 5, max = 50) @NotNull
+      @Size(min = 2, max = 50, message = "재고 이름은 최소 2글자 이상입니다.")
       String name,
       @Schema(description = "재고 가격", enumAsRef = true)
       @NotNull
