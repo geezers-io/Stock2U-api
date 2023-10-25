@@ -39,6 +39,10 @@ public class Reservation {
   @JoinColumn(name = "product_id")
   private Product product;
 
+  @Comment("잔여 재고 이름")
+  @Column(name = "product_name")
+  private String name;
+
   @Comment("판매자(사업자) id")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "seller_id")
