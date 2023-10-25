@@ -3,6 +3,7 @@ package com.hack.stock2u.user.api;
 import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.user.dto.SellerRequest;
 import com.hack.stock2u.user.dto.SellerResponse;
+import com.hack.stock2u.user.dto.SellerSummary;
 import com.hack.stock2u.user.service.SellerService;
 import com.hack.stock2u.user.validator.BankName;
 import com.hack.stock2u.utils.RoleGuard;
@@ -28,6 +29,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/my/seller")
 public class SellerApi {
   private final SellerService sellerService;
+
+  @RoleGuard(roles = UserRole.SELLER)
+  @Operation(summary = "판매자 계정 정보 조회 API")
+  @GetMapping
+  public ResponseEntity<SellerSummary> getDetailsApi() {
+    SellerSummary details = sellerService.getDetails();
+    return ResponseEntity.ok(details);
+  }
 
   @RoleGuard(roles = UserRole.SELLER)
   @Operation(summary = "판매자 은행정보(은행이름/계좌) 조회 API", description = "판매자 은행이름과 계좌정보를 조회합니다.")
