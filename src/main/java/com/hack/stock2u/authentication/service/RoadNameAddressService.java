@@ -35,6 +35,7 @@ public class RoadNameAddressService {
 
     DoroResult results = doroResponse.results();
     String errorCode = results.common().errorCode();
+    log.error("errorCode: {}, result: {}", errorCode, results.common());
     validateErrorCode(errorCode);
 
     DoroPageDetails pageDetails = DoroPageDetails.from(results.common());
@@ -50,6 +51,7 @@ public class RoadNameAddressService {
     }
 
     switch (errorCode) {
+      case "E0006" -> throw AuthException.DORO_ADDRESS_SHORT.create();
       case "E0008" -> throw AuthException.DORO_ONLY_ONE_CHAR.create();
       case "E0009" -> throw AuthException.DORO_CHARACTER.create();
       case "E0010" -> throw AuthException.DORO_TOO_LONG.create();

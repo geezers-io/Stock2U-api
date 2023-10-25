@@ -73,18 +73,22 @@ public class AuthApi {
   @Operation(summary = "구매자 회원가입 API", description = "구매자 회원가입을 수행합니다.")
   @PostMapping("/signup/purchaser")
   public ResponseEntity<UserDetails> signupPurchaserApi(
-      @RequestBody @Valid AuthRequestDto.SignupPurchaserRequest signupPurchaserRequest
+      @RequestBody @Valid AuthRequestDto.SignupPurchaserRequest signupPurchaserRequest,
+      HttpSession session
   ) {
     UserDetails user = authService.signupPurchaser(signupPurchaserRequest);
+    initializeSession(session, user);
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
   @Operation(summary = "판매자 회원가입 API", description = "판매자 회원가입을 수행합니다.")
   @PostMapping("/signup/seller")
   public ResponseEntity<UserDetails> signupSellerApi(
-      @RequestBody @Valid AuthRequestDto.SignupSellerRequest signupSellerRequest
+      @RequestBody @Valid AuthRequestDto.SignupSellerRequest signupSellerRequest,
+      HttpSession session
   ) {
     UserDetails user = authService.signupSeller(signupSellerRequest);
+    initializeSession(session, user);
     return ResponseEntity.status(HttpStatus.CREATED).body(user);
   }
 
@@ -184,6 +188,12 @@ public class AuthApi {
         request, response,
         SecurityContextHolder.getContext().getAuthentication()
     );
+  }
+
+  private void initializeSession(HttpSession session, UserDetails userDetails) {
+    session.setAttribute("vendor", userDetails.vendor().name());
+    session.setAttribute("id", userDetails.id());
+    session.setAttribute("role", userDetails.role().name());
   }
 
 }

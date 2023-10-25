@@ -14,14 +14,16 @@ public enum AuthException implements BasicErrorCase {
   INCOMPLETE_AUTH_CODE(HttpStatus.UNAUTHORIZED, "INCOMPLETE_AUTH_CODE", "휴대폰 인증 절차를 수행해주세요."),
   ALREADY_EXISTS_USER(HttpStatus.BAD_REQUEST, "ALREADY_EXISTS_USER", "중복된 사용자입니다."),
   IS_ANONYMOUS_USER(HttpStatus.UNAUTHORIZED, "ANONYMOUS_USER", "인증되지 않는 요청입니다."),
+  EXPIRED_SIGNUP(HttpStatus.BAD_REQUEST, "EXPIRED_SIGNUP", "회원가입 시간이 만료되었습니다 다시시도해주세요."),
 
   DORO_TOO_LONG(HttpStatus.BAD_REQUEST, "TOO_LONG_SEARCH", "검색어가 너무 깁니다. (한글40자, 영문,숫자 80자 이하)"),
-  DORO_CHARACTER(HttpStatus.BAD_REQUEST, "BAD_CHARACTER", "검색어는 문자와 숫자 같이 입력되어야 합니다. (숫자만 검색 불가)"),
+  DORO_CHARACTER(HttpStatus.BAD_REQUEST, "BAD_CHARACTER", "검색어는 문자와 숫자가 같이 입력되어야 합니다. (숫자만 검색 불가)"),
   DORO_ONLY_ONE_CHAR(HttpStatus.BAD_REQUEST, "ONLY_ONE_CHAR", "검색어는 한글자 이상 입력되어야 합니다."),
   DORO_NOT_INPUT(HttpStatus.BAD_REQUEST, "NOT_INPUT", "검색어가 입력되지 않았습니다."),
   DORO_OVER_SEARCHING(HttpStatus.BAD_REQUEST, "OVERSEARCHING", "검색 범위를 초과하였습니다."),
   DORO_BAD_FORM(HttpStatus.BAD_REQUEST, "BAD_FORM", "특수문자+숫자만으로는 검색이 불가능 합니다."),
-  DORO_KEY_EXPIRED(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "키 기간이 만료되어 서비스를 이용하실 수 없습니다.");
+  DORO_KEY_EXPIRED(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "키 기간이 만료되어 서비스를 이용하실 수 없습니다."),
+  DORO_ADDRESS_SHORT(HttpStatus.BAD_REQUEST, "ADDRESS_SHORT", "주소를 상세히 입력해 주시기 바랍니다.");
 
   private final HttpStatus httpStatus;
   private final String errorCode;

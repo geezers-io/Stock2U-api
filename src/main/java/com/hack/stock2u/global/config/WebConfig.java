@@ -2,6 +2,7 @@ package com.hack.stock2u.global.config;
 
 import com.hack.stock2u.authentication.service.AuthVendorEnumConverter;
 import com.hack.stock2u.global.filter.RoleGuardInterceptor;
+import com.hack.stock2u.utils.ProductTypeEnumConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -16,6 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addFormatters(FormatterRegistry registry) {
     registry.addConverter(new AuthVendorEnumConverter());
+    registry.addConverter(new ProductTypeEnumConverter());
   }
 
   @Override

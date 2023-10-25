@@ -1,11 +1,13 @@
 package com.hack.stock2u.models;
 
+import com.hack.stock2u.user.dto.SellerRequest;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,15 +44,49 @@ public class SellerDetails implements Serializable {
   @Column(length = 50)
   private String account;
 
+  @Column(precision = 18, scale = 10)
+  @Comment("위도")
+  private Double latitude;
+
+  @Column(precision = 18, scale = 10)
+  @Comment("경도")
+  private Double longitude;
+
+  @OneToOne(mappedBy = "sellerDetails")
+  private User user;
+
   @Builder
   public SellerDetails(String licenseNumber, String industry, String industryName, String location,
-                       String bankName, String account) {
+                       String bankName, String account, Double latitude, Double longtitude) {
     this.licenseNumber = licenseNumber;
     this.industry = industry;
     this.industryName = industryName;
     this.location = location;
     this.bankName = bankName;
     this.account = account;
+    this.latitude = latitude;
+    this.longitude = longtitude;
   }
 
+  public void changeLocation(String location) {
+    this.location = location;
+  }
+
+  public void changeBankName(String bankName) {
+    this.bankName = bankName;
+  }
+
+  public void changeAccount(String account) {
+    this.account = account;
+  }
+
+  public void changePosition(Double latitude, Double longitude) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+  }
+
+  public void changePosition(SellerRequest.LocationUpdate locationUpdateRequest) {
+    this.latitude = locationUpdateRequest.latitude();
+    this.longitude = locationUpdateRequest.longitude();
+  }
 }

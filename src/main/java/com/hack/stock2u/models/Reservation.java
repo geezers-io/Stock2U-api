@@ -63,4 +63,12 @@ public class Reservation {
   public void setDisabledAt() {
     basicDate.setRemovedAt(new Date());
   }
+
+  @Builder
+  public Reservation(ChatRoom chatRoom, Long senderId, String message) {
+    this.chatRoom =chatRoom;
+    this.senderId = senderId;
+    this.message = message;
+    this.sendTime = LocalDateTime.now();
+  }
 }

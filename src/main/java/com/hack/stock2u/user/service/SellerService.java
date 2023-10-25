@@ -3,6 +3,7 @@ package com.hack.stock2u.user.service;
 import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.models.SellerDetails;
 import com.hack.stock2u.models.User;
+import com.hack.stock2u.user.dto.SellerRequest;
 import com.hack.stock2u.user.dto.SellerResponse;
 import com.hack.stock2u.user.repository.JpaBuyerRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
@@ -29,6 +30,23 @@ public class SellerService {
   public com.hack.stock2u.user.dto.SellerDetails getSellerDetails(User u) {
     int salesCount = getSalesCount(u);
     return com.hack.stock2u.user.dto.SellerDetails.create(u, salesCount, 0);
+  }
+
+  public void updateLocation(SellerRequest.LocationUpdate locationUpdateRequest) {
+    User u = sessionManager.getSessionUserByRdb();
+    SellerDetails details = u.getSellerDetails();
+    details.changeLocation(locationUpdateRequest.location());
+    details.changePosition(locationUpdateRequest);
+    u.changeSellerDetails(details);
+    userRepository.save(u);
+  }
+
+  public void updateBank(String bankName, String account) {
+    User u = sessionManager.getSessionUserByRdb();
+    SellerDetails details = u.getSellerDetails();
+    details.changeBankName(bankName);
+    details.changeAccount(account);
+    userRepository.save(u);
   }
 
 }

@@ -24,13 +24,22 @@
         </encoder>
     </appender>
 
-    <appender name="HTTP" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="Http" class="ch.qos.logback.core.ConsoleAppender">
         <filter class="com.hack.stock2u.global.filter.HttpFilter" />
-        <!--        <file>${LOGS}/http.log</file>-->
-        <!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
-        <!--            <fileNamePattern>logs/http.%d{yyyy-MM-dd}.log</fileNamePattern>-->
-        <!--            <maxHistory>30</maxHistory>-->
-        <!--        </rollingPolicy>-->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>
+                [%d{HH:mm:ss.SSS}] %highlight(%-5level) %green(%logger) %red([traceId=%X{traceId}]) - %cyan(%msg%n)
+            </Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="HttpRollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS}/http.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/http.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <filter class="com.hack.stock2u.global.filter.HttpFilter" />
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <Pattern>
                 [%d{HH:mm:ss.SSS}] %highlight(%-5level) %green(%logger) %red([traceId=%X{traceId}]) - %cyan(%msg%n)
@@ -39,7 +48,8 @@
     </appender>
 
     <root level="debug">
-        <appender-ref ref="HTTP" />
+        <appender-ref ref="Http" />
+        <appender-ref ref="HttpRollingFile" />
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </root>

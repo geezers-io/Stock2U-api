@@ -6,6 +6,7 @@ import com.hack.stock2u.models.embed.BasicDateColumn;
 import com.hack.stock2u.product.dto.ProductRequest;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -65,12 +66,6 @@ public class Product {
   @Enumerated(EnumType.ORDINAL)
   private ReservationStatus status;
 
-  @Comment("위도")
-  private Double latitude;
-
-  @Comment("경도")
-  private Double longtitude;
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User seller;
@@ -81,27 +76,30 @@ public class Product {
   @OneToMany(fetch = FetchType.LAZY)
   private List<Reservation> reservations;
 
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.PERSIST)
+  private List<Attach> attaches;
+
   @Embedded
   private BasicDateColumn basicDate;
 
   @Builder
   public Product(String title, String name, int price, ProductType type, String description,
                  boolean onlyOneReserve, boolean showAccountDetails, Date expiredAt,
-                 Double latitude, Double longtitude, User seller) {
+                 User seller, BasicDateColumn basicDate) {
     this.title = title;
     this.name = name;
     this.price = price;
     this.type = type;
+    this.basicDate = getBasicDate();
     this.seller = seller;
     this.description = description;
     this.onlyOneReserve = onlyOneReserve;
     this.showAccountDetails = showAccountDetails;
     this.expiredAt = expiredAt;
-    this.latitude = latitude;
-    this.longtitude = longtitude;
   }
 
   public static Product fromRequest(ProductRequest.Create create, User u) {
+    BasicDateColumn basicDateColumn = new BasicDateColumn(new Date(), null);
     return Product.builder()
         .title(create.title())
         .name(create.name())
@@ -111,13 +109,12 @@ public class Product {
         .onlyOneReserve(create.onlyOneReserve())
         .showAccountDetails(create.showAccountDetails())
         .expiredAt(create.expiredAt())
-        .latitude(create.latitude())
-        .longtitude(create.longtitude())
         .seller(u)
+        .basicDate(basicDateColumn)
         .build();
   }
 
-  public void update(ProductRequest.Create request, List<ProductImage> images) {
+  public void update(ProductRequest.Create request, List<Attach> images) {
     this.title = request.title();
     this.name = request.name();
     this.price = request.price();
@@ -126,17 +123,15 @@ public class Product {
     this.onlyOneReserve = request.onlyOneReserve();
     this.showAccountDetails = request.showAccountDetails();
     this.expiredAt = request.expiredAt();
-    this.latitude = request.latitude();
-    this.longtitude = request.longtitude();
-    this.productImages = images;
+    this.attaches = images;
   }
 
   public void changeStatus(ReservationStatus status) {
     this.status = status;
   }
 
-  public void setProductImages(List<ProductImage> productImages) {
-    this.productImages = productImages;
+  public void setAttaches(List<Attach> attaches) {
+    this.attaches = attaches;
   }
 
   public void remove() {

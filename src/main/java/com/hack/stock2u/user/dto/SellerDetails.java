@@ -1,6 +1,7 @@
 package com.hack.stock2u.user.dto;
 
 import com.hack.stock2u.models.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
@@ -8,7 +9,9 @@ public record SellerDetails(
     Long id,
     String username,
     String phone,
+    @Schema(description = "판매 재고 갯수", required = true)
     int salesCount,
+    @Schema(description = "받은 리뷰 갯수", required = true)
     int reviewCount
 ) {
   public static SellerDetails create(User u, int salesCount, int reviewCount) {

@@ -18,4 +18,6 @@ public interface JpaUserRepository extends CrudRepository<User, Long> {
   Optional<User> findById(Long userId);
 
   Optional<User> findByPhone(String phone);
+
+  Optional<User> findByOauthId(String id);
 }

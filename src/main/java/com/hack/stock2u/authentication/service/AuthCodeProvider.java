@@ -43,19 +43,18 @@ public class AuthCodeProvider {
     template.expire(key, minutes, TimeUnit.MINUTES);
   }
 
-  public String saveAvailableSignup() {
+  public void saveAvailableSignup(String oauthId) {
     ValueOperations<String, String> ops = template.opsForValue();
-    String uuid = UUID.randomUUID().toString();
-    String key = createSignupKey(uuid);
-    ops.set(key, "ready");
-    template.expire(key, 1, TimeUnit.HOURS);
-    return uuid;
+    ops.set(oauthId, "ready");
+    template.expire(oauthId, 1, TimeUnit.HOURS);
   }
 
-  public boolean isReadySignup(String uuid) {
+  public boolean isReadySignup(String oauthId) {
     ValueOperations<String, String> ops = template.opsForValue();
-    String signupKey = createSignupKey(uuid);
-    String ready = ops.get(signupKey);
+    String ready = ops.get(oauthId);
+    if (ready != null) {
+      template.delete(oauthId);
+    }
     return ready != null;
   }
 
@@ -92,10 +91,6 @@ public class AuthCodeProvider {
 
   private String createKey(String phone) {
     return keyPrefix + ":" + phone;
-  }
-
-  private String createSignupKey(String id) {
-    return "signup" + ":" + id;
   }
 
 }

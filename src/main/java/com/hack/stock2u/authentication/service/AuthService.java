@@ -10,6 +10,7 @@ import com.hack.stock2u.authentication.service.client.KakaoClient;
 import com.hack.stock2u.authentication.service.strategy.SignInStrategyBranch;
 import com.hack.stock2u.authentication.service.strategy.SignInUrlCreateStrategy;
 import com.hack.stock2u.constant.AuthVendor;
+import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
@@ -49,17 +50,28 @@ public class AuthService {
   public SignInResponse signIn(String authCode) {
     TokenSet tokenSet = kakaoClient.getToken(authCode);
     AuthUserDetail userDetails = kakaoClient.getUserDetails(tokenSet.accessToken());
-    Optional<User> userOptional = userRepository.findByEmail(userDetails.email());
+    String oauthId = String.valueOf(userDetails.id());
+    Optional<User> userOptional = userRepository.findByOauthId(oauthId);
 
-    boolean exists = userOptional.isPresent();
     String email = userDetails.email();
-    if (!exists) {
-      String uuid = authCodeProvider.saveAvailableSignup();
-      return new SignInResponse(false, email, uuid, null);
+    if (!userOptional.isPresent()) {
+      authCodeProvider.saveAvailableSignup(oauthId);
+      return SignInResponse.builder()
+          .exists(false)
+          .email(email)
+          .verification(oauthId)
+          .user(null)
+          .build();
     }
+
     User user = userOptional.get();
     processLogin(user);
-    return new SignInResponse(true, email, null, UserDetails.user(user));
+    return SignInResponse.builder()
+        .exists(true)
+        .email(email)
+        .verification(oauthId)
+        .user(UserDetails.user(user))
+        .build();
   }
 
   public void withdraw(String reason) {

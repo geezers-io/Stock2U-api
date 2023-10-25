@@ -33,8 +33,6 @@ public class SessionManager {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     validate(authentication);
 
-    log.warn("credentials: {}", authentication.getCredentials());
-    log.warn("principal: {}", authentication.getPrincipal());
     return userRepository.findById((Long) authentication.getCredentials())
         .orElseThrow(UserException.NOT_FOUND_USER::create);
   }
