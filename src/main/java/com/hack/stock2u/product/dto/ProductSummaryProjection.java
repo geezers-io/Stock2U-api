@@ -21,4 +21,6 @@ public interface ProductSummaryProjection {
   Double getLongitude();
 
   String getThumbnailUrl();
+
+  Date getCreatedAt();
 }
