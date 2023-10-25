@@ -11,5 +11,6 @@ public record SellerSummary(
     int salesCount,
     int reviewCount,
     String location,
-    String bankDetails
+    String bankName,
+    String account
 ) {}
