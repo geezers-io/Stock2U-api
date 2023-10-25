@@ -1,6 +1,7 @@
 package com.hack.stock2u.user.api;
 
 import com.hack.stock2u.constant.UserRole;
+import com.hack.stock2u.user.dto.PurchaserSummary;
 import com.hack.stock2u.user.dto.SellerSubscribeDetails;
 import com.hack.stock2u.user.service.PurchaserService;
 import com.hack.stock2u.user.service.SubscriptionService;
@@ -28,6 +29,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class PurchaserApi {
   private final PurchaserService userService;
   private final SubscriptionService subscriptionService;
+
+  @RoleGuard(roles = UserRole.PURCHASER)
+  @Operation(summary = "구매자 계정 정보 조회 API")
+  @GetMapping
+  public ResponseEntity<PurchaserSummary> getDetailsApi() {
+    PurchaserSummary details = userService.getDetails();
+    return ResponseEntity.ok(details);
+  }
 
   @RoleGuard(roles = UserRole.PURCHASER)
   @Operation(summary = "구독 판매자 정보 리스트 조회 API")
