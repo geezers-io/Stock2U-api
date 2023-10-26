@@ -48,7 +48,8 @@ public class ReservationController {
 
   @Operation(summary = "예약 승인 API", description = "예약을 승인 할때 나오는 API + 구매자에게 자동 메세지 발송")
   @PostMapping("/approve")
-  public ResponseEntity<ReservationStatus> approveReservationApi(ReservationApproveRequest request) {
+  public ResponseEntity<ReservationStatus> approveReservationApi(
+      ReservationApproveRequest request) {
 
     //메세지로 상태값 넘기는게 맞는지?
     //approve에서 상태값을 넘기는게 나을것 같은데 : 일단 넘김
