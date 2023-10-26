@@ -1,6 +1,8 @@
 package com.hack.stock2u.models;
 
 import java.util.Date;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

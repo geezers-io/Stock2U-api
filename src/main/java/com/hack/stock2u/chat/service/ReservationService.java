@@ -1,9 +1,13 @@
 package com.hack.stock2u.chat.service;
 
 
+import com.hack.stock2u.authentication.service.SessionManager;
+import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.request.ReservationRequestDto;
+import com.hack.stock2u.chat.dto.response.ReservationResponse;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
+import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.file.repository.JpaAttachRepository;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.Product;
@@ -12,6 +16,8 @@ import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,27 +25,31 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReservationService {
 
-  //  채팅방 생성 로직: 누가 방팠는지는 별로 안중요한듯.
+
   private final MessageChatMongoRepository chatMongoRepository;
   private final JpaReservationRepository reservationRepository;
   private final JpaUserRepository userRepository;
   private final JpaProductRepository productRepository;
   private final JpaAttachRepository attachRepository;
+  private final SessionManager sessionManager;
 
-
-  public void createRoom(
+  public Long createRoom(
       ReservationRequestDto.CreateReservationRequest createRequest
   ) {
     User purchaser = userRepository.findById(createRequest.purchaserId())
         .orElseThrow(UserException.NOT_FOUND_USER::create);
+
     Product product = productRepository.findById(createRequest.productId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
 
-    Reservation newReservation = reservationRepository.save(Reservation.builder()
+    String roomId = UUID.randomUUID().toString();
+    Reservation reservation = reservationRepository.save(Reservation.builder()
         .purchaser(purchaser)
         .product(product)
+        .chatId(roomId)
         .seller(product.getSeller())
         .build());
+    return reservation.getId();
   }
 
   public void remove(Long id) {
@@ -48,19 +58,19 @@ public class ReservationService {
     r.setDisabledAt();
     reservationRepository.save(r);
   }
-  //  특정 채팅방 불러오기 ->>>>>>>>>할일
-  //  @Transactional
-  //  public List<Reservation> findMyChatRoom(String name) {
-  //    Sort sort = Sort.by(Sort.Direction.ASC, "id");
-  //    List<Reservation> chatRoomList = this.jpaChatRoomRepository.findAllByName(name, sort);
-  //    return new ArrayList<>(chatRoomList);
-  //  }
-  //
-  //
-  //  //채팅방 삭제
-  //  public void deleteRoom(Long id) {
-  //    Reservation reservation = this.jpaChatRoomRepository.findById(id).orElseThrow(
-  //        () -> new IllegalArgumentException("해당 chat방 없음" + id));
-  //    this.jpaChatRoomRepository.delete(reservation);
-  //  }
+
+  public void approve(ReservationApproveRequest request) {
+
+    Product product = productRepository.findById(request.productId())
+        .orElseThrow(GlobalException.NOT_FOUND::create);
+    product.changeStatus(ReservationStatus.PROGRESS);
+    productRepository.save(product);
+  }
+
+  public ReservationResponse search(String productName) {
+    List<Reservation> reservationList = reservationRepository.findByNameContaining(productName);
+
+    return null;
+  }
+
 }

@@ -42,7 +42,8 @@ public class SecurityConfig {
     http.authorizeRequests()
             .antMatchers(
                 "/auth/**",
-                "/docs/**", "/api-docs/**", "/swagger-ui/**"
+                "/docs/**", "/api-docs/**", "/swagger-ui/**",
+                "/ws/**"
             ).permitAll()
             .antMatchers("/auth/withdraw", "/auth/logout")
             .authenticated()

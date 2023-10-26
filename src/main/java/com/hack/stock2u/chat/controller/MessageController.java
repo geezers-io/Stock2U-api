@@ -1,19 +1,16 @@
 package com.hack.stock2u.chat.controller;
 
-import com.hack.stock2u.models.ChatMessage;
+import com.hack.stock2u.chat.service.ChatMessageService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class MessageController {
-  private final SimpMessageSendingOperations simpMessageSendingOperations;
 
-  @MessageMapping("/chat/message")
-  public void message(ChatMessage chatMessage) {
-    simpMessageSendingOperations.convertAndSend("/queue/chat/room"
-        + chatMessage.getId(), chatMessage);
-  }
+  private final ChatMessageService messageService;
+
+  //  public
+  //채팅방 내용 가져오기 페이징 기법으로
 }
