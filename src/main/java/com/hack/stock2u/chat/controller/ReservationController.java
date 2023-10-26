@@ -28,7 +28,8 @@ public class ReservationController {
   private final SimpMessagingTemplate messagingTemplate;
   private final ChatMessageService chatMessageService;
 
-  @Operation(summary = "예약 생성 API", description = "클라이언트가 구매 예약 요청을 보냈을때 예약을 위한 채팅방 생성")
+  @Operation(summary = "예약 생성 API", description = "클라이언트가 구매 예약 요청을 보냈을때 예약을"
+      + " 위한 채팅방 생성 + 판매자에게 자동 메세지 발송")
   @PostMapping("/room")
   public ResponseEntity<Void> createReservation(
       @RequestBody @Valid ReservationRequestDto.CreateReservationRequest createReservationRequest

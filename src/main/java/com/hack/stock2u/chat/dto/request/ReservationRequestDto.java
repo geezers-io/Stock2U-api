@@ -21,15 +21,15 @@ public class ReservationRequestDto {
 
   public record FindMyReservationRequest(
       @Schema(required = true, description = "판매자")
-      @NotNull @NotBlank
+      @NotNull
       User seller,
 
       @Schema(required = true, description = "구매자")
-      @NotNull @NotBlank
+      @NotNull
       User customer,
 
       @Schema(required = true, description = "제품 정보")
-      @NotNull @NotBlank
+      @NotNull
       Product product
   ){}
 
