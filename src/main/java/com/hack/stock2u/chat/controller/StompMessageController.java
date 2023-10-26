@@ -29,7 +29,8 @@ public class StompMessageController {
 
   // 채팅방 대화
   @MessageMapping("/chat/talk/{roomId}")
-  public void talkUser(@DestinationVariable("roomId") Long roomId, @Payload SendChatMessage request) {
+  public void talkUser(@DestinationVariable("roomId") Long roomId,
+                       @Payload SendChatMessage request) {
 
     messageService.saveAndSendMessage(request, roomId);
   }

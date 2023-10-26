@@ -11,6 +11,6 @@ public class MessageController {
 
   private final ChatMessageService messageService;
 
-//  public
+  //  public
   //채팅방 내용 가져오기 페이징 기법으로
 }

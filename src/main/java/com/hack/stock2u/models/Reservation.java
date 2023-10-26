@@ -65,10 +65,11 @@ public class Reservation {
   }
 
   @Builder
-  public Reservation(ChatRoom chatRoom, Long senderId, String message) {
-    this.chatRoom =chatRoom;
-    this.senderId = senderId;
-    this.message = message;
-    this.sendTime = LocalDateTime.now();
+  public Reservation(String chatId, Product product, String name, User seller, User purchaser) {
+    this.chatId = chatId;
+    this.product = product;
+    this.name = name;
+    this.seller = seller;
+    this.purchaser = purchaser;
   }
 }

@@ -15,11 +15,7 @@ public class ReservationRequestDto {
       Long productId,
       @Schema(required = true, description = "구매자")
       @NotNull
-      Long purchaserId,
-      @Schema(required = true, description = "판매자")
-      @NotNull
-      Long sellerId
-
+      Long purchaserId
 
   ){}
 
