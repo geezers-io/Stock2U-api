@@ -176,4 +176,7 @@ public class User implements Serializable {
     this.avatarId = id;
   }
 
+  public void setReportCount() {
+    this.reportCount += 1;
+  }
 }
