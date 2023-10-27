@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
@@ -32,4 +33,12 @@ public class Report {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "target_id")
   private User target;
+
+  @Builder
+  public Report(Long id, String reason, User reporter, User target) {
+    this.id = id;
+    this.reason = reason;
+    this.reporter = reporter;
+    this.target = target;
+  }
 }
