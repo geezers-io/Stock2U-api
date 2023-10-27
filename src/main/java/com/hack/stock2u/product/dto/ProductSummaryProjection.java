@@ -14,6 +14,8 @@ public interface ProductSummaryProjection {
 
   Date getExpiredAt();
 
+  Integer getProductCount();
+
   Double getDistance();
 
   Double getLatitude();

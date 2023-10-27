@@ -1,7 +1,6 @@
 package com.hack.stock2u.chat.dto.response;
 
 import com.hack.stock2u.file.dto.SimpleFile;
-import com.querydsl.core.annotations.QueryProjection;
 import lombok.Builder;
 
 //채팅방 조회에 사용될 예정
@@ -23,6 +22,7 @@ public class ReservationResponse {
       this.status = status;
       this.productImage = productImage;
     }
+
   }
 }
 

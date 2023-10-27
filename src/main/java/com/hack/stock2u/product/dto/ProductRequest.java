@@ -27,12 +27,9 @@ public class ProductRequest {
       @Schema(description = "재고 설명", required = true)
       @Size(max = 1000, message = "상세 설명은 1000글자를 넘으면 안됩니다.")
       String description,
-      @Schema(description = "예약 한 건만 받기", required = true)
+      @Schema(description = "재고 수량", required = true)
       @NotNull
-      boolean onlyOneReserve,
-      @Schema(description = "구매자에게 계좌 정보 보이기", required = true)
-      @NotNull
-      boolean showAccountDetails,
+      Integer productCount,
       @Schema(description = "게시 마감 기한", required = true)
       @NotNull
       Date expiredAt

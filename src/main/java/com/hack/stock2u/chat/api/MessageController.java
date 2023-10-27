@@ -1,4 +1,4 @@
-package com.hack.stock2u.chat.controller;
+package com.hack.stock2u.chat.api;
 
 import com.hack.stock2u.chat.service.ChatMessageService;
 import lombok.AllArgsConstructor;

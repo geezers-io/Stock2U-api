@@ -1,5 +1,6 @@
 package com.hack.stock2u.chat.service;
 
+import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.request.ReservationRequestDto;
 import com.hack.stock2u.chat.dto.request.SendChatMessage;
@@ -44,23 +45,22 @@ public class ChatMessageService {
     messagingTemplate.convertAndSend(destination, message);
   }
 
-  public void saveAndSendAutoMessage(ReservationRequestDto.CreateReservationRequest
-                                         createReservationRequest, Long roomId) {
-    Reservation reservation = reservationRepository.findById(roomId)
-        .orElseThrow(GlobalException.NOT_FOUND::create);
-    User purchaser = userRepository.findById(createReservationRequest.purchaserId())
-        .orElseThrow(GlobalException.NOT_FOUND::create);
-    Product product = productRepository.findById(createReservationRequest.productId())
-        .orElseThrow(GlobalException.NOT_FOUND::create);
+  public void saveAndSendAutoMessage(ReservationProductPurchaser rpp) {
+    Reservation reservation = rpp.reservation();
+    Product product = rpp.product();
+    User purchaser = rpp.purchaser();
+
     ChatMessage message = messageRepository.save(ChatMessage.builder()
         .roomId(reservation.getId())
         .userName(purchaser.getName())
         .message("[자동 발신 메세지] \n" + product.getName() + "구매를 원합니다.")
         .createdAt(new Date())
         .build());
+
     ReservationMessageResponse messageResponse = ReservationMessageResponse
         .makingReservationMessage(reservation, product, purchaser, message);
     String destination = "/topic/chat/room/" + reservation.getId();
+
     messagingTemplate.convertAndSend(destination, messageResponse);
   }
 

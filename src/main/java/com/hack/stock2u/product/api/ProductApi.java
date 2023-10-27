@@ -68,7 +68,6 @@ public class ProductApi {
     return ResponseEntity.ok(set);
   }
 
-
   @Operation(summary = "게시글 목록 조회 API", description = "다양한 필터값을 기반으로 게시글 목록을 불러옵니다.")
   @GetMapping("/search")
   public ResponseEntity<Page<ProductSummaryProjection>> getProductListSearchApi(

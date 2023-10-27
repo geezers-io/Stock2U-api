@@ -1,10 +1,13 @@
 package com.hack.stock2u.models;
 
+import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.models.embed.BasicDateColumn;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -57,6 +60,9 @@ public class Reservation {
   @Temporal(TemporalType.TIMESTAMP)
   private Date disabledAt;
 
+  @Enumerated(EnumType.STRING)
+  private ReservationStatus status;
+
   @Embedded
   private BasicDateColumn basicDate;
 
@@ -72,4 +78,9 @@ public class Reservation {
     this.seller = seller;
     this.purchaser = purchaser;
   }
+
+  public void changeStatus(ReservationStatus status) {
+    this.status = status;
+  }
+
 }

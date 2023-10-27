@@ -1,7 +1,6 @@
 package com.hack.stock2u.models;
 
 import com.hack.stock2u.constant.ProductType;
-import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.models.embed.BasicDateColumn;
 import com.hack.stock2u.product.dto.ProductRequest;
 import java.util.Date;
@@ -51,20 +50,13 @@ public class Product {
   @Column(length = 1000)
   private String description;
 
-  @Comment("예약 한 건만 받기")
-  @Column(name = "only_one_reserve")
-  private boolean onlyOneReserve;
-
-  @Comment("계좌 정보 보이기")
-  @Column(name = "show_account_details")
-  private boolean showAccountDetails;
+  @Comment("판매 재고 수량")
+  @Column(name = "product_count")
+  private Integer productCount;
 
   @Comment("게시 마감 기한")
   @Column(name = "expired_at")
   private Date expiredAt;
-
-  @Enumerated(EnumType.ORDINAL)
-  private ReservationStatus status;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
@@ -84,17 +76,16 @@ public class Product {
 
   @Builder
   public Product(String title, String name, int price, ProductType type, String description,
-                 boolean onlyOneReserve, boolean showAccountDetails, Date expiredAt,
+                 int productCount, Date expiredAt,
                  User seller, BasicDateColumn basicDate) {
     this.title = title;
     this.name = name;
     this.price = price;
     this.type = type;
-    this.basicDate = getBasicDate();
+    this.basicDate = basicDate;
     this.seller = seller;
     this.description = description;
-    this.onlyOneReserve = onlyOneReserve;
-    this.showAccountDetails = showAccountDetails;
+    this.productCount = productCount;
     this.expiredAt = expiredAt;
   }
 
@@ -106,8 +97,7 @@ public class Product {
         .price(create.price())
         .type(create.type())
         .description(create.description())
-        .onlyOneReserve(create.onlyOneReserve())
-        .showAccountDetails(create.showAccountDetails())
+        .productCount(create.productCount())
         .expiredAt(create.expiredAt())
         .seller(u)
         .basicDate(basicDateColumn)
@@ -120,14 +110,9 @@ public class Product {
     this.price = request.price();
     this.type = request.type();
     this.description = request.description();
-    this.onlyOneReserve = request.onlyOneReserve();
-    this.showAccountDetails = request.showAccountDetails();
+    this.productCount = request.productCount();
     this.expiredAt = request.expiredAt();
     this.attaches = images;
-  }
-
-  public void changeStatus(ReservationStatus status) {
-    this.status = status;
   }
 
   public void setAttaches(List<Attach> attaches) {
@@ -136,6 +121,10 @@ public class Product {
 
   public void remove() {
     basicDate.setRemovedAt(new Date());
+  }
+
+  public void decreaseProductCount() {
+    productCount--;
   }
 
 }

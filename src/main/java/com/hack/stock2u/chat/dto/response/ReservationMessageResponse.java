@@ -35,7 +35,7 @@ public record ReservationMessageResponse(
         .message(chatMessage.getMessage())
         .purchaserName(purchaser.getName())
         .createdAt(new Date())
-        .status(product.getStatus())
+        .status(reservation.getStatus())
         .build();
   }
 }
