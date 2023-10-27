@@ -2,10 +2,11 @@ package com.hack.stock2u.chat.service;
 
 
 import com.hack.stock2u.authentication.service.SessionManager;
+import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
-import com.hack.stock2u.chat.dto.request.ReservationRequestDto;
 import com.hack.stock2u.chat.dto.response.ReservationResponse;
+import com.hack.stock2u.chat.exception.ReservationException;
 import com.hack.stock2u.chat.repository.JpaReportRepository;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
@@ -17,11 +18,11 @@ import com.hack.stock2u.models.Report;
 import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
-import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,26 +38,33 @@ public class ReservationService {
   private final SessionManager sessionManager;
   private final JpaReportRepository reportRepository;
 
-  public Long createRoom(
-      ReservationRequestDto.CreateReservationRequest createRequest
-  ) {
-    User purchaser = userRepository.findById(createRequest.purchaserId())
-        .orElseThrow(UserException.NOT_FOUND_USER::create);
-
-    Product product = productRepository.findById(createRequest.productId())
+  /**
+   * 예약 엔티티를 생성합니다.
+   */
+  public ReservationProductPurchaser create(Long productId) {
+    User purchaser = sessionManager.getSessionUserByRdb();
+    Product product = productRepository.findById(productId)
         .orElseThrow(GlobalException.NOT_FOUND::create);
 
-    String roomId = UUID.randomUUID().toString();
-    Reservation reservation = reservationRepository.save(Reservation.builder()
-        .purchaser(purchaser)
-        .product(product)
-        .chatId(roomId)
-        .seller(product.getSeller())
-        .build());
-    return reservation.getId();
+    // 잔여재고 남은 갯수가 0개면 예약되지 않음
+    if (product.getProductCount() == 0) {
+      throw ReservationException.NOT_ENOUGH_COUNT.create();
+    }
+
+    String roomId = RandomStringUtils.randomAlphabetic(8);
+    Reservation reservation = reservationRepository.save(
+        Reservation.builder()
+            .purchaser(purchaser)
+            .product(product)
+            .chatId(roomId)
+            .seller(product.getSeller())
+            .build()
+    );
+
+    return new ReservationProductPurchaser(reservation, product, purchaser);
   }
 
-  public void remove(Long id) {
+  public void cancel(Long id) {
     Reservation r = reservationRepository.findById(id)
         .orElseThrow(GlobalException.NOT_FOUND::create);
     r.setDisabledAt();
@@ -64,17 +72,15 @@ public class ReservationService {
   }
 
   public ReservationStatus approve(ReservationApproveRequest request) {
-
-    Product product = productRepository.findById(request.productId())
+    Reservation reservation = reservationRepository.findById(request.roomId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
-    product.changeStatus(ReservationStatus.PROGRESS);
-    productRepository.save(product);
-    return product.getStatus();
+    reservation.changeStatus(ReservationStatus.PROGRESS);
+    reservationRepository.save(reservation);
+    return ReservationStatus.PROGRESS;
   }
 
   public ReservationResponse search(String productName) {
     List<Reservation> reservationList = reservationRepository.findByNameContaining(productName);
-
     return null;
   }
 
@@ -83,6 +89,7 @@ public class ReservationService {
         .orElseThrow(GlobalException.NOT_FOUND::create);
     User target = userRepository.findById(request.targetId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
+
     target.setReportCount();
     userRepository.save(target);
     reportRepository.save(Report.builder()

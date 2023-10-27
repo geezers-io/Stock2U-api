@@ -12,11 +12,7 @@ public class ReservationRequestDto {
   public record CreateReservationRequest(
       @Schema(required = true, description = "제품 정보")
       @NotNull
-      Long productId,
-      @Schema(required = true, description = "구매자")
-      @NotNull
-      Long purchaserId
-
+      Long productId
   ){}
 
   public record FindMyReservationRequest(

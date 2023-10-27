@@ -19,6 +19,7 @@ SELECT DISTINCT
     p.title as title,
     p.price as price,
     p.type as productType,
+    p.product_count as productCount,
     p.expired_at as expiredAt,
     (6371
         *ACOS(COS(RADIANS(:lat))
@@ -43,6 +44,7 @@ LEFT JOIN attachments a ON a.id = (
 WHERE p.removed_at IS NULL AND DATE(NOW()) < p.expired_at
   AND p.price BETWEEN :minPrice AND :maxPrice
   AND p.type in (:productTypes)
+HAVING distance <= :distance
 ORDER BY p.expired_at
 LIMIT :pageSize
 OFFSET :offset
@@ -51,6 +53,7 @@ OFFSET :offset
       Double lat,
       Double lng,
       List<String> productTypes,
+      Double distance,
       Integer minPrice,
       Integer maxPrice,
       Integer pageSize,

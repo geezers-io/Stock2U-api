@@ -43,11 +43,11 @@ public class ProductService {
   }
 
   public Page<ProductSummaryProjection> getProducts(ProductCondition condition, Pageable pageable) {
-    log.debug("productCondition: {}", condition.toString());
     List<ProductSummaryProjection> products = productRepository.findProducts(
         condition.getLatitude(),
         condition.getLongitude(),
         condition.getCategory(),
+        condition.getDistance(),
         condition.getMinPrice(),
         condition.getMaxPrice(),
         pageable.getPageSize(),
@@ -66,7 +66,6 @@ public class ProductService {
     return ProductDetails.create(p, sellerDetails, images);
   }
 
-  @Transactional
   public GlobalResponse.Id create(ProductRequest.Create createRequest) {
     validate(createRequest);
 
@@ -123,7 +122,6 @@ public class ProductService {
     attaches.forEach(image -> image.setProduct(p));
     return attaches;
   }
-
 
   protected Product getProduct(Long id) {
     return productRepository.findById(id).orElseThrow(GlobalException.NOT_FOUND::create);

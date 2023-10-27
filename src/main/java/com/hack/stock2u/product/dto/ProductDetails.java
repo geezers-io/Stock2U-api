@@ -18,8 +18,7 @@ public record ProductDetails(
     int price,
     ProductType type,
     String description,
-    boolean onlyOneReserve,
-    boolean showAccountDetails,
+    int productCount,
     Date expiredAt,
     @Schema(description = "예약 상태(예약 한 건만 받기 체크 && 예약 진행 중일 시 표기 됨)", nullable = true)
     ReservationStatus status,
@@ -36,10 +35,8 @@ public record ProductDetails(
         .price(p.getPrice())
         .type(p.getType())
         .description(p.getDescription())
-        .onlyOneReserve(p.isOnlyOneReserve())
-        .showAccountDetails(p.isShowAccountDetails())
         .expiredAt(p.getExpiredAt())
-        .status(p.getStatus())
+        .productCount(p.getProductCount())
         .seller(sellerDetails)
         .productImages(simpleFiles)
         .build();

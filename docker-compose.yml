@@ -6,6 +6,7 @@ services:
     container_name: stock2u-api
     volumes:
       - ./build/libs/stock2u-api-0.0.1-SNAPSHOT.jar:/app.jar
+      - /home/galaxy4276/logs/stock2u:/logs
     env_file:
       - .env
     command: ["java", "-jar", "/app.jar"]

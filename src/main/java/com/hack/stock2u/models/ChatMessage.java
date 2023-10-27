@@ -1,8 +1,8 @@
 package com.hack.stock2u.models;
 
+import com.hack.stock2u.constant.ChatMessageType;
 import java.util.Date;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,11 +29,16 @@ public class ChatMessage {
   @Field(name = "user_name")
   private String userName;
 
+  @Field(name = "type")
+  private ChatMessageType type;
+
   @Field(name = "message")
   private String message;
 
+  @Field(name = "image_urls")
+  private List<String> imageUrls;
+
   @Field(name = "timestamp")
   private Date createdAt;
-
 
 }
