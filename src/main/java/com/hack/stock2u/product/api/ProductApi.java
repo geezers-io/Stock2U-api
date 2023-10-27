@@ -41,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductApi {
   private final ProductService productService;
 
-
   @Operation(
       summary = "메인 페이지 게시글 목록 조회 API",
       description = "AI(GPT), 마감 순, 인근 위치 순 섹션대로 리스트를 조회합니다."

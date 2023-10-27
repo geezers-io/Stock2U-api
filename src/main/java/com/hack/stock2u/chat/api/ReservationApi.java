@@ -3,12 +3,10 @@ package com.hack.stock2u.chat.api;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
-import com.hack.stock2u.chat.dto.request.ReservationRequestDto;
+import com.hack.stock2u.chat.dto.response.ReservationResponse;
 import com.hack.stock2u.chat.service.ChatMessageService;
 import com.hack.stock2u.chat.service.ReservationService;
 import com.hack.stock2u.constant.ReservationStatus;
-import com.hack.stock2u.chat.dto.response.ReservationResponse;
-import com.hack.stock2u.chat.service.ReservationService;
 import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.utils.RoleGuard;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,16 +41,14 @@ public class ReservationApi {
       @PathVariable("productId") Long productId
   ) {
     ReservationProductPurchaser ret = reservationService.create(productId);
-    //예약 눌렀을때 메세지 보내지는 방식
-    //상태 보내야함 근데 null로 갈꺼 같음 그래서 상태 하나 추가해야될듯?
-    //메세지로 ReservationStatus를 넘기는게 맞을까? 구매자가 판매자에게 넘기는 형식임
+    // 예약 눌렀을때 메세지 보내지는 방식
+    // 상태 보내야함 근데 null로 갈꺼 같음 그래서 상태 하나 추가해야될듯?
+    // 메세지로 ReservationStatus를 넘기는게 맞을까? 구매자가 판매자에게 넘기는 형식임
     chatMessageService.saveAndSendAutoMessage(ret);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
-
   //예약승인 api
-
   @Operation(summary = "예약 승인 API", description = "예약을 승인 할때 나오는 API + 구매자에게 자동 메세지 발송")
   @PostMapping("/approve")
   public ResponseEntity<ReservationStatus> approveReservationApi(
@@ -81,9 +77,6 @@ public class ReservationApi {
     Short reportCount = reservationService.report(request);
     return ResponseEntity.status(HttpStatus.OK).body(reportCount);
   }
-
-
-
 
   //  @Operation(summary = "채팅방 조회 API", description = "특정 이용자의 채팅 내역 조회")
   //  @GetMapping("/rooms")

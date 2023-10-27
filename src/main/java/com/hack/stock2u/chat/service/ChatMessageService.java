@@ -27,8 +27,8 @@ public class ChatMessageService {
   private final JpaUserRepository userRepository;
   private final SimpMessagingTemplate messagingTemplate;
   private final JpaProductRepository productRepository;
-  // 메시지 저장
 
+  // 메시지 저장
   public void saveAndSendMessage(SendChatMessage request, Long roomId) {
     Reservation currentRoom = reservationRepository.findById(request.roomId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
@@ -50,12 +50,14 @@ public class ChatMessageService {
     Product product = rpp.product();
     User purchaser = rpp.purchaser();
 
-    ChatMessage message = messageRepository.save(ChatMessage.builder()
-        .roomId(reservation.getId())
-        .userName(purchaser.getName())
-        .message("[자동 발신 메세지] \n" + product.getName() + "구매를 원합니다.")
-        .createdAt(new Date())
-        .build());
+    ChatMessage message = messageRepository.save(
+        ChatMessage.builder()
+          .roomId(reservation.getId())
+          .userName(purchaser.getName())
+          .message("[자동 발신 메세지] \n" + product.getName() + "구매를 원합니다.")
+          .createdAt(new Date())
+          .build()
+    );
 
     ReservationMessageResponse messageResponse = ReservationMessageResponse
         .makingReservationMessage(reservation, product, purchaser, message);

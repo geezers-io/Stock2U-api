@@ -1,14 +1,13 @@
 package com.hack.stock2u.chat.service;
 
 
-import com.ctc.wstx.util.StringUtil;
 import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.response.ReservationResponse;
-import com.hack.stock2u.chat.repository.JpaReportRepository;
 import com.hack.stock2u.chat.exception.ReservationException;
+import com.hack.stock2u.chat.repository.JpaReportRepository;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
 import com.hack.stock2u.constant.ReservationStatus;
@@ -90,6 +89,7 @@ public class ReservationService {
         .orElseThrow(GlobalException.NOT_FOUND::create);
     User target = userRepository.findById(request.targetId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
+
     target.setReportCount();
     userRepository.save(target);
     reportRepository.save(Report.builder()
