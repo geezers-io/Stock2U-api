@@ -1,5 +1,6 @@
 package com.hack.stock2u.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hack.stock2u.authentication.dto.AuthRequestDto;
 import com.hack.stock2u.constant.AuthVendor;
 import com.hack.stock2u.constant.UserRole;
@@ -68,6 +69,7 @@ public class User implements Serializable {
   @Embedded
   private BasicDateColumn basicDate;
 
+  @JsonManagedReference
   @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
   @JoinColumn(name = "seller_details_id")
   private SellerDetails sellerDetails;  

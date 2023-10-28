@@ -1,5 +1,6 @@
 package com.hack.stock2u.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hack.stock2u.user.dto.SellerRequest;
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -52,6 +53,7 @@ public class SellerDetails implements Serializable {
   @Comment("경도")
   private Double longitude;
 
+  @JsonBackReference
   @OneToOne(mappedBy = "sellerDetails")
   private User user;
 
