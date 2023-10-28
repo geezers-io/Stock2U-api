@@ -2,7 +2,6 @@ package com.hack.stock2u.product.repository;
 
 import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.User;
-import com.hack.stock2u.product.dto.ProductCountProjection;
 import com.hack.stock2u.product.dto.ProductSummaryProjection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
