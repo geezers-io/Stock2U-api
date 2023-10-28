@@ -12,5 +12,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MessageChatMongoRepository extends MongoRepository<ChatMessage, String> {
 
-  Optional<ChatMessage> findByRoomIdOrderByTimestampDesc(Long id, PageRequest of);
+  Optional<ChatMessage> findByRoomIdOrderByCreatedAtDesc(Long id, PageRequest of);
 }

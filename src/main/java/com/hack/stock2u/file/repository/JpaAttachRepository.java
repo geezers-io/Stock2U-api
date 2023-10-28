@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 public interface JpaAttachRepository extends JpaRepository<Attach, Long> {
-  @Query("select a from attachments a where a.product.id = :productId order by a.id limit 1")
-  Attach getThumbnail(Long productId);
+  Attach findFirstByProductIdOrderById(Long productId);
+
 }

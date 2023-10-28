@@ -120,12 +120,13 @@ public class ReservationService {
 
   private PurchaserReservationsResponse purchaserReservationLatestMessages(Long id) {
     ChatMessage chatMessage = chatMongoRepository
-        .findByRoomIdOrderByTimestampDesc(id, PageRequest.of(0, 1))
+        .findByRoomIdOrderByCreatedAtDesc(id, PageRequest.of(0, 1))
          .orElseThrow(GlobalException.NOT_FOUND::create);
     ChatMessageResponse messageResponse = ChatMessageResponse.create(chatMessage);
     Reservation reservation = reservationRepository.findById(id)
          .orElseThrow(GlobalException.NOT_FOUND::create);
-    Attach thumbnail = attachRepository.getThumbnail(reservation.getProduct().getId());
+    Attach thumbnail = attachRepository.findFirstByProductIdOrderById(
+        reservation.getProduct().getId());
     SimpleThumbnailImage simpleThumbnailImage = SimpleThumbnailImage.builder()
         .uploadPath(thumbnail.getUploadPath())
         .build();
