@@ -26,7 +26,7 @@ SELECT DISTINCT
         *COS(RADIANS(sd.latitude))
         *COS(RADIANS(sd.longitude)-RADIANS(:lng))
         +SIN(RADIANS(:lat))*SIN(RADIANS(sd.latitude)))
-    ) as distance,
+    ) / 10 as distance,
     sd.latitude as latitude,
     sd.longitude as longitude,
     a.upload_path as thumbnailUrl,
