@@ -3,24 +3,32 @@ package com.hack.stock2u.chat.api;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
+import com.hack.stock2u.chat.dto.response.PurchaserReservationsResponse;
 import com.hack.stock2u.chat.dto.response.ReservationResponse;
+import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.service.ChatMessageService;
 import com.hack.stock2u.chat.service.ReservationService;
 import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.constant.UserRole;
+import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.utils.RoleGuard;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "C. 예약 API (채팅, 재고 관련)")
@@ -72,13 +80,28 @@ public class ReservationApi {
   }
 
   @Operation(summary = "신고 API", description = "채팅방에서 사용자 신고 API")
-  @PostMapping("/room/report")
+  @PostMapping("/report")
   public ResponseEntity<Short> reportUserApi(@RequestBody @Valid ReportRequest request) {
     Short reportCount = reservationService.report(request);
     return ResponseEntity.status(HttpStatus.OK).body(reportCount);
   }
 
-  //  @Operation(summary = "채팅방 조회 API", description = "특정 이용자의 채팅 내역 조회")
-  //  @GetMapping("/rooms")
-  //  public ResponseEntity<>
+  @RoleGuard(roles = UserRole.PURCHASER)
+  @Operation(summary = "일반 사용자 채팅방 조회 API", description = "일반 사용자의 채팅 내역 조회")
+  @GetMapping("/purchaser/reservations")
+  public ResponseEntity<Page<PurchaserReservationsResponse>> getAllPurchaserReservations(
+      @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
+      @RequestParam("page") int page,
+      @Parameter(description = "가져올 데이터 갯수 단위", required = true)
+      @RequestParam("size") int size
+  ) {
+    PageRequest pageable = PageRequest.of(page, size);
+    Page<PurchaserReservationsResponse> purchaserReservations =
+        reservationService.getPurchaserReservations(pageable);
+    return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
+  }
+
+
+
+
 }

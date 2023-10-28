@@ -5,7 +5,10 @@ import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
-import com.hack.stock2u.chat.dto.response.ReservationResponse;
+import com.hack.stock2u.chat.dto.response.ChatMessageResponse;
+import com.hack.stock2u.chat.dto.response.PurchaserReservationsResponse;
+import com.hack.stock2u.chat.dto.response.SimpleReservation;
+import com.hack.stock2u.chat.dto.response.SimpleThumbnailImage;
 import com.hack.stock2u.chat.exception.ReservationException;
 import com.hack.stock2u.chat.repository.JpaReportRepository;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
@@ -13,6 +16,8 @@ import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
 import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.file.repository.JpaAttachRepository;
 import com.hack.stock2u.global.exception.GlobalException;
+import com.hack.stock2u.models.Attach;
+import com.hack.stock2u.models.ChatMessage;
 import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.Report;
 import com.hack.stock2u.models.Reservation;
@@ -20,9 +25,12 @@ import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -79,11 +87,6 @@ public class ReservationService {
     return ReservationStatus.PROGRESS;
   }
 
-  public ReservationResponse search(String productName) {
-    List<Reservation> reservationList = reservationRepository.findByNameContaining(productName);
-    return null;
-  }
-
   public Short report(ReportRequest request) {
     User reporter = userRepository.findById(request.reporterId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
@@ -100,4 +103,35 @@ public class ReservationService {
     );
     return target.getReportCount();
   }
+
+
+  public Page<PurchaserReservationsResponse> getPurchaserReservations(Pageable pageable) {
+
+    Long pid = sessionManager.getSessionUser().id();
+    List<Reservation> reservations = reservationRepository.findBySellerId(pid, pageable)
+        .getContent();
+
+    List<PurchaserReservationsResponse> responses = reservations.stream()
+        .map(Reservation::getId)
+        .map(this::purchaserReservationLatestMessages)
+        .toList();
+    return new PageImpl<>(responses);
+  }
+
+  private PurchaserReservationsResponse purchaserReservationLatestMessages(Long id) {
+    ChatMessage chatMessage = chatMongoRepository
+        .findByRoomIdOrderByTimestampDesc(id, PageRequest.of(0, 1))
+         .orElseThrow(GlobalException.NOT_FOUND::create);
+    ChatMessageResponse messageResponse = ChatMessageResponse.create(chatMessage);
+    Reservation reservation = reservationRepository.findById(id)
+         .orElseThrow(GlobalException.NOT_FOUND::create);
+    Attach thumbnail = attachRepository.getThumbnail(reservation.getProduct().getId());
+    SimpleThumbnailImage simpleThumbnailImage = SimpleThumbnailImage.builder()
+        .uploadPath(thumbnail.getUploadPath())
+        .build();
+    SimpleReservation simpleReservation = SimpleReservation.create(
+        reservation, simpleThumbnailImage);
+    return new PurchaserReservationsResponse(messageResponse, simpleReservation);
+  }
+
 }

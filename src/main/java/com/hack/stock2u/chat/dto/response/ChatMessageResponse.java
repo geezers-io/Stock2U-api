@@ -12,13 +12,19 @@ public record ChatMessageResponse(
     @Schema(required = true, description = "chatmessage에 id")
     @NotNull
     Long roomId,
-
-    Long userId,
     String username,
     String message,
     Date createdAt
 
 //    String image
 ) {
-
+  public static ChatMessageResponse create(
+      ChatMessage chatMessage) {
+    return ChatMessageResponse.builder()
+        .roomId(chatMessage.getRoomId())
+        .username(chatMessage.getUserName())
+        .message(chatMessage.getMessage())
+        .createdAt(chatMessage.getCreatedAt())
+        .build();
+  }
 }
