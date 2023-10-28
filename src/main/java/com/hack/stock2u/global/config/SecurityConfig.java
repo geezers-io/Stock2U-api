@@ -43,7 +43,7 @@ public class SecurityConfig {
             .antMatchers(
                 "/auth/**",
                 "/docs/**", "/api-docs/**", "/swagger-ui/**",
-                "/ws/**"
+                "/ws/**", "/stomp/**"
             ).permitAll()
             .antMatchers("/auth/withdraw", "/auth/logout")
             .authenticated()
@@ -66,8 +66,10 @@ public class SecurityConfig {
     config.addAllowedHeader("*");
     config.setAllowedOrigins(List.of(
         "http://localhost:3000",
+        "https://localhost:3000",
         "https://stock2u-front.vercel.app/"
     ));
+    config.setExposedHeaders(List.of("*"));
     config.setAllowedMethods(List.of("*"));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);
