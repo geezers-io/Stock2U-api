@@ -14,6 +14,7 @@ import com.hack.stock2u.product.dto.ProductDetails;
 import com.hack.stock2u.product.dto.ProductRequest;
 import com.hack.stock2u.product.dto.ProductSummaryProjection;
 import com.hack.stock2u.product.exception.ProductException;
+import com.hack.stock2u.product.repository.JpaProductImageRepository;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.dto.SellerDetails;
 import com.hack.stock2u.user.service.SellerService;
@@ -33,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
   private final JpaProductRepository productRepository;
   private final JpaAttachRepository attachRepository;
+  private final JpaProductImageRepository productImageRepository;
   private final SessionManager sessionManager;
   private final SellerService sellerService;
 
@@ -43,6 +45,7 @@ public class ProductService {
   }
 
   public Page<ProductSummaryProjection> getProducts(ProductCondition condition, Pageable pageable) {
+    Long totalCount = getCount(condition);
     List<ProductSummaryProjection> products = productRepository.findProducts(
         condition.getLatitude(),
         condition.getLongitude(),
@@ -53,7 +56,14 @@ public class ProductService {
         pageable.getPageSize(),
         pageable.getOffset()
     );
-    return new PageImpl<>(products);
+    int pageSize = (int) (totalCount / pageable.getPageSize());
+    if (pageSize == 0) {
+      pageSize = 1;
+    }
+
+    log.warn("totalCount: {}, pageSize: {}", totalCount, pageSize);
+
+    return new PageImpl<>(products, pageable, totalCount);
   }
 
   public ProductDetails getProductDetails(Long id) {
@@ -73,8 +83,8 @@ public class ProductService {
     Product product = Product.fromRequest(createRequest, u);
     List<Attach> images = getImages(createRequest, product);
     product.setAttaches(images);
-    productRepository.save(product);
 
+    productRepository.save(product);
     return new GlobalResponse.Id(product.getId());
   }
 
@@ -87,15 +97,15 @@ public class ProductService {
   @Transactional
   public ProductDetails update(Long id, ProductRequest.Create updateRequest) {
     validate(updateRequest);
-    Product p = getProduct(id);
-    List<Attach> images = getImages(updateRequest, p);
-    User u = p.getSeller();
+    Product product = getProduct(id);
+    List<Attach> images = getImages(updateRequest, product);
+    User user = product.getSeller();
 
-    p.update(updateRequest, images);
-    productRepository.save(p);
-    SellerDetails sellerDetails = sellerService.getSellerDetails(u);
+    product.update(updateRequest, images);
+    productRepository.save(product);
+    SellerDetails sellerDetails = sellerService.getSellerDetails(user);
 
-    return ProductDetails.create(p, sellerDetails, images);
+    return ProductDetails.create(product, sellerDetails, images);
   }
 
   protected Attach getAttachById(Long id) {
@@ -131,6 +141,18 @@ public class ProductService {
     if (req.imageIds().size() > 5) {
       throw ProductException.FILE_UPLOAD_LIMIT.create();
     }
+  }
+
+  private Long getCount(ProductCondition condition) {
+    log.error(condition.toString());
+    return productRepository.getCount(
+        condition.getLatitude(),
+        condition.getLongitude(),
+        condition.getCategory(),
+        condition.getDistance(),
+        condition.getMinPrice(),
+        condition.getMaxPrice()
+    );
   }
 
 }

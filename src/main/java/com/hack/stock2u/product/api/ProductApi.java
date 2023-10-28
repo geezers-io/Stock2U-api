@@ -102,15 +102,15 @@ public class ProductApi {
     condition.setLatitude(latitude);
     condition.setLongitude(longitude);
     condition.setDistance(Objects.requireNonNullElse(distance, 10.0));
-    condition.setCategory(
-        Objects.requireNonNullElseGet(
-            category,
-            () -> List.of(FOOD, TICKET, ACCOMMODATION)
-        ).stream().map(ProductType::name).toList()
-    );
+    if (category.size() == 0) {
+      category = List.of(FOOD, TICKET, ACCOMMODATION);
+    }
+    condition.setCategory(category.stream().map(ProductType::name).toList());
+
     condition.setMinPrice(Objects.requireNonNullElse(minPrice, 0));
     condition.setMaxPrice(Objects.requireNonNullElse(maxPrice, 2147483647));
     PageRequest pageRequest = PageRequest.of(page, size);
+    System.out.println("pageRequest: " + pageRequest.toString());
 
     Page<ProductSummaryProjection> products = productService.getProducts(condition, pageRequest);
     return ResponseEntity.ok(products);
