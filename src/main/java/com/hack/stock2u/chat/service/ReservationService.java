@@ -1,6 +1,7 @@
 package com.hack.stock2u.chat.service;
 
 
+import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
@@ -14,6 +15,7 @@ import com.hack.stock2u.chat.repository.JpaReportRepository;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
 import com.hack.stock2u.constant.ReservationStatus;
+import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.file.repository.JpaAttachRepository;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.Attach;
@@ -107,10 +109,10 @@ public class ReservationService {
 
 
   public Page<PurchaserSellerReservationsResponse> getReservations(Pageable pageable) {
-
-    Long id = sessionManager.getSessionUser().id();
-    List<Reservation> reservations = checkSellerAndPurchaser(id, pageable);
-
+    SessionUser u = sessionManager.getSessionUser();
+    String role = u.userRole().getName();
+    Long id = u.id();
+    List<Reservation> reservations = checkSellerAndPurchaser(id, role, pageable);
     List<PurchaserSellerReservationsResponse> responses = reservations.stream()
         .map(Reservation::getId)
         .map(this::reservationLatestMessages)
@@ -118,13 +120,11 @@ public class ReservationService {
     return new PageImpl<>(responses);
   }
 
-  private List<Reservation> checkSellerAndPurchaser(Long pid, Pageable pageable) {
-    Optional<Reservation> byPurchaserId = reservationRepository.findByPurchaserId(pid);
-    Optional<Reservation> bySellerId = reservationRepository.findBySellerId(pid);
-    if (bySellerId.isPresent()) {
-      return reservationRepository.findBySellerId(pid, pageable).getContent();
-    } else if (byPurchaserId.isPresent()) {
-      return reservationRepository.findByPurchaserId(pid, pageable).getContent();
+  private List<Reservation> checkSellerAndPurchaser(Long id, String role, Pageable pageable) {
+    if (role.equals(UserRole.SELLER.getName())) {
+      return reservationRepository.findBySellerId(id, pageable).getContent();
+    } else if (role.equals(UserRole.PURCHASER.getName())) {
+      return reservationRepository.findByPurchaserId(id, pageable).getContent();
     } else {
       throw new IllegalArgumentException();
     }
