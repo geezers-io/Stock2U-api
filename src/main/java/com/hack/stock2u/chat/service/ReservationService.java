@@ -146,8 +146,7 @@ public class ReservationService {
         reservation, simpleThumbnailImage);
     return new PurchaserSellerReservationsResponse(messageResponse, simpleReservation);
   }
-
-
+  
   //  public Page<PurchaserSellerReservationsResponse> search(PageRequest pageable, String title) {
   //
   //
