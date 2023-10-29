@@ -77,6 +77,7 @@ public class ReservationApi {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
+  //얼마 이상 누적되면 이용정지 로직 추가
   @Operation(summary = "신고 API", description = "채팅방에서 사용자 신고 API")
   @PostMapping("/report")
   public ResponseEntity<Short> reportUserApi(@RequestBody @Valid ReportRequest request) {
@@ -101,6 +102,7 @@ public class ReservationApi {
 
 
   @Operation(summary = "검색으로 채팅방 조회 API", description = "공통 채팅방 검색 조회")
+  @GetMapping("/search/reservations")
   public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservationsBySearch(
       @Parameter(description = "게시글 제목으로 검색")
       @RequestParam("title") String title,
