@@ -85,7 +85,6 @@ public class ReservationApi {
     return ResponseEntity.status(HttpStatus.OK).body(reportCount);
   }
 
-
   @Operation(summary = "공통 채팅방 조회 API", description = "일반 사용자의 채팅 내역 조회")
   @GetMapping("/reservations")
   public ResponseEntity<Page<PurchaserSellerReservationsResponse>> getAllPurchaserReservations(
@@ -99,7 +98,6 @@ public class ReservationApi {
         reservationService.getReservations(pageable);
     return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
   }
-
 
   @Operation(summary = "검색으로 채팅방 조회 API", description = "공통 채팅방 검색 조회")
   @GetMapping("/search/reservations")
