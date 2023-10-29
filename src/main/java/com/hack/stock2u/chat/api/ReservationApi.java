@@ -3,14 +3,12 @@ package com.hack.stock2u.chat.api;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
-import com.hack.stock2u.chat.dto.response.PurchaserReservationsResponse;
+import com.hack.stock2u.chat.dto.response.PurchaserSellerReservationsResponse;
 import com.hack.stock2u.chat.dto.response.ReservationResponse;
-import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.service.ChatMessageService;
 import com.hack.stock2u.chat.service.ReservationService;
 import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.constant.UserRole;
-import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.utils.RoleGuard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -86,22 +84,34 @@ public class ReservationApi {
     return ResponseEntity.status(HttpStatus.OK).body(reportCount);
   }
 
-  @RoleGuard(roles = UserRole.PURCHASER)
-  @Operation(summary = "일반 사용자 채팅방 조회 API", description = "일반 사용자의 채팅 내역 조회")
-  @GetMapping("/purchaser/reservations")
-  public ResponseEntity<Page<PurchaserReservationsResponse>> getAllPurchaserReservations(
+
+  @Operation(summary = "공통 채팅방 조회 API", description = "일반 사용자의 채팅 내역 조회")
+  @GetMapping("/reservations")
+  public ResponseEntity<Page<PurchaserSellerReservationsResponse>> getAllPurchaserReservations(
       @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
       @RequestParam("page") int page,
       @Parameter(description = "가져올 데이터 갯수 단위", required = true)
       @RequestParam("size") int size
   ) {
     PageRequest pageable = PageRequest.of(page, size);
-    Page<PurchaserReservationsResponse> purchaserReservations =
-        reservationService.getPurchaserReservations(pageable);
+    Page<PurchaserSellerReservationsResponse> purchaserReservations =
+        reservationService.getReservations(pageable);
     return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
   }
 
 
-
-
+  //  @Operation(summary = "검색으로 채팅방 조회 API", description = "공통 채팅방 검색 조회")
+  //  public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservationsBySearch(
+  //      @Parameter(description = "게시글 제목으로 검색")
+  //      @RequestParam("title") String title,
+  //      @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
+  //      @RequestParam("page") int page,
+  //      @Parameter(description = "가져올 데이터 갯수 단위", required = true)
+  //      @RequestParam("size") int size
+  //  ) {
+  //    PageRequest pageable = PageRequest.of(page, size);
+  //    Page<PurchaserSellerReservationsResponse> purchaserReservations =
+  //        reservationService.search(pageable, title);
+  //    return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
+  //  }
 }
