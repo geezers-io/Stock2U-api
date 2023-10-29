@@ -102,7 +102,7 @@ public class ProductApi {
     condition.setLatitude(latitude);
     condition.setLongitude(longitude);
     condition.setDistance(Objects.requireNonNullElse(distance, 10.0));
-    if (category.size() == 0) {
+    if (category == null || category.size() == 0) {
       category = List.of(FOOD, TICKET, ACCOMMODATION);
     }
     condition.setCategory(category.stream().map(ProductType::name).toList());
