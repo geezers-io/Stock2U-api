@@ -53,7 +53,7 @@ public class Reservation {
 
   @Comment("구매자 id")
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "customer_id")
+  @JoinColumn(name = "purchaser_id")
   private User purchaser;
 
   @Column(name = "disabled_at")
