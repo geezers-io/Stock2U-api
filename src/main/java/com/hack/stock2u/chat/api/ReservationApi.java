@@ -100,18 +100,18 @@ public class ReservationApi {
   }
 
 
-  //  @Operation(summary = "검색으로 채팅방 조회 API", description = "공통 채팅방 검색 조회")
-  //  public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservationsBySearch(
-  //      @Parameter(description = "게시글 제목으로 검색")
-  //      @RequestParam("title") String title,
-  //      @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
-  //      @RequestParam("page") int page,
-  //      @Parameter(description = "가져올 데이터 갯수 단위", required = true)
-  //      @RequestParam("size") int size
-  //  ) {
-  //    PageRequest pageable = PageRequest.of(page, size);
-  //    Page<PurchaserSellerReservationsResponse> purchaserReservations =
-  //        reservationService.search(pageable, title);
-  //    return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
-  //  }
+  @Operation(summary = "검색으로 채팅방 조회 API", description = "공통 채팅방 검색 조회")
+  public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservationsBySearch(
+      @Parameter(description = "게시글 제목으로 검색")
+      @RequestParam("title") String title,
+      @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
+      @RequestParam("page") int page,
+      @Parameter(description = "가져올 데이터 갯수 단위", required = true)
+      @RequestParam("size") int size
+  ) {
+    PageRequest pageable = PageRequest.of(page, size);
+    Page<PurchaserSellerReservationsResponse> purchaserReservations =
+        reservationService.search(pageable, title);
+    return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
+  }
 }

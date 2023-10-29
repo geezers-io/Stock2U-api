@@ -43,8 +43,8 @@ public class Reservation {
   private Product product;
 
   @Comment("잔여 재고 이름")
-  @Column(name = "product_name")
-  private String name;
+  @Column(name = "product_title")
+  private String title;
 
   @Comment("판매자(사업자) id")
   @ManyToOne(fetch = FetchType.LAZY)
@@ -71,10 +71,10 @@ public class Reservation {
   }
 
   @Builder
-  public Reservation(String chatId, Product product, String name, User seller, User purchaser) {
+  public Reservation(String chatId, Product product, String title, User seller, User purchaser) {
     this.chatId = chatId;
     this.product = product;
-    this.name = name;
+    this.title = title;
     this.seller = seller;
     this.purchaser = purchaser;
   }

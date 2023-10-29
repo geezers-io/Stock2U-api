@@ -27,7 +27,6 @@ import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
@@ -108,7 +107,9 @@ public class ReservationService {
   }
 
 
+
   public Page<PurchaserSellerReservationsResponse> getReservations(Pageable pageable) {
+
     SessionUser u = sessionManager.getSessionUser();
     String role = u.userRole().getName();
     Long id = u.id();
@@ -120,11 +121,39 @@ public class ReservationService {
     return new PageImpl<>(responses);
   }
 
+  public Page<PurchaserSellerReservationsResponse> search(PageRequest pageable, String title) {
+
+    SessionUser u = sessionManager.getSessionUser();
+    String role = u.userRole().getName();
+    Long id = u.id();
+    List<Reservation> reservations = checkAndSearchSellerAndPurchaser(id, role, pageable, title);
+    List<PurchaserSellerReservationsResponse> responses = reservations.stream()
+        .map(Reservation::getId)
+        .map(this::reservationLatestMessages)
+        .toList();
+    return new PageImpl<>(responses);
+
+
+  }
+
   private List<Reservation> checkSellerAndPurchaser(Long id, String role, Pageable pageable) {
     if (role.equals(UserRole.SELLER.getName())) {
       return reservationRepository.findBySellerId(id, pageable).getContent();
     } else if (role.equals(UserRole.PURCHASER.getName())) {
       return reservationRepository.findByPurchaserId(id, pageable).getContent();
+    } else {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  private List<Reservation> checkAndSearchSellerAndPurchaser(Long id, String role,
+                                                             Pageable pageable, String title) {
+    if (role.equals(UserRole.SELLER.getName())) {
+      return reservationRepository.findByTitleContainingAndSellerId(
+          title, id, pageable).getContent();
+    } else if (role.equals(UserRole.PURCHASER.getName())) {
+      return reservationRepository.findByTitleContainingAndPurchaserId(
+          title, id, pageable).getContent();
     } else {
       throw new IllegalArgumentException();
     }
@@ -146,9 +175,5 @@ public class ReservationService {
         reservation, simpleThumbnailImage);
     return new PurchaserSellerReservationsResponse(messageResponse, simpleReservation);
   }
-  //  public Page<PurchaserSellerReservationsResponse> search(PageRequest pageable, String title) {
-  //
-  //
-  //
-  //  }
+
 }
