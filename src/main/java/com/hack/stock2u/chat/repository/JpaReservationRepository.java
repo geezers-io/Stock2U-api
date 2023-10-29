@@ -13,6 +13,9 @@ public interface JpaReservationRepository extends JpaRepository<Reservation, Lon
 
   Page<Reservation> findBySellerId(Long sellerId, Pageable pageable);
 
+  Optional<Reservation> findBySellerId(Long sellerId);
+
   Page<Reservation> findByPurchaserId(Long purchaserId, Pageable pageable);
 
+  Optional<Reservation> findByPurchaserId(Long purchaser);
 }

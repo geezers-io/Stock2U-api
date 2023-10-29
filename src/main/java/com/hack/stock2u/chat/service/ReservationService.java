@@ -6,7 +6,7 @@ import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.response.ChatMessageResponse;
-import com.hack.stock2u.chat.dto.response.PurchaserReservationsResponse;
+import com.hack.stock2u.chat.dto.response.PurchaserSellerReservationsResponse;
 import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.dto.response.SimpleThumbnailImage;
 import com.hack.stock2u.chat.exception.ReservationException;
@@ -25,6 +25,7 @@ import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
@@ -105,20 +106,31 @@ public class ReservationService {
   }
 
 
-  public Page<PurchaserReservationsResponse> getPurchaserReservations(Pageable pageable) {
+  public Page<PurchaserSellerReservationsResponse> getReservations(Pageable pageable) {
 
-    Long pid = sessionManager.getSessionUser().id();
-    List<Reservation> reservations = reservationRepository.findBySellerId(pid, pageable)
-        .getContent();
+    Long id = sessionManager.getSessionUser().id();
+    List<Reservation> reservations = checkSellerAndPurchaser(id, pageable);
 
-    List<PurchaserReservationsResponse> responses = reservations.stream()
+    List<PurchaserSellerReservationsResponse> responses = reservations.stream()
         .map(Reservation::getId)
-        .map(this::purchaserReservationLatestMessages)
+        .map(this::reservationLatestMessages)
         .toList();
     return new PageImpl<>(responses);
   }
 
-  private PurchaserReservationsResponse purchaserReservationLatestMessages(Long id) {
+  private List<Reservation> checkSellerAndPurchaser(Long pid, Pageable pageable) {
+    Optional<Reservation> byPurchaserId = reservationRepository.findByPurchaserId(pid);
+    Optional<Reservation> bySellerId = reservationRepository.findBySellerId(pid);
+    if (bySellerId.isPresent()) {
+      return reservationRepository.findBySellerId(pid, pageable).getContent();
+    } else if (byPurchaserId.isPresent()) {
+      return reservationRepository.findByPurchaserId(pid, pageable).getContent();
+    } else {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  private PurchaserSellerReservationsResponse reservationLatestMessages(Long id) {
     ChatMessage chatMessage = chatMongoRepository
         .findByRoomIdOrderByCreatedAtDesc(id, PageRequest.of(0, 1))
          .orElseThrow(GlobalException.NOT_FOUND::create);
@@ -132,7 +144,13 @@ public class ReservationService {
         .build();
     SimpleReservation simpleReservation = SimpleReservation.create(
         reservation, simpleThumbnailImage);
-    return new PurchaserReservationsResponse(messageResponse, simpleReservation);
+    return new PurchaserSellerReservationsResponse(messageResponse, simpleReservation);
   }
 
+
+  //  public Page<PurchaserSellerReservationsResponse> search(PageRequest pageable, String title) {
+  //
+  //
+  //
+  //  }
 }
