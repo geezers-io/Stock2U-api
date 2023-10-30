@@ -42,7 +42,7 @@ public class Reservation {
   @JoinColumn(name = "product_id")
   private Product product;
 
-  @Comment("잔여 재고 이름")
+  @Comment("게시글 제목")
   @Column(name = "product_title")
   private String productTitle;
 
