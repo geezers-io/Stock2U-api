@@ -137,26 +137,17 @@ public class ReservationService {
   }
 
   private List<Reservation> checkSellerAndPurchaser(Long id, String role, Pageable pageable) {
-    if (role.equals(UserRole.SELLER.getName())) {
-      return reservationRepository.findBySellerId(id, pageable).getContent();
-    } else if (role.equals(UserRole.PURCHASER.getName())) {
-      return reservationRepository.findByPurchaserId(id, pageable).getContent();
-    } else {
-      throw new IllegalArgumentException();
-    }
+    return (role.equals(UserRole.SELLER.getName()))
+        ? reservationRepository.findBySellerId(id, pageable).getContent() :
+        reservationRepository.findByPurchaserId(id, pageable).getContent();
   }
 
   private List<Reservation> checkAndSearchSellerAndPurchaser(Long id, String role,
                                                              Pageable pageable, String title) {
-    if (role.equals(UserRole.SELLER.getName())) {
-      return reservationRepository.findByTitleContainingAndSellerId(
-          title, id, pageable).getContent();
-    } else if (role.equals(UserRole.PURCHASER.getName())) {
-      return reservationRepository.findByTitleContainingAndPurchaserId(
-          title, id, pageable).getContent();
-    } else {
-      throw new IllegalArgumentException();
-    }
+    return role.equals(UserRole.SELLER.getName())
+        ? reservationRepository.findByTitleContainingAndSellerId(title, id, pageable).getContent() :
+        reservationRepository.findByTitleContainingAndPurchaserId(title, id, pageable).getContent();
+
   }
 
   private PurchaserSellerReservationsResponse reservationLatestMessages(Long id) {

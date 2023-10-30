@@ -44,7 +44,7 @@ public class Reservation {
 
   @Comment("잔여 재고 이름")
   @Column(name = "product_title")
-  private String title;
+  private String productTitle;
 
   @Comment("판매자(사업자) id")
   @ManyToOne(fetch = FetchType.LAZY)

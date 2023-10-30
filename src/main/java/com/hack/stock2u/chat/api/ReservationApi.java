@@ -94,16 +94,10 @@ public class ReservationApi {
       @Parameter(description = "가져올 데이터 갯수 단위", required = true)
       @RequestParam("size") int size
   ) {
-    if (title.isEmpty()) {
-      PageRequest pageable = PageRequest.of(page, size);
-      Page<PurchaserSellerReservationsResponse> purchaserReservations =
-          reservationService.getReservations(pageable);
-      return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
-    } else {
-      PageRequest pageable = PageRequest.of(page, size);
-      Page<PurchaserSellerReservationsResponse> purchaserReservations =
-          reservationService.search(pageable, title);
-      return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
-    }
+    PageRequest pageable = PageRequest.of(page, size);
+    Page<PurchaserSellerReservationsResponse> purchaserReservations =
+        title.isEmpty() ? reservationService.getReservations(pageable)
+            : reservationService.search(pageable, title);
+    return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
   }
 }
