@@ -15,7 +15,9 @@ public record SellerDetails(
     @Schema(description = "받은 리뷰 갯수", required = true)
     int reviewCount
 ) {
-  public static SellerDetails create(User u, String profileImageUrl, int salesCount, int reviewCount) {
+  public static SellerDetails create(
+      User u, String profileImageUrl, int salesCount, int reviewCount
+  ) {
     return SellerDetails.builder()
         .id(u.getId())
         .username(u.getName())
