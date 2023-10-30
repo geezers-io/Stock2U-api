@@ -27,6 +27,7 @@ import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
@@ -106,34 +107,44 @@ public class ReservationService {
     return target.getReportCount();
   }
 
-
-
-  public Page<PurchaserSellerReservationsResponse> getReservations(Pageable pageable) {
+  public Page<PurchaserSellerReservationsResponse> getReservations(Pageable pageable,
+                                                                   String title) {
 
     SessionUser u = sessionManager.getSessionUser();
     String role = u.userRole().getName();
     Long id = u.id();
+
     List<Reservation> reservations = checkSellerAndPurchaser(id, role, pageable);
-    List<PurchaserSellerReservationsResponse> responses = reservations.stream()
+    Stream<Reservation> filteredReservations;
+
+    if (title.isEmpty()) {
+      filteredReservations = reservations.stream();
+    } else {
+      filteredReservations = reservations.stream()
+          .filter(reservation -> reservation.getProduct().getTitle().contains(title));
+    }
+
+    List<PurchaserSellerReservationsResponse> responses = filteredReservations
         .map(Reservation::getId)
-        .map(this::reservationLatestMessages)
+        .map(this::createLatestMessageAndThumbnailAndSimpleReservation)
         .toList();
+
     return new PageImpl<>(responses);
   }
 
-  public Page<PurchaserSellerReservationsResponse> search(PageRequest pageable, String title) {
+  private PurchaserSellerReservationsResponse
+      createLatestMessageAndThumbnailAndSimpleReservation(Long id) {
 
-    SessionUser u = sessionManager.getSessionUser();
-    String role = u.userRole().getName();
-    Long id = u.id();
-    List<Reservation> reservations = checkAndSearchSellerAndPurchaser(id, role, pageable, title);
-    List<PurchaserSellerReservationsResponse> responses = reservations.stream()
-        .map(Reservation::getId)
-        .map(this::reservationLatestMessages)
-        .toList();
-    return new PageImpl<>(responses);
+    ChatMessageResponse messageResponse = latestMessage(id);
 
+    Reservation reservation = getReservationId(id);
 
+    SimpleThumbnailImage simpleThumbnailImage = getThumbnailImage(reservation);
+
+    SimpleReservation simpleReservation = SimpleReservation.create(
+        reservation, simpleThumbnailImage);
+
+    return new PurchaserSellerReservationsResponse(messageResponse, simpleReservation);
   }
 
   private List<Reservation> checkSellerAndPurchaser(Long id, String role, Pageable pageable) {
@@ -142,31 +153,25 @@ public class ReservationService {
         reservationRepository.findByPurchaserId(id, pageable).getContent();
   }
 
-  private List<Reservation> checkAndSearchSellerAndPurchaser(Long id, String role,
-                                                             Pageable pageable, String title) {
-    return role.equals(UserRole.SELLER.getName())
-        ? reservationRepository.findByProductTitleContainingAndSellerId(
-            title, id, pageable).getContent() :
-        reservationRepository.findByProductTitleContainingAndPurchaserId(
-            title, id, pageable).getContent();
-
-  }
-
-  private PurchaserSellerReservationsResponse reservationLatestMessages(Long id) {
+  private ChatMessageResponse latestMessage(Long id) {
     ChatMessage chatMessage = chatMongoRepository
         .findByRoomIdOrderByCreatedAtDesc(id, PageRequest.of(0, 1))
-         .orElseThrow(GlobalException.NOT_FOUND::create);
-    ChatMessageResponse messageResponse = ChatMessageResponse.create(chatMessage);
-    Reservation reservation = reservationRepository.findById(id)
-         .orElseThrow(GlobalException.NOT_FOUND::create);
+        .orElseThrow(GlobalException.NOT_FOUND::create);
+    return ChatMessageResponse.create(chatMessage);
+  }
+
+  private SimpleThumbnailImage getThumbnailImage(Reservation reservation) {
+
     Attach thumbnail = attachRepository.findFirstByProductIdOrderById(
         reservation.getProduct().getId());
-    SimpleThumbnailImage simpleThumbnailImage = SimpleThumbnailImage.builder()
+    return SimpleThumbnailImage.builder()
         .uploadPath(thumbnail.getUploadPath())
         .build();
-    SimpleReservation simpleReservation = SimpleReservation.create(
-        reservation, simpleThumbnailImage);
-    return new PurchaserSellerReservationsResponse(messageResponse, simpleReservation);
+  }
+
+  private Reservation getReservationId(Long id) {
+    return reservationRepository.findById(id)
+        .orElseThrow(GlobalException.NOT_FOUND::create);
   }
 
 }

@@ -42,10 +42,6 @@ public class Reservation {
   @JoinColumn(name = "product_id")
   private Product product;
 
-  @Comment("게시글 제목")
-  @Column(name = "product_title")
-  private String productTitle;
-
   @Comment("판매자(사업자) id")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "seller_id")
@@ -72,10 +68,9 @@ public class Reservation {
 
   @Builder
   public Reservation(String chatId, Product product,
-                     String productTitle, User seller, User purchaser) {
+                      User seller, User purchaser) {
     this.chatId = chatId;
     this.product = product;
-    this.productTitle = productTitle;
     this.seller = seller;
     this.purchaser = purchaser;
   }

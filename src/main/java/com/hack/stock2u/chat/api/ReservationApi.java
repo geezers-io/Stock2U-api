@@ -94,10 +94,10 @@ public class ReservationApi {
       @Parameter(description = "가져올 데이터 갯수 단위", required = true)
       @RequestParam("size") int size
   ) {
+    //여기서 그럼 삼항연산자 빼고 뒤에 getReservations에서 if else나 삼항으로 해결하기
     PageRequest pageable = PageRequest.of(page, size);
     Page<PurchaserSellerReservationsResponse> purchaserReservations =
-        title.isEmpty() ? reservationService.getReservations(pageable)
-            : reservationService.search(pageable, title);
+        reservationService.getReservations(pageable, title);
     return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
   }
 }
