@@ -14,7 +14,7 @@ public record SimpleReservation(
     @Schema(description = "예약 id")
     Long id,
     @Schema(description = "상품 이름")
-    String name,
+    String title,
     @Schema(description = "예약 상태")
     ReservationStatus status,
     @Schema(description = "썸네일 주소")
@@ -24,7 +24,7 @@ public record SimpleReservation(
                                          SimpleThumbnailImage simpleThumbnailImage) {
     return SimpleReservation.builder()
         .id(reservation.getId())
-        .name(reservation.getName())
+        .title(reservation.getProductTitle())
         .status(reservation.getStatus())
         .uploadUrl(simpleThumbnailImage)
         .build();

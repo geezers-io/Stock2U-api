@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReservationApi {
   private final ReservationService reservationService;
   //create에도 session 추가하기
-  private final SimpMessagingTemplate messagingTemplate;
   private final ChatMessageService chatMessageService;
 
   @RoleGuard(roles = UserRole.PURCHASER)
@@ -77,6 +75,7 @@ public class ReservationApi {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
+  //얼마 이상 누적되면 이용정지 로직 추가
   @Operation(summary = "신고 API", description = "채팅방에서 사용자 신고 API")
   @PostMapping("/report")
   public ResponseEntity<Short> reportUserApi(@RequestBody @Valid ReportRequest request) {
@@ -84,10 +83,12 @@ public class ReservationApi {
     return ResponseEntity.status(HttpStatus.OK).body(reportCount);
   }
 
-
-  @Operation(summary = "공통 채팅방 조회 API", description = "일반 사용자의 채팅 내역 조회")
+  @Operation(summary = "채팅방 조회 API, 채팅방 검색 조회 API",
+      description = "사용자가 가진 채팅방 + 검색으로 조회한 채팅방")
   @GetMapping("/reservations")
-  public ResponseEntity<Page<PurchaserSellerReservationsResponse>> getAllPurchaserReservations(
+  public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservationsBySearch(
+      @Parameter(description = "게시글 제목으로 검색", required = false)
+      @RequestParam("title") String title,
       @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
       @RequestParam("page") int page,
       @Parameter(description = "가져올 데이터 갯수 단위", required = true)
@@ -95,23 +96,8 @@ public class ReservationApi {
   ) {
     PageRequest pageable = PageRequest.of(page, size);
     Page<PurchaserSellerReservationsResponse> purchaserReservations =
-        reservationService.getReservations(pageable);
+        title.isEmpty() ? reservationService.getReservations(pageable)
+            : reservationService.search(pageable, title);
     return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
   }
-
-
-  //  @Operation(summary = "검색으로 채팅방 조회 API", description = "공통 채팅방 검색 조회")
-  //  public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservationsBySearch(
-  //      @Parameter(description = "게시글 제목으로 검색")
-  //      @RequestParam("title") String title,
-  //      @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
-  //      @RequestParam("page") int page,
-  //      @Parameter(description = "가져올 데이터 갯수 단위", required = true)
-  //      @RequestParam("size") int size
-  //  ) {
-  //    PageRequest pageable = PageRequest.of(page, size);
-  //    Page<PurchaserSellerReservationsResponse> purchaserReservations =
-  //        reservationService.search(pageable, title);
-  //    return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
-  //  }
 }
