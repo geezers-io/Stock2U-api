@@ -2,6 +2,7 @@ package com.hack.stock2u.product.repository;
 
 import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.User;
+import com.hack.stock2u.product.dto.ProductCountProjection;
 import com.hack.stock2u.product.dto.ProductSummaryProjection;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -38,7 +39,7 @@ LEFT JOIN seller_details sd on u.seller_details_id = sd.id
 LEFT JOIN attachments a ON a.id = (
     SELECT MIN(id) as id
     FROM attachments a2
-    WHERE a2.id = p.user_id AND a2.product_id = p.id
+    WHERE a2.user_id = p.user_id AND a2.product_id = p.id
     GROUP BY id
     LIMIT 1
 )
@@ -61,26 +62,25 @@ OFFSET :offset
       @Param("offset") Long offset
   );
 
-  @SuppressWarnings("checkstyle:Indentation")
-  @Query(value = """
-select *
-from (SELECT DISTINCT COUNT(p.id) as totalCount,
-                      (6371
-                          * ACOS(COS(RADIANS(33.450701))
-                                     * COS(RADIANS(33.450701))
-                                     * COS(RADIANS(126.570667) - RADIANS(126.570667))
-                              + SIN(RADIANS(33.450701)) * SIN(RADIANS(33.450701)))
-                          ) / 10  as distance
+@SuppressWarnings({"checkstyle:Indentation", "checkstyle:CommentsIndentation"})
+@Query(value = """
+SELECT COUNT(p.id) as totalCount,
+      (6371
+        *ACOS(COS(RADIANS(:lat))
+        *COS(RADIANS(sd.latitude))
+        *COS(RADIANS(sd.longitude)-RADIANS(:lng))
+        +SIN(RADIANS(:lat))*SIN(RADIANS(sd.latitude)))
+      ) / 10  as distance
       FROM products p
                LEFT JOIN users u on p.user_id = u.id
                LEFT JOIN seller_details sd on u.seller_details_id = sd.id
       WHERE p.removed_at IS NULL
         AND DATE(NOW()) < p.expired_at
-        AND p.price BETWEEN 0 AND 999999
-        AND p.type in ('FOOD')
-      HAVING distance <= 10) tCd
+        AND p.price BETWEEN :minPrice AND :maxPrice
+        AND p.type in (:productTypes)
+      HAVING distance <= :distance
   """, nativeQuery = true)
-  Long getCount(
+  ProductCountProjection getCount(
       @Param("lat") Double lat,
       @Param("lng") Double lng,
       @Param("productTypes") List<String> productTypes,
