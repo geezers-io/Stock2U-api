@@ -91,12 +91,17 @@ public class ReservationService {
   }
 
   public Short report(ReportRequest request) {
-    User reporter = userRepository.findById(request.reporterId())
-        .orElseThrow(GlobalException.NOT_FOUND::create);
+
     User target = userRepository.findById(request.targetId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
 
     target.setReportCount();
+
+    User reporter = userRepository.findById(request.reporterId())
+        .orElseThrow(GlobalException.NOT_FOUND::create);
+
+    target.setDisabledDate();
+
     userRepository.save(target);
     reportRepository.save(Report.builder()
         .reason(request.reason())
