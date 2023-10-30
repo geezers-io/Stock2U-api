@@ -24,7 +24,7 @@ public record SimpleReservation(
                                          SimpleThumbnailImage simpleThumbnailImage) {
     return SimpleReservation.builder()
         .id(reservation.getId())
-        .title(reservation.getTitle())
+        .title(reservation.getProductTitle())
         .status(reservation.getStatus())
         .uploadUrl(simpleThumbnailImage)
         .build();

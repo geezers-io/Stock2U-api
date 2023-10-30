@@ -71,10 +71,11 @@ public class Reservation {
   }
 
   @Builder
-  public Reservation(String chatId, Product product, String title, User seller, User purchaser) {
+  public Reservation(String chatId, Product product,
+                     String productTitle, User seller, User purchaser) {
     this.chatId = chatId;
     this.product = product;
-    this.title = title;
+    this.productTitle = productTitle;
     this.seller = seller;
     this.purchaser = purchaser;
   }
