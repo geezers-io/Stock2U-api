@@ -145,8 +145,10 @@ public class ReservationService {
   private List<Reservation> checkAndSearchSellerAndPurchaser(Long id, String role,
                                                              Pageable pageable, String title) {
     return role.equals(UserRole.SELLER.getName())
-        ? reservationRepository.findByTitleContainingAndSellerId(title, id, pageable).getContent() :
-        reservationRepository.findByTitleContainingAndPurchaserId(title, id, pageable).getContent();
+        ? reservationRepository.findByProductTitleContainingAndSellerId(
+            title, id, pageable).getContent() :
+        reservationRepository.findByProductTitleContainingAndPurchaserId(
+            title, id, pageable).getContent();
 
   }
 
