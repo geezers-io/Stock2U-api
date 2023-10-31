@@ -87,7 +87,7 @@ public class ReservationApi {
       description = "사용자가 가진 채팅방 + 검색으로 조회한 채팅방")
   @GetMapping("/reservations")
   public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservationsBySearch(
-      @Parameter(description = "게시글 제목으로 검색", required = false)
+      @Parameter(description = "게시글 제목으로 검색")
       @RequestParam("title") String title,
       @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
       @RequestParam("page") int page,
