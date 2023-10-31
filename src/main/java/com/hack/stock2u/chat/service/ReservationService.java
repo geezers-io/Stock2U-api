@@ -194,6 +194,7 @@ public class ReservationService {
     return sessionUser.id();
   }
 
+
   private PurchaserSellerReservationsResponse
       createLatestMessageAndThumbnailAndSimpleReservation(Long id) {
 

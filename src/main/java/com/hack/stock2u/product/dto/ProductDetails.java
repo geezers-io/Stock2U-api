@@ -23,10 +23,13 @@ public record ProductDetails(
     @Schema(description = "예약 상태(예약 한 건만 받기 체크 && 예약 진행 중일 시 표기 됨)", nullable = true)
     ReservationStatus status,
     SellerDetails seller,
+
+    @Schema(description = "요청한 사용자(구매자)가 구독한 판매자인 지 여부 (true 면 구독)")
+    boolean isSubscribe,
     List<SimpleFile> productImages
 ) {
   public static ProductDetails create(
-      Product p, SellerDetails sellerDetails, List<Attach> attaches
+      Product p, SellerDetails sellerDetails, List<Attach> attaches, boolean isSubscribe
   ) {
     List<SimpleFile> simpleFiles = attaches.stream().map(SimpleFile::attach).toList();
     return ProductDetails.builder()
@@ -39,6 +42,7 @@ public record ProductDetails(
         .productCount(p.getProductCount())
         .seller(sellerDetails)
         .productImages(simpleFiles)
+        .isSubscribe(isSubscribe)
         .build();
   }
 }

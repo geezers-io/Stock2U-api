@@ -1,6 +1,9 @@
 package com.hack.stock2u.user.service;
 
 import com.hack.stock2u.authentication.service.SessionManager;
+import com.hack.stock2u.file.repository.JpaAttachRepository;
+import com.hack.stock2u.global.exception.GlobalException;
+import com.hack.stock2u.models.Attach;
 import com.hack.stock2u.models.SellerDetails;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.user.dto.AvatarId;
@@ -22,6 +25,7 @@ public class SellerService {
   private final SessionManager sessionManager;
   private final SellerDslRepository sellerDslRepository;
   private final UserDslRepository userDslRepository;
+  private final JpaAttachRepository attachRepository;
 
   public SellerSummary getDetails() {
     User user = sessionManager.getSessionUserByRdb();
@@ -54,7 +58,11 @@ public class SellerService {
   // FIX: 리뷰 미구현으로 갯수 0 고정
   public com.hack.stock2u.user.dto.SellerDetails getSellerDetails(User u) {
     int salesCount = getSalesCount(u);
-    return com.hack.stock2u.user.dto.SellerDetails.create(u, salesCount, 0);
+    Attach avatar = attachRepository.findById(u.getAvatarId())
+        .orElseThrow(GlobalException.NOT_FOUND::create);
+    return com.hack.stock2u.user.dto.SellerDetails.create(
+        u, avatar.getUploadPath(), salesCount, 0
+    );
   }
 
   public void updateLocation(SellerRequest.LocationUpdate locationUpdateRequest) {
