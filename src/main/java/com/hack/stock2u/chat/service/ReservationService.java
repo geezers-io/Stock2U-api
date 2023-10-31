@@ -4,6 +4,7 @@ package com.hack.stock2u.chat.service;
 import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
+import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.response.ChatMessageResponse;
@@ -26,6 +27,8 @@ import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
+import java.nio.file.AccessDeniedException;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +81,7 @@ public class ReservationService {
   public void cancel(Long id) {
     Reservation r = reservationRepository.findById(id)
         .orElseThrow(GlobalException.NOT_FOUND::create);
-    r.setDisabledAt();
+    r.setDisabledAt(new Date());
     reservationRepository.save(r);
   }
 
@@ -115,9 +118,9 @@ public class ReservationService {
   public Page<PurchaserSellerReservationsResponse> getReservations(Pageable pageable,
                                                                    String title) {
 
-    SessionUser u = sessionManager.getSessionUser();
-    String role = u.userRole().getName();
-    Long id = u.id();
+    SessionUser u = getSessionUser();
+    String role = getUserRole(u);
+    Long id = getUserId(u);
 
     List<Reservation> reservations = checkSellerAndPurchaser(id, role, pageable);
     Stream<Reservation> filteredReservations;
@@ -137,6 +140,60 @@ public class ReservationService {
     return new PageImpl<>(responses);
   }
 
+  public Page<SimpleReservation> getReserveByDate(
+      PageRequest pageable, Date startDate, Date endDate) {
+    SessionUser u = getSessionUser();
+    Long id = getUserId(u);
+    String role = getUserRole(u);
+
+    List<Reservation> reservations = checkSellerAndPurchaser(id, role, pageable);
+
+    List<SimpleReservation> responses =
+        reservations.stream()
+        .filter(reservation -> {
+          Date creatAt = reservation.getBasicDate().getCreatedAt();
+          return creatAt.after(startDate) && creatAt.before(endDate);
+        })
+        .filter(reservation -> reservation.getStatus() == ReservationStatus.PROGRESS)
+        .map(Reservation::getId)
+        .map(this::creatSimpleReservation)
+        .toList();
+
+    return new PageImpl<>(responses);
+  }
+
+  //만약 구매자가 접근했을 경우.. 막아야됩니다.
+  public ReservationStatus changeStatus(ChangeStatusRequest request) {
+    SessionUser u = getSessionUser();
+    if (getUserRole(u).equals(UserRole.PURCHASER.getName())) {
+      return null;
+    }
+    Reservation reservation = getReservationId(request.reservationId());
+    reservation.changeStatus(ReservationStatus.valueOf(request.status()));
+    reservationRepository.save(reservation);
+    return reservation.getStatus();
+  }
+
+  private SimpleReservation creatSimpleReservation(Long id) {
+    Reservation reservation = getReservationId(id);
+
+    SimpleThumbnailImage simpleThumbnailImage = getThumbnailImage(reservation);
+
+    return SimpleReservation.create(reservation, simpleThumbnailImage);
+  }
+
+  private SessionUser getSessionUser() {
+    return sessionManager.getSessionUser();
+  }
+
+  private String getUserRole(SessionUser sessionUser) {
+    return sessionUser.userRole().getName();
+  }
+
+  private Long getUserId(SessionUser sessionUser) {
+    return sessionUser.id();
+  }
+
   private PurchaserSellerReservationsResponse
       createLatestMessageAndThumbnailAndSimpleReservation(Long id) {
 
@@ -154,8 +211,8 @@ public class ReservationService {
 
   private List<Reservation> checkSellerAndPurchaser(Long id, String role, Pageable pageable) {
     return (role.equals(UserRole.SELLER.getName()))
-        ? reservationRepository.findBySellerId(id, pageable).getContent() :
-        reservationRepository.findByPurchaserId(id, pageable).getContent();
+        ? getReservationBySellerId(id, pageable) :
+        getReservationByPurchaserId(id, pageable);
   }
 
   private ChatMessageResponse latestMessage(Long id) {
@@ -178,5 +235,14 @@ public class ReservationService {
     return reservationRepository.findById(id)
         .orElseThrow(GlobalException.NOT_FOUND::create);
   }
+
+  private List<Reservation> getReservationByPurchaserId(Long id, Pageable pageable) {
+    return reservationRepository.findByPurchaserId(id, pageable).getContent();
+  }
+
+  private List<Reservation> getReservationBySellerId(Long id, Pageable pageable) {
+    return reservationRepository.findBySellerId(id, pageable).getContent();
+  }
+
 
 }

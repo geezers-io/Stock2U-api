@@ -186,7 +186,7 @@ public class User implements Serializable {
   }
 
   public void setDisabledDate() {
-    if (this.reportCount % 10 == 0) {
+    if (this.reportCount % 3 == 0) {
       Calendar calendar = Calendar.getInstance();
       calendar.add(Calendar.DAY_OF_MONTH, 3);
       this.disabledAt = calendar.getTime();
