@@ -125,7 +125,7 @@ public class ReservationApi {
     return ResponseEntity.status(HttpStatus.OK).body(reservations);
   }
 
-  //원래 상태값을 비교해야될까?
+  @RoleGuard(roles = UserRole.SELLER)
   @Operation(summary = "예약 상태 변경 API", description = "판매자 예약내역에서 상태를 변경할 수 있는 API")
   @PatchMapping("change-status")
   public ResponseEntity<ReservationStatus> changeReservationStatus(

@@ -164,12 +164,11 @@ public class ReservationService {
 
   //만약 구매자가 접근했을 경우.. 막아야됩니다.
   public ReservationStatus changeStatus(ChangeStatusRequest request) {
-    SessionUser u = getSessionUser();
-    if (getUserRole(u).equals(UserRole.PURCHASER.getName())) {
-      return null;
-    }
+
     Reservation reservation = getReservationId(request.reservationId());
+
     reservation.changeStatus(ReservationStatus.valueOf(request.status()));
+
     reservationRepository.save(reservation);
     return reservation.getStatus();
   }
@@ -208,6 +207,7 @@ public class ReservationService {
 
     return new PurchaserSellerReservationsResponse(messageResponse, simpleReservation);
   }
+  //check는 boolean으로 예측되니 이름을 바꾸자
 
   private List<Reservation> checkSellerAndPurchaser(Long id, String role, Pageable pageable) {
     return (role.equals(UserRole.SELLER.getName()))
