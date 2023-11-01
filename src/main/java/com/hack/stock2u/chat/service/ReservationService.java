@@ -27,7 +27,6 @@ import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
-import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -95,12 +94,17 @@ public class ReservationService {
 
   public Short report(ReportRequest request) {
 
-    User target = userRepository.findById(request.targetId())
+    SessionUser s = getSessionUser();
+    Long id = getUserId(s);
+    String r = getUserRole(s);
+
+    Reservation reservation = reservationRepository.findById(request.roomId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
+    User target = getWhoIsTarget(r, reservation);
 
     target.setReportCount();
 
-    User reporter = userRepository.findById(request.reporterId())
+    User reporter = userRepository.findById(id)
         .orElseThrow(GlobalException.NOT_FOUND::create);
 
     target.setDisabledDate();
@@ -115,14 +119,24 @@ public class ReservationService {
     return target.getReportCount();
   }
 
+  private User getWhoIsTarget(String r, Reservation reservation) {
+    Long userId;
+    if (r.equals(UserRole.SELLER.getName())) {
+      userId = reservation.getPurchaser().getId();
+    } else {
+      userId = reservation.getSeller().getId();
+    }
+    return userRepository.findById(userId)
+        .orElseThrow(GlobalException.NOT_FOUND::create);
+  }
+
   public Page<PurchaserSellerReservationsResponse> getReservations(Pageable pageable,
                                                                    String title) {
-
     SessionUser u = getSessionUser();
     String role = getUserRole(u);
     Long id = getUserId(u);
 
-    List<Reservation> reservations = checkSellerAndPurchaser(id, role, pageable);
+    List<Reservation> reservations = getSellerAndPurchaser(id, role, pageable);
     Stream<Reservation> filteredReservations;
 
     if (title.isEmpty()) {
@@ -146,7 +160,7 @@ public class ReservationService {
     Long id = getUserId(u);
     String role = getUserRole(u);
 
-    List<Reservation> reservations = checkSellerAndPurchaser(id, role, pageable);
+    List<Reservation> reservations = getSellerAndPurchaser(id, role, pageable);
 
     List<SimpleReservation> responses =
         reservations.stream()
@@ -162,11 +176,15 @@ public class ReservationService {
     return new PageImpl<>(responses);
   }
 
-  //만약 구매자가 접근했을 경우.. 막아야됩니다.
+
   public ReservationStatus changeStatus(ChangeStatusRequest request) {
-
+    //예약 취소, 예약 완료 로직 다르게 짜야함
     Reservation reservation = getReservationId(request.reservationId());
-
+    if (request.status().equals("예약 취소됌")) {
+      reservation.setDisabledAt(new Date());
+    } else {
+      reservation.setDisabledAt(null);
+    }
     reservation.changeStatus(ReservationStatus.valueOf(request.status()));
 
     reservationRepository.save(reservation);
@@ -210,11 +228,12 @@ public class ReservationService {
   }
   //check는 boolean으로 예측되니 이름을 바꾸자
 
-  private List<Reservation> checkSellerAndPurchaser(Long id, String role, Pageable pageable) {
+  private List<Reservation> getSellerAndPurchaser(Long id, String role, Pageable pageable) {
     return (role.equals(UserRole.SELLER.getName()))
         ? getReservationBySellerId(id, pageable) :
         getReservationByPurchaserId(id, pageable);
   }
+
 
   private ChatMessageResponse latestMessage(Long id) {
     ChatMessage chatMessage = chatMongoRepository

@@ -7,9 +7,9 @@ public record ReportRequest(
     @Schema(required = true, description = "신고 사유")
     @NotNull
     String reason,
-    @Schema(required = true, description = "신고자")
-    Long reporterId,
-    @Schema(required = true, description = "신고 당한 사람")
-    Long targetId
+    @Schema(required = true, description = "채팅방 id, 예약 id")
+    @NotNull
+    Long roomId
+
 ) {
 }

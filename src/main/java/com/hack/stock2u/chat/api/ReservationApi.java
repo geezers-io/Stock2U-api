@@ -60,18 +60,16 @@ public class ReservationApi {
 
   //예약승인 api 이것도 patch로 해도될듯
   @Operation(summary = "예약 승인 API", description = "예약을 승인 할때 나오는 API + 구매자에게 자동 메세지 발송")
-  @PostMapping("/approve")
+  @PatchMapping("/approve")
   public ResponseEntity<ReservationStatus> approveReservationApi(
       ReservationApproveRequest request) {
 
-    //메세지로 상태값 넘기는게 맞는지?
-    //approve에서 상태값을 넘기는게 나을것 같은데 : 일단 넘김
     ReservationStatus approve = reservationService.approve(request);
     chatMessageService.saveAndSendAutoMessageApprove(request);
     return ResponseEntity.status(HttpStatus.OK).body(approve);
   }
+  //이게 채팅방을 삭제하는건데 로직을 예약 취소로 작성해버림 수정 필요
 
-  @RoleGuard
   @Operation(summary = "예약 취소 API", description = "예약을 위한 채팅방을 삭제할때 사용하는 API")
   @DeleteMapping("/{reservationId}")
   public ResponseEntity<Void> cancelReservationApi(
@@ -91,7 +89,6 @@ public class ReservationApi {
 
   @Operation(summary = "채팅방 조회 API, 채팅방 검색 조회 API",
       description = "사용자가 가진 채팅방 + 검색으로 조회한 채팅방")
-
   @GetMapping("/chats")
   public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservations(
 
