@@ -21,4 +21,6 @@ public interface JpaSubscriptionRepository extends JpaRepository<Subscription, L
   Optional<Long> findByUserIds(Long uid, Long sellerId);
 
   Page<Subscription> findBySubscriberId(Long id, Pageable pageable);
+
+  Optional<Long> findBySubscriberId(Long purchaserId);
 }

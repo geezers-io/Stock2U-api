@@ -10,6 +10,7 @@ import com.hack.stock2u.models.ProductImage;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.dto.MainProductSet;
 import com.hack.stock2u.product.dto.ProductCondition;
+import com.hack.stock2u.product.dto.ProductCountProjection;
 import com.hack.stock2u.product.dto.ProductDetails;
 import com.hack.stock2u.product.dto.ProductRequest;
 import com.hack.stock2u.product.dto.ProductSummaryProjection;
@@ -17,6 +18,7 @@ import com.hack.stock2u.product.exception.ProductException;
 import com.hack.stock2u.product.repository.JpaProductImageRepository;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.dto.SellerDetails;
+import com.hack.stock2u.user.repository.JpaSubscriptionRepository;
 import com.hack.stock2u.user.service.SellerService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
   private final JpaProductRepository productRepository;
   private final JpaAttachRepository attachRepository;
-  private final JpaProductImageRepository productImageRepository;
   private final SessionManager sessionManager;
   private final SellerService sellerService;
+  private final JpaSubscriptionRepository subscriptionRepository;
 
   // TODO: AI 기반 서칭, 마감 임박 순, 인근 위치 순 구현하기
   public MainProductSet getMainProductSet(ProductCondition condition, PageRequest pageable) {
@@ -45,7 +47,9 @@ public class ProductService {
   }
 
   public Page<ProductSummaryProjection> getProducts(ProductCondition condition, Pageable pageable) {
+    log.debug("getProduct condition: {}", condition);
     Long totalCount = getCount(condition);
+    log.debug("totalCount: {}", totalCount);
     List<ProductSummaryProjection> products = productRepository.findProducts(
         condition.getLatitude(),
         condition.getLongitude(),
@@ -56,24 +60,21 @@ public class ProductService {
         pageable.getPageSize(),
         pageable.getOffset()
     );
-    int pageSize = (int) (totalCount / pageable.getPageSize());
-    if (pageSize == 0) {
-      pageSize = 1;
-    }
-
-    log.warn("totalCount: {}, pageSize: {}", totalCount, pageSize);
-
     return new PageImpl<>(products, pageable, totalCount);
   }
 
   public ProductDetails getProductDetails(Long id) {
+    Long purchaserId = sessionManager.getSessionUser().id();
     Product p = getProduct(id);
-    User u = p.getSeller();
-    SellerDetails sellerDetails = sellerService.getSellerDetails(u);
+    User seller = p.getSeller();
+    SellerDetails sellerDetails = sellerService.getSellerDetails(seller);
     List<Attach> images = p.getProductImages().stream()
         .map(ProductImage::getAttach)
         .toList();
-    return ProductDetails.create(p, sellerDetails, images);
+
+    boolean isSubscribe = subscriptionRepository.findBySubscriberId(purchaserId).isPresent();
+
+    return ProductDetails.create(p, sellerDetails, images, isSubscribe);
   }
 
   public GlobalResponse.Id create(ProductRequest.Create createRequest) {
@@ -97,6 +98,7 @@ public class ProductService {
   @Transactional
   public ProductDetails update(Long id, ProductRequest.Create updateRequest) {
     validate(updateRequest);
+    Long purchaserId = sessionManager.getSessionUser().id();
     Product product = getProduct(id);
     List<Attach> images = getImages(updateRequest, product);
     User user = product.getSeller();
@@ -104,8 +106,9 @@ public class ProductService {
     product.update(updateRequest, images);
     productRepository.save(product);
     SellerDetails sellerDetails = sellerService.getSellerDetails(user);
+    boolean isSubscribe = subscriptionRepository.findBySubscriberId(purchaserId).isPresent();
 
-    return ProductDetails.create(product, sellerDetails, images);
+    return ProductDetails.create(product, sellerDetails, images, isSubscribe);
   }
 
   protected Attach getAttachById(Long id) {
@@ -144,8 +147,8 @@ public class ProductService {
   }
 
   private Long getCount(ProductCondition condition) {
-    log.error(condition.toString());
-    return productRepository.getCount(
+    log.debug("get MinPrice: {}", condition.getMinPrice());
+    ProductCountProjection ret = productRepository.getCount(
         condition.getLatitude(),
         condition.getLongitude(),
         condition.getCategory(),
@@ -153,6 +156,12 @@ public class ProductService {
         condition.getMinPrice(),
         condition.getMaxPrice()
     );
+    if (ret == null) {
+      return 0L;
+    }
+    log.debug("totalCount: {} distance:{}", ret.getTotalCount(), ret.getDistance());
+
+    return ret.getTotalCount();
   }
 
 }

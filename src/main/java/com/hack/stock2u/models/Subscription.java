@@ -20,12 +20,12 @@ public class Subscription {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Comment("판매자(사업자) id")
+  @Comment("구매자 id")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "subscriber_id")
   private User subscriber;
 
-  @Comment("구매자(예약자) id")
+  @Comment("판매자 id")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "target_id")
   private User target;
