@@ -6,6 +6,8 @@ import com.hack.stock2u.constant.AuthVendor;
 import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.models.embed.BasicDateColumn;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -26,6 +28,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
+import org.joda.time.DateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -180,5 +183,13 @@ public class User implements Serializable {
 
   public void setReportCount() {
     this.reportCount += 1;
+  }
+
+  public void setDisabledDate() {
+    if (this.reportCount % 3 == 0) {
+      Calendar calendar = Calendar.getInstance();
+      calendar.add(Calendar.DAY_OF_MONTH, 3);
+      this.disabledAt = calendar.getTime();
+    }
   }
 }

@@ -41,11 +41,6 @@ spring:
       enabled: true
       max-file-size: 20MB
       max-request-size: 20MB
-  thymeleaf:
-    cache: false
-    prefix: classpath:/templates/
-    suffix: .html
-    check-template-location: true
   security:
     oauth2:
       client:

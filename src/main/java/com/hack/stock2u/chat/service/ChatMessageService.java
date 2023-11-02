@@ -1,8 +1,8 @@
 package com.hack.stock2u.chat.service;
 
+import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
-import com.hack.stock2u.chat.dto.request.ReservationRequestDto;
 import com.hack.stock2u.chat.dto.request.SendChatMessage;
 import com.hack.stock2u.chat.dto.response.ReservationMessageResponse;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
@@ -27,8 +27,9 @@ public class ChatMessageService {
   private final JpaUserRepository userRepository;
   private final SimpMessagingTemplate messagingTemplate;
   private final JpaProductRepository productRepository;
-
+  private final SessionManager sessionManager;
   // 메시지 저장
+
   public void saveAndSendMessage(SendChatMessage request, Long roomId) {
     Reservation currentRoom = reservationRepository.findById(request.roomId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
@@ -67,7 +68,8 @@ public class ChatMessageService {
   }
 
   public void saveAndSendAutoMessageApprove(ReservationApproveRequest request) {
-    User seller = userRepository.findById(request.sellerId())
+    Long u = sessionManager.getSessionUser().id();
+    User seller = userRepository.findById(u)
         .orElseThrow(GlobalException.NOT_FOUND::create);
     ChatMessage message = messageRepository.save(ChatMessage.builder()
         .roomId(request.roomId())

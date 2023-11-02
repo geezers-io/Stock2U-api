@@ -11,10 +11,12 @@ import lombok.Builder;
 @Builder
 public record SimpleReservation(
 
-    @Schema(description = "예약 id")
+    @Schema(description = "예약 id, 채팅방 id")
     Long id,
-    @Schema(description = "상품 이름")
+    @Schema(description = "게시글 제목")
     String title,
+    @Schema(description = "상품 이름")
+    String name,
     @Schema(description = "예약 상태")
     ReservationStatus status,
     @Schema(description = "썸네일 주소")
@@ -24,7 +26,8 @@ public record SimpleReservation(
                                          SimpleThumbnailImage simpleThumbnailImage) {
     return SimpleReservation.builder()
         .id(reservation.getId())
-        .title(reservation.getProductTitle())
+        .title(reservation.getProduct().getTitle())
+        .name(reservation.getProduct().getName())
         .status(reservation.getStatus())
         .uploadUrl(simpleThumbnailImage)
         .build();
