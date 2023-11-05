@@ -23,7 +23,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class HttpLogger extends OncePerRequestFilter {
   private final List<String> excludeAntPaths = Arrays.asList(
-      "/api/swagger-ui/**", "/api/docs/**", "/api/api-docs/**"
+      "/api/swagger-ui/**", "/api/docs/**", "/api/api-docs/**",
+      "/api/ws/**"
   );
   MultiReadableRequestBodyHttpServletRequest reqWrapper;
 
@@ -97,10 +98,13 @@ public class HttpLogger extends OncePerRequestFilter {
     String requestUri = reqWrapper.getRequestURI();
     String contentType = reqWrapper.getContentType();
     log.debug("[{}] {}", method, requestUri);
-    log.debug("Content-Type: {}", contentType);
-    log.debug("URL Params: {}", queryString);
+    if (contentType != null) {
+      log.debug("Content-Type: {}", contentType);
+    }
 
-
+    if (queryString != null) {
+      log.debug("URL Params: {}", queryString);
+    }
 
     if (method.equalsIgnoreCase("POST")) {
       if (contentType.startsWith("multipart/form-data")) {
