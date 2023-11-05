@@ -43,7 +43,8 @@ public class SecurityConfig {
             .antMatchers(
                 "/auth/**",
                 "/docs/**", "/api-docs/**", "/swagger-ui/**",
-                "/ws/**", "/stomp/**"
+                "/ws/**",
+                "/chat-test/**"
             ).permitAll()
             .antMatchers("/auth/withdraw", "/auth/logout")
             .authenticated()
