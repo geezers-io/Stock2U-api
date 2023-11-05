@@ -5,6 +5,8 @@ import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,6 +31,11 @@ public class SessionManager {
     return ops.get(key);
   }
 
+  public SessionUser getSessionUser(String key) {
+    ValueOperations<String, SessionUser> ops = redisTemplate.opsForValue();
+    return ops.get(key);
+  }
+
   public User getSessionUserByRdb() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     validate(authentication);
@@ -46,9 +53,7 @@ public class SessionManager {
   }
 
   public String getKey(Object principal, Object credentials) {
-    String phone = (String) principal;
-    Long id = (Long) credentials;
-    return "session:" + phone + ":" + id;
+    return "session:" + principal + ":" + credentials;
   }
 
 }
