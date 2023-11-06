@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -23,8 +22,15 @@ public class CredentialsInterceptor implements ChannelInterceptor {
   @Override
   public Message<?> preSend(Message<?> message, MessageChannel channel) {
     StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+    log.info(message.getHeaders().toString());
     List<String> userIds = accessor.getNativeHeader("userId");
     List<String> phones = accessor.getNativeHeader("phone");
+
+    if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+      return ChannelInterceptor.super.preSend(message, channel);
+    }
+
+    log.info("userIds: {}, phones: {}", userIds, phones);
     if (userIds == null || phones == null) {
       throw AuthException.IS_ANONYMOUS_USER.create();
     }

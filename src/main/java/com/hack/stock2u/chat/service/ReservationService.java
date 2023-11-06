@@ -31,13 +31,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
@@ -50,6 +53,7 @@ public class ReservationService {
   private final JpaAttachRepository attachRepository;
   private final SessionManager sessionManager;
   private final JpaReportRepository reportRepository;
+  private final ReservationMessageHandler reservationMessageHandler;
 
   /**
    * 예약 엔티티를 생성합니다.
@@ -72,6 +76,12 @@ public class ReservationService {
             .chatId(roomId)
             .seller(product.getSeller())
             .build()
+    );
+
+    reservationMessageHandler.publishReservationRequest(
+        product.getTitle(),
+        purchaser.getId(),
+        product.getSeller().getId()
     );
 
     return new ReservationProductPurchaser(reservation, product, purchaser);
