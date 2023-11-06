@@ -126,7 +126,7 @@ public class ReservationApi {
 
   @RoleGuard(roles = UserRole.SELLER)
   @Operation(summary = "예약 상태 변경 API", description = "판매자 예약내역에서 상태를 변경할 수 있는 API")
-  @PatchMapping("change-status")
+  @PatchMapping("/status")
   public ResponseEntity<ReservationStatus> changeReservationStatus(
       @RequestBody @Valid ChangeStatusRequest request
   ) {
