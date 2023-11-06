@@ -17,6 +17,8 @@ public record ProductDetails(
     String title,
     int price,
     ProductType type,
+    @Schema(description = "재고 이름")
+    String name,
     String description,
     int productCount,
     Date expiredAt,
@@ -35,6 +37,7 @@ public record ProductDetails(
     return ProductDetails.builder()
         .id(p.getId())
         .title(p.getTitle())
+        .name(p.getName())
         .price(p.getPrice())
         .type(p.getType())
         .description(p.getDescription())
