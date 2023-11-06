@@ -20,7 +20,7 @@ public record SimpleReservation(
     @Schema(description = "예약 상태")
     ReservationStatus status,
     @Schema(description = "썸네일 주소")
-    SimpleThumbnailImage uploadUrl
+    String uploadUrl
 ) {
   public static SimpleReservation create(Reservation reservation,
                                          SimpleThumbnailImage simpleThumbnailImage) {
@@ -29,7 +29,7 @@ public record SimpleReservation(
         .title(reservation.getProduct().getTitle())
         .name(reservation.getProduct().getName())
         .status(reservation.getStatus())
-        .uploadUrl(simpleThumbnailImage)
+        .uploadUrl(simpleThumbnailImage.uploadPath())
         .build();
   }
 }
