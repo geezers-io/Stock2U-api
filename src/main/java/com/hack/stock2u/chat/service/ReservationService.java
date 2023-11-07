@@ -150,8 +150,10 @@ public class ReservationService {
     Stream<Reservation> filteredReservations = reservations.stream();
 
     if (!title.isEmpty() || title.isBlank()) {
-      filteredReservations = reservations.stream()
-          .filter(reservation -> reservation.getProduct().getTitle().contains(title));
+      filteredReservations =
+          filteredReservations.filter(
+              reservation -> reservation.getProduct().getTitle().contains(title)
+          );
     }
 
     List<PurchaserSellerReservationsResponse> responses = filteredReservations
