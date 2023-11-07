@@ -89,4 +89,7 @@ SELECT COUNT(p.id) as totalCount,
       @Param("maxPrice") Integer maxPrice
   );
 
+  @Query("select p from products p where p.seller.id = :userId")
+  List<Product> findIdsByUserId(Long userId);
+
 }

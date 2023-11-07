@@ -10,10 +10,14 @@ import com.hack.stock2u.authentication.service.client.KakaoClient;
 import com.hack.stock2u.authentication.service.strategy.SignInStrategyBranch;
 import com.hack.stock2u.authentication.service.strategy.SignInUrlCreateStrategy;
 import com.hack.stock2u.constant.AuthVendor;
+import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.global.exception.GlobalException;
+import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.User;
+import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +36,7 @@ public class AuthService {
   private final KakaoClient kakaoClient;
   private final JpaUserRepository userRepository;
   private final AuthCodeProvider authCodeProvider;
+  private final JpaProductRepository productRepository;
   private final AuthManager authManager;
   private final SignupValidator validator;
   private final SessionManager sessionManager;
@@ -74,10 +79,14 @@ public class AuthService {
         .build();
   }
 
+  @Transactional
   public void withdraw(String reason) {
     User user = sessionManager.getSessionUserByRdb();
     user.remove(reason);
-    userRepository.save(user);
+    if (UserRole.SELLER.equals(user.getRole())) {
+      List<Product> products = productRepository.findIdsByUserId(user.getId());
+      products.forEach(Product::remove);
+    }
   }
 
   /**
