@@ -1,0 +1,9 @@
+diff a/src/main/java/com/hack/stock2u/chat/api/ReservationApi.java b/src/main/java/com/hack/stock2u/chat/api/ReservationApi.java	(rejected hunks)
+@@ -89,7 +89,6 @@
+ 
+   @Operation(summary = "채팅방 조회 API, 채팅방 검색 조회 API",
+       description = "사용자가 가진 채팅방 + 검색으로 조회한 채팅방")
+-
+   @GetMapping("/chats")
+   public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservations(
+ 
