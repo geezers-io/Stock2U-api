@@ -14,6 +14,7 @@ import com.hack.stock2u.user.repository.JpaBuyerRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import com.hack.stock2u.user.repository.SellerDslRepository;
 import com.hack.stock2u.user.repository.UserDslRepository;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -58,10 +59,15 @@ public class SellerService {
   // FIX: 리뷰 미구현으로 갯수 0 고정
   public com.hack.stock2u.user.dto.SellerDetails getSellerDetails(User u) {
     int salesCount = getSalesCount(u);
-    Attach avatar = attachRepository.findById(u.getAvatarId())
-        .orElseThrow(GlobalException.NOT_FOUND::create);
+    String avatarUrl = null;
+
+    if (u.getAvatarId() != null) {
+      Attach avatar = attachRepository.findById(u.getAvatarId()).get();
+      avatarUrl = avatar.getUploadPath();
+    }
+
     return com.hack.stock2u.user.dto.SellerDetails.create(
-        u, avatar.getUploadPath(), salesCount, 0
+        u,  avatarUrl, salesCount, 0
     );
   }
 
