@@ -5,7 +5,6 @@ import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.response.PurchaserSellerReservationsResponse;
-import com.hack.stock2u.chat.dto.response.ReservationResponse;
 import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.service.ChatMessageService;
 import com.hack.stock2u.chat.service.ReservationService;
@@ -47,7 +46,7 @@ public class ReservationApi {
   @Operation(summary = "예약 생성 API", description = "클라이언트가 구매 예약 요청을 보냈을때 예약을"
       + " 위한 채팅방 생성 + 판매자에게 자동 메세지 발송")
   @PostMapping("/{productId}")
-  public ResponseEntity<ReservationResponse> createReservation(
+  public ResponseEntity<Void> createReservation(
       @PathVariable("productId") Long productId
   ) {
     ReservationProductPurchaser ret = reservationService.create(productId);
