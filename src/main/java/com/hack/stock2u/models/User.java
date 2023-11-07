@@ -33,7 +33,7 @@ import org.joda.time.DateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(name = "users")
-@Where(clause = "removed_at IS NULL")
+//@Where(clause = "removed_at IS NULL")
 public class User implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
