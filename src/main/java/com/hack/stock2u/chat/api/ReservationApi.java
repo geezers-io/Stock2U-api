@@ -92,8 +92,8 @@ public class ReservationApi {
   @GetMapping("/chats")
   public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservations(
 
-      @Parameter(description = "게시글 제목으로 검색", required = false, allowEmptyValue = true)
-      @RequestParam("title") String title,
+      @Parameter(description = "게시글 제목으로 검색")
+      @RequestParam(value = "title", required = false) String title,
       @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
       @RequestParam("page") int page,
       @Parameter(description = "가져올 데이터 갯수 단위", required = true)
