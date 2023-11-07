@@ -149,7 +149,7 @@ public class ReservationService {
     List<Reservation> reservations = getSellerAndPurchaser(id, role, pageable);
     Stream<Reservation> filteredReservations;
 
-    if (title.isEmpty()) {
+    if (title.isEmpty() || title.isBlank()) {
       filteredReservations = reservations.stream();
     } else {
       filteredReservations = reservations.stream()
