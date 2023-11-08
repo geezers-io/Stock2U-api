@@ -18,6 +18,7 @@ import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
+import com.hack.stock2u.utils.JsonSerializer;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -32,7 +33,7 @@ public class ChatMessageService {
   private final SimpMessagingTemplate messagingTemplate;
   private final JpaProductRepository productRepository;
   private final SessionManager sessionManager;
-  private final ObjectMapper objectMapper;
+  private final JsonSerializer jsonSerializer;
   // 메시지 저장
 
   public void saveAndSendMessage(SendChatMessage request, Long roomId) {
@@ -56,12 +57,8 @@ public class ChatMessageService {
         .reservationId(roomId)
         .build();
 
-    try {
-      String idAndMessageByJson = objectMapper.writeValueAsString(idAndMessage);
-      messagingTemplate.convertAndSend("/topic/chat/alert/" + opUserId, idAndMessageByJson);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    }
+    Object idAndMessageByJson = jsonSerializer.serialize(idAndMessage);
+    messagingTemplate.convertAndSend("/topic/chat/alert/" + opUserId, idAndMessageByJson);
 
   }
 
