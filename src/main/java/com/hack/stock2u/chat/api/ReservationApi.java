@@ -1,5 +1,6 @@
 package com.hack.stock2u.chat.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
@@ -50,9 +51,9 @@ public class ReservationApi {
       @PathVariable("productId") Long productId
   ) {
     ReservationProductPurchaser ret = reservationService.create(productId);
-    // 예약 눌렀을때 메세지 보내지는 방식
-    // 상태 보내야함 근데 null로 갈꺼 같음 그래서 상태 하나 추가해야될듯?
-    // 메세지로 ReservationStatus를 넘기는게 맞을까? 구매자가 판매자에게 넘기는 형식임
+    if (ret == null) {
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
     chatMessageService.saveAndSendAutoMessage(ret);
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }

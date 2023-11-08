@@ -33,10 +33,6 @@ public class Reservation {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Comment("MongoDB Chat 식별자")
-  @Column(name = "chat_id")
-  private String chatId;
-
   @Comment("잔여 재고")
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id")
@@ -52,24 +48,25 @@ public class Reservation {
   @JoinColumn(name = "purchaser_id")
   private User purchaser;
 
-  @Column(name = "disabled_at")
-  @Temporal(TemporalType.TIMESTAMP)
-  private Date disabledAt;
-
   @Enumerated(EnumType.STRING)
   private ReservationStatus status;
 
   @Embedded
   private BasicDateColumn basicDate;
 
-  public void setDisabledAt(Date date) {
-    this.disabledAt = date;
+  public void setRemoveAt(Date date) {
+    this.basicDate.setRemovedAt(date);
   }
 
+  public void setCreateAt() {
+    this.basicDate.setCreatedAt(new Date());
+  }
+
+
+
   @Builder
-  public Reservation(String chatId, Product product,
+  public Reservation(Product product,
                       User seller, User purchaser) {
-    this.chatId = chatId;
     this.product = product;
     this.seller = seller;
     this.purchaser = purchaser;
