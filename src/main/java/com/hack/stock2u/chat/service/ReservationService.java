@@ -247,12 +247,7 @@ public class ReservationService {
   }
 
   private long getCountOfMessage(String userName, Long roomId) {
-
-    Query query = new Query(Criteria.where("roomId").is(roomId)
-        .and("read").is(false)
-        .and("userName").ne(userName));
-
-    return mongoTemplate.count(query, ChatMessage.class);
+    return chatMongoRepository.countByRoomIdAndReadIsFalseAndUserNameNot(roomId, userName);
   }
 
 
