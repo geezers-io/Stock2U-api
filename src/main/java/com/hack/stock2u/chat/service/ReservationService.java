@@ -84,7 +84,7 @@ public class ReservationService {
         .product(product)
         .seller(product.getSeller())
         .build();
-    reservation.setCreateAt();
+    reservation.setCreateAt(new Date());
     reservationRepository.save(reservation);
 
     reservationMessageHandler.publishReservationRequest(

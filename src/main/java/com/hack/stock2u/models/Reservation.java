@@ -58,8 +58,8 @@ public class Reservation {
     this.basicDate.setRemovedAt(date);
   }
 
-  public void setCreateAt() {
-    this.basicDate.setCreatedAt(new Date());
+  public void setCreateAt(Date date) {
+    this.basicDate.setCreatedAt(date);
   }
 
 
