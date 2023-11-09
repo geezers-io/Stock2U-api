@@ -156,7 +156,7 @@ public class ReservationService {
     List<Reservation> reservations = getSellerAndPurchaser(id, role, pageable);
     Stream<Reservation> filteredReservations = reservations.stream();
 
-    if (!title.isEmpty() || title.isBlank()) {
+    if (title != null && !title.isEmpty()) {
       filteredReservations =
           filteredReservations.filter(
               reservation -> reservation.getProduct().getTitle().contains(title)
