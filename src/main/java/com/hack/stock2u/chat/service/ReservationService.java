@@ -83,6 +83,7 @@ public class ReservationService {
         .purchaser(purchaser)
         .product(product)
         .seller(product.getSeller())
+        .status(ReservationStatus.REQUESTED)
         .build();
     reservation.setCreateAt(new Date());
     reservationRepository.save(reservation);
