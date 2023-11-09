@@ -30,6 +30,10 @@ public class CredentialsInterceptor implements ChannelInterceptor {
       return ChannelInterceptor.super.preSend(message, channel);
     }
 
+    if (StompCommand.UNSUBSCRIBE.equals(accessor.getCommand())) {
+      return ChannelInterceptor.super.preSend(message, channel);
+    }
+
     log.info("userIds: {}, phones: {}", userIds, phones);
     if (userIds == null || phones == null) {
       throw AuthException.IS_ANONYMOUS_USER.create();
