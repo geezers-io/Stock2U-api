@@ -48,7 +48,7 @@ public class ReservationApi {
   @Operation(summary = "예약 생성 API", description = "클라이언트가 구매 예약 요청을 보냈을때 예약을"
       + " 위한 채팅방 생성 + 판매자에게 자동 메세지 발송")
   @PostMapping("/{productId}")
-  public ResponseEntity<Void> createReservation(
+  public ResponseEntity<Long> createReservation(
       @PathVariable("productId") Long productId
   ) {
     ReservationProductPurchaser ret = reservationService.create(productId);
@@ -56,7 +56,7 @@ public class ReservationApi {
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
     chatMessageService.saveAndSendAutoMessage(ret);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+    return ResponseEntity.status(HttpStatus.CREATED).body(ret.reservation().getId());
   }
 
   //예약승인 api 이것도 patch로 해도될듯

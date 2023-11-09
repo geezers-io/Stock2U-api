@@ -61,9 +61,6 @@ public class Reservation {
   public void setCreateAt(Date date) {
     this.basicDate.setCreatedAt(date);
   }
-
-
-
   @Builder
   public Reservation(Product product,
                       User seller, User purchaser) {
