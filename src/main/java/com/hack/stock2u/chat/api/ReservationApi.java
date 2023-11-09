@@ -91,7 +91,7 @@ public class ReservationApi {
   @Operation(summary = "채팅방 조회 API, 채팅방 검색 조회 API",
       description = "사용자가 가진 채팅방 + 검색으로 조회한 채팅방")
   @GetMapping("/chats")
-  public ResponseEntity<Page<PurchaserSellerReservationsResponse>>  getReservations(
+  public ResponseEntity<Page<PurchaserSellerReservationsResponse>> getReservations(
 
       @Parameter(description = "게시글 제목으로 검색")
       @RequestParam(value = "title", required = false) String title,

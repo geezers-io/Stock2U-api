@@ -1,6 +1,7 @@
 package com.hack.stock2u.chat.service;
 
 
+import com.hack.stock2u.authentication.AuthException;
 import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.dto.ReservationApproveToMessage;
@@ -71,7 +72,17 @@ public class ReservationService {
     User purchaser = sessionManager.getSessionUserByRdb();
     Product product = productRepository.findById(productId)
         .orElseThrow(GlobalException.NOT_FOUND::create);
+
     Date currentDate = new Date();
+    Long sellerId = product.getSeller().getId();
+
+    boolean reservationExists =
+        reservationRepository.findByBothUserId(purchaser.getId(), sellerId).isPresent();
+
+    if (reservationExists) {
+      throw ReservationException.ALREADY_EXISTS.create();
+    }
+
     if (!(product.getExpiredAt().after(currentDate))) {
       throw ReservationException.PRODUCT_EXPIRED.create();
     }
@@ -289,6 +300,5 @@ public class ReservationService {
   private List<Reservation> getReservationBySellerId(Long id, Pageable pageable) {
     return reservationRepository.findBySellerId(id, pageable).getContent();
   }
-
 
 }
