@@ -18,6 +18,7 @@ import com.hack.stock2u.user.dto.SellerSubscribeDetails;
 import com.hack.stock2u.user.repository.JpaSubscriptionRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,13 @@ public class SubscriptionService {
     User purchaser = sessionManager.getSessionUserByRdb();
     User seller = userRepository.findById(sellerId)
         .orElseThrow(UserException.NOT_FOUND_USER::create);
+
+    boolean subExists =
+        subscriptionRepository.existsBothUserId(purchaser.getId(), sellerId).isPresent();
+
+    if (subExists) {
+      throw GlobalException.ALREADY_EXISTS.create();
+    }
 
     Subscription subscription = new Subscription(purchaser, seller);
     subscriptionRepository.save(subscription);
