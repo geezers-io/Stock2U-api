@@ -13,7 +13,7 @@ public record ChatMessageResponse(
     String message,
     Date createdAt
 
-//    String image
+
 ) {
   public static ChatMessageResponse create(
       ChatMessage chatMessage) {

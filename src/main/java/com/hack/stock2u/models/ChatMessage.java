@@ -41,4 +41,6 @@ public class ChatMessage {
   @Field(name = "timestamp")
   private Date createdAt;
 
+  @Field(name = "message_read")
+  private boolean read;
 }

@@ -3,6 +3,7 @@ package com.hack.stock2u.chat.service;
 
 import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.authentication.service.SessionManager;
+import com.hack.stock2u.chat.dto.ReservationApproveToMessage;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
@@ -27,18 +28,23 @@ import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
+import net.bytebuddy.asm.Advice;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
 
 @Slf4j
 @Service
@@ -54,29 +60,32 @@ public class ReservationService {
   private final SessionManager sessionManager;
   private final JpaReportRepository reportRepository;
   private final ReservationMessageHandler reservationMessageHandler;
-
+  private final MongoTemplate mongoTemplate;
   /**
    * 예약 엔티티를 생성합니다.
    */
+
   public ReservationProductPurchaser create(Long productId) {
+
     User purchaser = sessionManager.getSessionUserByRdb();
     Product product = productRepository.findById(productId)
         .orElseThrow(GlobalException.NOT_FOUND::create);
-
+    Date currentDate = new Date();
+    if (product.getExpiredAt().after(currentDate)) {
+      return null;
+    }
     // 잔여재고 남은 갯수가 0개면 예약되지 않음
     if (product.getProductCount() == 0) {
       throw ReservationException.NOT_ENOUGH_COUNT.create();
     }
 
-    String roomId = RandomStringUtils.randomAlphabetic(8);
-    Reservation reservation = reservationRepository.save(
-        Reservation.builder()
-            .purchaser(purchaser)
-            .product(product)
-            .chatId(roomId)
-            .seller(product.getSeller())
-            .build()
-    );
+    Reservation reservation = Reservation.builder()
+        .purchaser(purchaser)
+        .product(product)
+        .seller(product.getSeller())
+        .build();
+    reservation.setCreateAt();
+    reservationRepository.save(reservation);
 
     reservationMessageHandler.publishReservationRequest(
         product.getTitle(),
@@ -88,18 +97,15 @@ public class ReservationService {
   }
 
   public void cancel(Long id) {
-    Reservation r = reservationRepository.findById(id)
-        .orElseThrow(GlobalException.NOT_FOUND::create);
-    r.setDisabledAt(new Date());
-    reservationRepository.save(r);
+    reservationRepository.deleteById(id);
   }
 
-  public ReservationStatus approve(ReservationApproveRequest request) {
+  public ReservationApproveToMessage approve(ReservationApproveRequest request) {
     Reservation reservation = reservationRepository.findById(request.roomId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
     reservation.changeStatus(ReservationStatus.PROGRESS);
     reservationRepository.save(reservation);
-    return ReservationStatus.PROGRESS;
+    return new ReservationApproveToMessage(reservation.getStatus(), reservation);
   }
 
   public Short report(ReportRequest request) {
@@ -145,6 +151,7 @@ public class ReservationService {
     SessionUser u = getSessionUser();
     String role = getUserRole(u);
     Long id = getUserId(u);
+    String userName = u.username();
 
     List<Reservation> reservations = getSellerAndPurchaser(id, role, pageable);
     Stream<Reservation> filteredReservations = reservations.stream();
@@ -157,8 +164,8 @@ public class ReservationService {
     }
 
     List<PurchaserSellerReservationsResponse> responses = filteredReservations
-        .map(Reservation::getId)
-        .map(this::createLatestMessageAndThumbnailAndSimpleReservation)
+        .map(reservation -> createLatestMessageAndThumbnailAndSimpleReservation(
+            reservation.getId(), userName))
         .toList();
 
     return new PageImpl<>(responses);
@@ -190,10 +197,11 @@ public class ReservationService {
   public ReservationStatus changeStatus(ChangeStatusRequest request) {
     //예약 취소, 예약 완료 로직 다르게 짜야함
     Reservation reservation = getReservationId(request.reservationId());
-    if (request.status().equals("예약 취소됌")) {
-      reservation.setDisabledAt(new Date());
+    //setremoveAt을 예약취소
+    if (request.status().equals(ReservationStatus.CANCEL.getName())) {
+      reservation.setRemoveAt(new Date());
     } else {
-      reservation.setDisabledAt(null);
+      reservation.setRemoveAt(null);
     }
     reservation.changeStatus(ReservationStatus.valueOf(request.status()));
 
@@ -223,26 +231,36 @@ public class ReservationService {
 
 
   private PurchaserSellerReservationsResponse
-      createLatestMessageAndThumbnailAndSimpleReservation(Long id) {
+      createLatestMessageAndThumbnailAndSimpleReservation(Long id, String userName) {
 
     ChatMessageResponse messageResponse = latestMessage(id);
 
     Reservation reservation = getReservationId(id);
 
     SimpleThumbnailImage simpleThumbnailImage = getThumbnailImage(reservation);
-
+    long count = getCountOfMessage(userName, id);
     SimpleReservation simpleReservation = SimpleReservation.create(
         reservation, simpleThumbnailImage);
 
-    return new PurchaserSellerReservationsResponse(messageResponse, simpleReservation);
+    return new PurchaserSellerReservationsResponse(messageResponse, simpleReservation, count);
   }
-  //check는 boolean으로 예측되니 이름을 바꾸자
+
+  private long getCountOfMessage(String userName, Long roomId) {
+
+    Query query = new Query(Criteria.where("roomId").is(roomId)
+        .and("read").is(false)
+        .and("userName").ne(userName));
+
+    return mongoTemplate.count(query, ChatMessage.class);
+  }
+
 
   private List<Reservation> getSellerAndPurchaser(Long id, String role, Pageable pageable) {
     return (role.equals(UserRole.SELLER.getName()))
         ? getReservationBySellerId(id, pageable) :
         getReservationByPurchaserId(id, pageable);
   }
+
 
 
   private ChatMessageResponse latestMessage(Long id) {
