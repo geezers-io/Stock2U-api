@@ -12,6 +12,7 @@ import com.hack.stock2u.chat.service.ChatMessageService;
 import com.hack.stock2u.chat.service.ReservationService;
 import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.constant.UserRole;
+import com.hack.stock2u.global.dto.GlobalResponse;
 import com.hack.stock2u.utils.RoleGuard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,15 +49,17 @@ public class ReservationApi {
   @Operation(summary = "예약 생성 API", description = "클라이언트가 구매 예약 요청을 보냈을때 예약을"
       + " 위한 채팅방 생성 + 판매자에게 자동 메세지 발송")
   @PostMapping("/{productId}")
-  public ResponseEntity<Long> createReservation(
+  public ResponseEntity<GlobalResponse.Id> createReservation(
       @PathVariable("productId") Long productId
   ) {
     ReservationProductPurchaser ret = reservationService.create(productId);
     if (ret == null) {
       return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
     chatMessageService.saveAndSendAutoMessage(ret);
-    return ResponseEntity.status(HttpStatus.CREATED).body(ret.reservation().getId());
+    return ResponseEntity.status(HttpStatus.CREATED).body(new GlobalResponse.Id(
+        ret.reservation().getId()));
   }
 
   //예약승인 api 이것도 patch로 해도될듯
@@ -71,7 +74,7 @@ public class ReservationApi {
   }
   //이게 채팅방을 삭제하는건데 로직을 예약 취소로 작성해버림 수정 필요
 
-  @Operation(summary = "예약 취소 API", description = "예약을 위한 채팅방을 삭제할때 사용하는 API")
+  @Operation(summary = "예약 취소 API", description = "희정님이 상세페이지에서 예약 삭제할때 쓰는 API")
   @DeleteMapping("/{reservationId}")
   public ResponseEntity<Void> cancelReservationApi(
       @PathVariable("reservationId") Long reservationId
