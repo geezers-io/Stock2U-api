@@ -106,7 +106,6 @@ public class ChatMessageService {
         .message(message.getMessage())
         .createdAt(message.getCreatedAt())
         .imageId(purchaser.getAvatarId())
-        .status(reservation.getStatus())
         .build());
     String destination = "/topic/chat/room/" + reservation.getId();
 
@@ -142,7 +141,6 @@ public class ChatMessageService {
         .message(message.getMessage())
         .createdAt(message.getCreatedAt())
         .imageId(seller.getAvatarId())
-        .status(approveToMessage.status())
         .build());
     String destination = "/topic/chat/room/" + roomId;
 

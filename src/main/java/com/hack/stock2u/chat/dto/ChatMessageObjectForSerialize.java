@@ -9,8 +9,7 @@ public record ChatMessageObjectForSerialize(
     String username,
     String message,
     Date createdAt,
-    Long imageId,
-    ReservationStatus status
+    Long imageId
 ) {
 
 }
