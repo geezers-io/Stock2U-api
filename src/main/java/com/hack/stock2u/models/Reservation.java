@@ -59,7 +59,8 @@ public class Reservation {
   }
 
   public void setCreateAt(Date date) {
-    this.basicDate.setCreatedAt(date);
+    basicDate = new BasicDateColumn();
+    basicDate.setCreatedAt(date);
   }
 
   @Builder
