@@ -98,6 +98,7 @@ public class ChatMessageService {
           .userName(purchaser.getName())
           .message("[자동 발신 메세지] \n" + product.getName() + "구매를 원합니다.")
           .createdAt(new Date())
+          .read(false)
           .build()
     );
 

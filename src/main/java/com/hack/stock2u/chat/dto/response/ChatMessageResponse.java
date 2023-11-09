@@ -11,8 +11,8 @@ public record ChatMessageResponse(
 
     String username,
     String message,
-    Date createdAt
-
+    Date createdAt,
+    boolean read
 
 ) {
   public static ChatMessageResponse create(
@@ -21,6 +21,7 @@ public record ChatMessageResponse(
         .username(chatMessage.getUserName())
         .message(chatMessage.getMessage())
         .createdAt(chatMessage.getCreatedAt())
+        .read(chatMessage.isRead())
         .build();
   }
 }

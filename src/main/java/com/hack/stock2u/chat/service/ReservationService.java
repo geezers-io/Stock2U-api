@@ -268,6 +268,7 @@ public class ReservationService {
     ChatMessage chatMessage = chatMongoRepository
         .findByRoomIdOrderByCreatedAtDesc(id, PageRequest.of(0, 1))
         .orElseThrow(GlobalException.NOT_FOUND::create);
+
     return ChatMessageResponse.create(chatMessage);
   }
 
