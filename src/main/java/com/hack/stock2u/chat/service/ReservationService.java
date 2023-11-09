@@ -3,6 +3,7 @@ package com.hack.stock2u.chat.service;
 
 import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.authentication.service.SessionManager;
+import com.hack.stock2u.chat.dto.ReservationApproveToMessage;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
@@ -99,12 +100,12 @@ public class ReservationService {
     reservationRepository.deleteById(id);
   }
 
-  public ReservationStatus approve(ReservationApproveRequest request) {
+  public ReservationApproveToMessage approve(ReservationApproveRequest request) {
     Reservation reservation = reservationRepository.findById(request.roomId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
     reservation.changeStatus(ReservationStatus.PROGRESS);
     reservationRepository.save(reservation);
-    return ReservationStatus.PROGRESS;
+    return new ReservationApproveToMessage(reservation.getStatus(), reservation);
   }
 
   public Short report(ReportRequest request) {

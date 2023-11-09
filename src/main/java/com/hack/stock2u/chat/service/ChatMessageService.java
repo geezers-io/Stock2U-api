@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.authentication.service.SessionManager;
+import com.hack.stock2u.chat.dto.ChatMessageObjectForSerialize;
+import com.hack.stock2u.chat.dto.ReservationApproveToMessage;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.request.SendChatMessage;
@@ -11,6 +13,7 @@ import com.hack.stock2u.chat.dto.response.AlertIdAndMessage;
 import com.hack.stock2u.chat.dto.response.ReservationMessageResponse;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
+import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.ChatMessage;
 import com.hack.stock2u.models.Product;
@@ -41,18 +44,29 @@ public class ChatMessageService {
         .orElseThrow(GlobalException.NOT_FOUND::create);
     SessionUser s = sessionManager.getSessionUser();
     String username = s.username();
-
+    User user = userRepository.findById(s.id())
+        .orElseThrow(GlobalException.NOT_FOUND::create);
     ChatMessage message = messageRepository.save(ChatMessage.builder()
         .roomId(currentRoom.getId())
         .userName(username)
         .message(request.message())
         .createdAt(new Date())
         .build());
+
+
     String destination = "/topic/chat/room/" + roomId;
     Long opUserId = getOpUserId(s.id(), currentRoom);
-    messagingTemplate.convertAndSend(destination, message.getMessage());
-    //아바타 이미지 텏스트 시간 메세지 user
+    Object objectForSerialize = jsonSerializer.serialize(ChatMessageObjectForSerialize.builder()
+        .username(username)
+        .createdAt(message.getCreatedAt())
+        .message(request.message())
+        .imageId(user.getAvatarId())
+        .build());
+
+    messagingTemplate.convertAndSend(destination, objectForSerialize);
     AlertIdAndMessage idAndMessage = AlertIdAndMessage.builder()
+        .userName(username)
+        .userId(s.id())
         .message(message.getMessage())
         .reservationId(roomId)
         .build();
@@ -86,27 +100,64 @@ public class ChatMessageService {
           .createdAt(new Date())
           .build()
     );
-    // 밑에 dto 지워 그리고 message 가공하던가 하셈
-    ReservationMessageResponse messageResponse = ReservationMessageResponse
-        .makingReservationMessage(reservation, product, purchaser, message);
+
+    Object objectForSerialize = jsonSerializer.serialize(ChatMessageObjectForSerialize.builder()
+        .username(message.getUserName())
+        .message(message.getMessage())
+        .createdAt(message.getCreatedAt())
+        .imageId(purchaser.getAvatarId())
+        .status(reservation.getStatus())
+        .build());
     String destination = "/topic/chat/room/" + reservation.getId();
 
-    messagingTemplate.convertAndSend(destination, messageResponse);
+    messagingTemplate.convertAndSend(destination, objectForSerialize);
+
+    AlertIdAndMessage idAndMessage = AlertIdAndMessage.builder()
+        .userName(message.getUserName())
+        .userId(purchaser.getId())
+        .message(message.getMessage())
+        .reservationId(reservation.getId())
+        .build();
+    Long opUserId = getOpUserId(purchaser.getId(), reservation);
+    Object idAndMessageByJson = jsonSerializer.serialize(idAndMessage);
+    messagingTemplate.convertAndSend("/topic/chat/alert/" + opUserId, idAndMessageByJson);
+
   }
 
-  public void saveAndSendAutoMessageApprove(ReservationApproveRequest request) {
+  public void saveAndSendAutoMessageApprove(ReservationApproveToMessage approveToMessage) {
+    Long roomId = approveToMessage.reservation().getId();
     Long u = sessionManager.getSessionUser().id();
     User seller = userRepository.findById(u)
         .orElseThrow(GlobalException.NOT_FOUND::create);
     ChatMessage message = messageRepository.save(ChatMessage.builder()
-        .roomId(request.roomId())
+        .roomId(roomId)
         .userName(seller.getName())
         .message("[자동 발신 메세지] \n 판매가 예약되었습니다.")
         .createdAt(new Date())
         .build()
     );
-    String destination = "/topic/chat/room/" + request.roomId();
-    messagingTemplate.convertAndSend(destination, message);
+
+    Object objectForSerialize = jsonSerializer.serialize(ChatMessageObjectForSerialize.builder()
+        .username(message.getUserName())
+        .message(message.getMessage())
+        .createdAt(message.getCreatedAt())
+        .imageId(seller.getAvatarId())
+        .status(approveToMessage.status())
+        .build());
+    String destination = "/topic/chat/room/" + roomId;
+
+    messagingTemplate.convertAndSend(destination, objectForSerialize);
+
+    AlertIdAndMessage idAndMessage = AlertIdAndMessage.builder()
+        .userName(message.getUserName())
+        .userId(seller.getId())
+        .message(message.getMessage())
+        .reservationId(roomId)
+        .build();
+    Long opUserId = getOpUserId(seller.getId(), approveToMessage.reservation());
+    Object idAndMessageByJson = jsonSerializer.serialize(idAndMessage);
+    messagingTemplate.convertAndSend("/topic/chat/alert/" + opUserId, idAndMessageByJson);
+
   }
 }
 

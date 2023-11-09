@@ -1,6 +1,7 @@
 package com.hack.stock2u.chat.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hack.stock2u.chat.dto.ReservationApproveToMessage;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
@@ -64,9 +65,9 @@ public class ReservationApi {
   public ResponseEntity<ReservationStatus> approveReservationApi(
       ReservationApproveRequest request) {
 
-    ReservationStatus approve = reservationService.approve(request);
-    chatMessageService.saveAndSendAutoMessageApprove(request);
-    return ResponseEntity.status(HttpStatus.OK).body(approve);
+    ReservationApproveToMessage approveToMessage = reservationService.approve(request);
+    chatMessageService.saveAndSendAutoMessageApprove(approveToMessage);
+    return ResponseEntity.status(HttpStatus.OK).body(approveToMessage.status());
   }
   //이게 채팅방을 삭제하는건데 로직을 예약 취소로 작성해버림 수정 필요
 
