@@ -53,9 +53,6 @@ public class ReservationApi {
       @PathVariable("productId") Long productId
   ) {
     ReservationProductPurchaser ret = reservationService.create(productId);
-    if (ret == null) {
-      return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
 
     chatMessageService.saveAndSendAutoMessage(ret);
     return ResponseEntity.status(HttpStatus.CREATED).body(new GlobalResponse.Id(

@@ -8,7 +8,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ReservationException implements BasicErrorCase {
-  NOT_ENOUGH_COUNT(HttpStatus.BAD_REQUEST, "NOT_ENOUGH_COUNT", "재고 개수가 소진되었습니다.");
+  NOT_ENOUGH_COUNT(HttpStatus.BAD_REQUEST, "NOT_ENOUGH_COUNT", "재고 개수가 소진되었습니다."),
+  PRODUCT_EXPIRED(HttpStatus.GONE, "PRODUCT_EXPIRED", "상품 기한이 만료되었습니다.");
 
   private final HttpStatus httpStatus;
   private final String errorCode;

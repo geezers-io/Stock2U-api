@@ -71,8 +71,8 @@ public class ReservationService {
     Product product = productRepository.findById(productId)
         .orElseThrow(GlobalException.NOT_FOUND::create);
     Date currentDate = new Date();
-    if (product.getExpiredAt().after(currentDate)) {
-      return null;
+    if (!(product.getExpiredAt().after(currentDate))) {
+      throw ReservationException.PRODUCT_EXPIRED.create();
     }
     // 잔여재고 남은 갯수가 0개면 예약되지 않음
     if (product.getProductCount() == 0) {
