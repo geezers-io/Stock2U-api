@@ -13,6 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -42,7 +43,8 @@ public class SecurityConfig {
     http.authorizeRequests()
             .antMatchers(
                 "/auth/**",
-                "/docs/**", "/api-docs/**", "/swagger-ui/**",
+                 "/docs/**", "/api-docs/**", "/swagger-ui/**",
+                "/products/**",
                 "/ws/**",
                 "/chat-test/**"
             ).permitAll()
@@ -50,6 +52,9 @@ public class SecurityConfig {
             .authenticated()
             .antMatchers("/test/admin").hasRole(ADMIN.name())
             .anyRequest().authenticated();
+
+    http.sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
 
     return http.build();
   }
@@ -76,15 +81,6 @@ public class SecurityConfig {
     source.registerCorsConfiguration("/**", config);
     return source;
   }
-
-  /**
-   * 암호화를 수행하는 PasswordEncoder 객체를 반환합니다.
-   */
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
-
 
   private void disableMvcSettings(HttpSecurity http) throws Exception {
     http.formLogin().disable();

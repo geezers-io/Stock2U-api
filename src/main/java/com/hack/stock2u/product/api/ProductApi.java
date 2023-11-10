@@ -57,7 +57,7 @@ public class ProductApi {
     ProductCondition condition = new ProductCondition();
     condition.setLatitude(latitude);
     condition.setLongitude(longitude);
-    condition.setDistance(10.0);
+    condition.setDistance(3.0);
     condition.setCategory(List.of(FOOD.name(), ACCOMMODATION.name(), TICKET.name()));
     condition.setMinPrice(0);
     condition.setMaxPrice(2147483647);
