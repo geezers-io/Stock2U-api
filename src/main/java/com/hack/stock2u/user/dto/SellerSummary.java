@@ -7,7 +7,7 @@ public record SellerSummary(
     Long id,
     String name,
     String phone,
-    String avatarUrl,
+    String profileImageUrl,
     int salesCount,
     int reviewCount,
     String location,

@@ -7,7 +7,7 @@ public record PurchaserSummary(
     Long id,
     String name,
     String phone,
-    String avatarUrl,
+    String profileImageUrl,
     int buyCount,
     int reviewCount
 ) {}

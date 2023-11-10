@@ -23,14 +23,14 @@ public class PurchaserService {
 
   public PurchaserSummary getDetails() {
     SessionUser user = sessionManager.getSessionUser();
-    String avatarUrl = userDslRepository.getAvatarUrl(new UserId(user.id()));
+    String profileUrl = userDslRepository.getProfileUrl(new UserId(user.id()));
     Long buyCount = purchaserRepository.getBuyCount(user.id());
 
     return PurchaserSummary.builder()
         .id(user.id())
         .name(user.username())
         .phone(user.phone())
-        .avatarUrl(avatarUrl)
+        .profileImageUrl(profileUrl)
         .buyCount(buyCount.intValue())
         .reviewCount(0)
         .build();

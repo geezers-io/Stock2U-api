@@ -32,7 +32,7 @@ public class SellerService {
     User user = sessionManager.getSessionUserByRdb();
     SellerDetails sellerDetails = user.getSellerDetails();
     Long salesCount = sellerDslRepository.getSalesCount(user.getId());
-    String avatarUrl = userDslRepository.getAvatarUrl(new AvatarId(user.getAvatarId()));
+    String profileImageUrl = userDslRepository.getProfileUrl(new AvatarId(user.getAvatarId()));
 
     return SellerSummary.builder()
         .id(user.getId())
@@ -43,7 +43,7 @@ public class SellerService {
         .account(sellerDetails.getAccount())
         .reviewCount(0)
         .salesCount(salesCount.intValue())
-        .avatarUrl(avatarUrl)
+        .profileImageUrl(profileImageUrl)
         .build();
   }
 
@@ -59,15 +59,15 @@ public class SellerService {
   // FIX: 리뷰 미구현으로 갯수 0 고정
   public com.hack.stock2u.user.dto.SellerDetails getSellerDetails(User u) {
     int salesCount = getSalesCount(u);
-    String avatarUrl = null;
+    String profileUrl = null;
 
     if (u.getAvatarId() != null) {
       Attach avatar = attachRepository.findById(u.getAvatarId()).get();
-      avatarUrl = avatar.getUploadPath();
+      profileUrl = avatar.getUploadPath();
     }
 
     return com.hack.stock2u.user.dto.SellerDetails.create(
-        u,  avatarUrl, salesCount, 0
+        u, profileUrl, salesCount, 0
     );
   }
 

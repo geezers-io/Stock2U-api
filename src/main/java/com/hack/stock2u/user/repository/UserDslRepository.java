@@ -13,21 +13,21 @@ import org.springframework.stereotype.Repository;
 public class UserDslRepository {
   private final JPAQueryFactory factory;
 
-  public String getAvatarUrl(UserId id) {
+  public String getProfileUrl(UserId id) {
     Long avatarId =
         factory.select(QUser.user.avatarId).from(QUser.user).where(QUser.user.id.eq(id.id()))
             .fetchOne();
     if (avatarId == null) {
       return null;
     }
-    return getAvatarUrlQuery(avatarId);
+    return getProfileUrlQuery(avatarId);
   }
 
-  public String getAvatarUrl(AvatarId id) {
-    return getAvatarUrlQuery(id.id());
+  public String getProfileUrl(AvatarId id) {
+    return getProfileUrlQuery(id.id());
   }
 
-  private String getAvatarUrlQuery(Long avatarId) {
+  private String getProfileUrlQuery(Long avatarId) {
     if (avatarId == null) {
       return null;
     }
