@@ -267,7 +267,7 @@ public class ReservationService {
         latestChat, reservationSummary, getCountOfMessage(userName, id));
   }
 
-  private long getCountOfMessage(String userName, Long roomId) {
+  public long getCountOfMessage(String userName, Long roomId) {
     return chatMongoRepository.countByRoomIdAndReadIsFalseAndUserNameNot(roomId, userName);
   }
 
@@ -288,7 +288,7 @@ public class ReservationService {
     return ChatMessageResponse.create(chatMessage);
   }
 
-  private SimpleThumbnailImage getThumbnailImage(Reservation reservation) {
+  public SimpleThumbnailImage getThumbnailImage(Reservation reservation) {
 
     Attach thumbnail = attachRepository.findFirstByProductIdOrderById(
         reservation.getProduct().getId());

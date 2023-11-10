@@ -1,6 +1,5 @@
 package com.hack.stock2u.chat.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hack.stock2u.chat.dto.ReservationApproveToMessage;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;

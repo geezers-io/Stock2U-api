@@ -2,9 +2,11 @@ package com.hack.stock2u.chat.service;
 
 import com.hack.stock2u.chat.dto.ChatMessageObjectForSerialize;
 import com.hack.stock2u.constant.AutoMessageTemplate;
+import com.hack.stock2u.constant.ChatMessageType;
 import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.utils.JsonSerializer;
 import java.text.MessageFormat;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -35,8 +37,11 @@ public class MessageHandler {
   }
 
   //사용자들끼리 일반 채팅할때 사용
-  public String publishMessageSend(Reservation reservation, Long id, String message) {
+  public String publishMessageSend(
+      Reservation reservation, Long id, String message,
+      ChatMessageType type, List<String> imageUrls) {
     Object serialize = jsonSerializer.serialize(ChatMessageObjectForSerialize.builder()
+
         .username(reservation.getPurchaser().getName())
         .message(message)
         .createdAt(reservation.getBasicDate().getCreatedAt())

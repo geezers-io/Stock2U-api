@@ -8,4 +8,6 @@ public record PurchaserSellerReservationsResponse(
     SimpleReservation reservationSummary,
     @Schema(description = "안 읽은 채팅 수")
     long count
-) {}
+) {
+
+}
