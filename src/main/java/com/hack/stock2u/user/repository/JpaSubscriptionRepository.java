@@ -23,4 +23,9 @@ public interface JpaSubscriptionRepository extends JpaRepository<Subscription, L
   Page<Subscription> findBySubscriberId(Long id, Pageable pageable);
 
   Optional<Long> findBySubscriberId(Long purchaserId);
+
+  @Query(
+      "select sub from subscriptions sub where sub.subscriber.id = :pid and sub.target.id = :sid"
+  )
+  Optional<Long> existsBothUserId(Long pid, Long sid);
 }

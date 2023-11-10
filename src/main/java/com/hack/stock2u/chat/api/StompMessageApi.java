@@ -24,7 +24,7 @@ public class StompMessageApi {
 
   // 채팅방 대화
   @Operation(summary = "메세지 전송 + 저장", description = "메세지를 전송할시 저장 후, "
-      + "sub를 하고 있는 사용자에게 메세지 전송 ")
+      + "sub를 하고 있는 사용자에게 메세지 전송")
   @MessageMapping("/chat/talk/{roomId}")
   public void talkUser(
       @DestinationVariable("roomId") Long roomId,
