@@ -19,8 +19,8 @@ public class ReservationMessageHandler {
    * @param pid 구매자 ID
    * @param sid 판매자 ID
    */
-  public void publishReservationRequest(String title, Long pid, Long sid) {
-    String message = MessageFormat.format(MessageTemplate.RESERVATION_REQUEST.getMessage(), title);
+  public void publishReservation(MessageTemplate template, String title, Long pid, Long sid) {
+    String message = MessageFormat.format(template.getMessage(), title);
     String dest = "/topic/alert/";
     publisher.convertAndSend(dest + pid, message);
     publisher.convertAndSend(dest + sid, message);

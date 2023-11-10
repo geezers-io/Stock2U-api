@@ -6,6 +6,5 @@ import com.hack.stock2u.models.User;
 
 public record ReservationProductPurchaser(
     Reservation reservation,
-    Product product,
     User purchaser
 ) {}
