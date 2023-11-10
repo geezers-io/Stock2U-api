@@ -73,7 +73,7 @@ public class ReservationService {
     Long sellerId = product.getSeller().getId();
 
     boolean reservationExists =
-        reservationRepository.findByBothUserId(purchaser.getId(), sellerId).isPresent();
+        reservationRepository.findByBothUserId(purchaser.getId(), sellerId, productId).isPresent();
 
     if (reservationExists) {
       throw ReservationException.ALREADY_EXISTS.create();
