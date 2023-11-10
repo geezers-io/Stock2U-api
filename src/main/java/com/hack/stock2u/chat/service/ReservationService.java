@@ -303,11 +303,13 @@ public class ReservationService {
   }
 
   private List<Reservation> getReservationByPurchaserId(Long id, Pageable pageable) {
-    return reservationRepository.findByPurchaserId(id, pageable).getContent();
+    return reservationRepository.findByPurchaserIdOrderByBasicDateCreatedAtDesc(
+        id, pageable).getContent();
   }
 
   private List<Reservation> getReservationBySellerId(Long id, Pageable pageable) {
-    return reservationRepository.findBySellerId(id, pageable).getContent();
+    return reservationRepository.findBySellerIdOrderByBasicDateCreatedAtDesc(
+        id, pageable).getContent();
   }
 
 }

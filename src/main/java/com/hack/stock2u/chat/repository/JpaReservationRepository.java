@@ -12,9 +12,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface JpaReservationRepository extends JpaRepository<Reservation, Long> {
 
-  Page<Reservation> findBySellerId(Long sellerId, Pageable pageable);
+  Page<Reservation> findBySellerIdOrderByBasicDateCreatedAtDesc(Long sellerId, Pageable pageable);
 
-  Page<Reservation> findByPurchaserId(Long purchaserId, Pageable pageable);
+  Page<Reservation> findByPurchaserIdOrderByBasicDateCreatedAtDesc(
+      Long purchaserId, Pageable pageable);
 
   @Query("select r from reservations r where r.purchaser.id = :pid and r.seller.id = :sid")
   Optional<Reservation> findByBothUserId(Long pid, Long sid);
