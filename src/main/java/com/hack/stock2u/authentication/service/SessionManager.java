@@ -25,15 +25,13 @@ public class SessionManager {
   public SessionUser getSessionUser() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     validate(authentication);
-    ValueOperations<String, SessionUser> ops = redisTemplate.opsForValue();
 
     String key = getKey(authentication.getPrincipal(), authentication.getCredentials());
-    return ops.get(key);
+    return getSessionUserKey(key);
   }
 
   public SessionUser getSessionUser(String key) {
-    ValueOperations<String, SessionUser> ops = redisTemplate.opsForValue();
-    return ops.get(key);
+    return getSessionUserKey(key);
   }
 
   public User getSessionUserByRdb() {
@@ -54,6 +52,16 @@ public class SessionManager {
 
   public String getKey(Object principal, Object credentials) {
     return "session:" + principal + ":" + credentials;
+  }
+
+  private SessionUser getSessionUserKey(String key) {
+    ValueOperations<String, SessionUser> ops = redisTemplate.opsForValue();
+    SessionUser sessionUser = ops.get(key);
+    if (sessionUser == null) {
+      throw AuthException.EXPIRED_ACCOUNT.create();
+    }
+
+    return sessionUser;
   }
 
 }
