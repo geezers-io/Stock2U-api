@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,7 +17,13 @@ public interface JpaReservationRepository extends JpaRepository<Reservation, Lon
 
   Page<Reservation> findByPurchaserId(Long purchaserId, Pageable pageable);
 
-  @Query("select r from reservations r where r.purchaser.id = :pid and r.seller.id = :sid")
-  Optional<Reservation> findByBothUserId(Long pid, Long sid);
+  @SuppressWarnings("checkstyle:Indentation")
+  @Query("""
+    select r from reservations r
+    where r.purchaser.id = :pid and r.seller.id = :sid and r.product.id = :productId
+  """)
+  Optional<Reservation> findByBothUserId(
+      @Param("pid") Long pid, @Param("sid") Long sid, @Param("productId") Long productId
+  );
 
 }
