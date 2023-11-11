@@ -1,8 +1,6 @@
 package com.hack.stock2u.chat.service;
 
 
-import com.hack.stock2u.authentication.AuthException;
-import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.dto.ReservationApproveToMessage;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
@@ -10,7 +8,7 @@ import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.response.ChatMessageResponse;
-import com.hack.stock2u.chat.dto.response.PurchaserSellerReservationsResponse;
+import com.hack.stock2u.chat.dto.response.ChatRoomSummary;
 import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.dto.response.SimpleThumbnailImage;
 import com.hack.stock2u.chat.exception.ReservationException;
@@ -32,7 +30,6 @@ import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +91,7 @@ public class ReservationService {
         .build();
     reservation.setCreateAt(new Date());
     reservationRepository.save(reservation);
+
     //글로벌 알림
     reservationMessageHandler.publishReservation(
         MessageTemplate.RESERVATION_REQUEST,
@@ -173,8 +171,8 @@ public class ReservationService {
         .orElseThrow(GlobalException.NOT_FOUND::create);
   }
 
-  public Page<PurchaserSellerReservationsResponse> getReservations(Pageable pageable,
-                                                                   String title) {
+  public Page<ChatRoomSummary> getReservations(Pageable pageable,
+                                               String title) {
     User u = sessionManager.getSessionUserByRdb();
 
 
@@ -189,7 +187,7 @@ public class ReservationService {
           );
     }
 
-    List<PurchaserSellerReservationsResponse> responses = filteredReservations
+    List<ChatRoomSummary> responses = filteredReservations
         .map(reservation -> createLatestMessageAndThumbnailAndSimpleReservation(
             reservation.getId(), u.getName()))
         .toList();
@@ -251,7 +249,7 @@ public class ReservationService {
 
 
 
-  private PurchaserSellerReservationsResponse
+  private ChatRoomSummary
       createLatestMessageAndThumbnailAndSimpleReservation(Long id, String userName) {
 
     ChatMessageResponse latestChat = latestMessage(id);
@@ -263,7 +261,7 @@ public class ReservationService {
     SimpleReservation reservationSummary = SimpleReservation.create(
         reservation, simpleThumbnailImage);
 
-    return new PurchaserSellerReservationsResponse(
+    return new ChatRoomSummary(
         latestChat, reservationSummary, getCountOfMessage(userName, id));
   }
 
