@@ -8,6 +8,7 @@ server:
         path: /
         name: JSESSIONID
         http-only: true
+      timeout: 3600
     context-path: /api
 
 cloud:
@@ -41,6 +42,12 @@ spring:
       enabled: true
       max-file-size: 20MB
       max-request-size: 20MB
+  session:
+    store-type: redis
+    redis:
+      namespace: "stock2u:session"
+    timeout: 60m
+
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
@@ -126,11 +133,6 @@ spring:
   redis:
     host: ${HOME_REDIS_HOST}
     port: 6379
-  session:
-    store-type: redis
-    redis:
-      namespace: stock2u:session
-    timeout: 60m
 
 
 # dev 환경

@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import lombok.Builder;
 
-public class    AuthRequestDto {
+public class AuthRequestDto {
 
   public record SignInRequest(
       @Schema(required = true, description = "OAuth 인증 코드")

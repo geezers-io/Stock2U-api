@@ -51,7 +51,7 @@ public class SessionManager {
   }
 
   public String getKey(Object principal, Object credentials) {
-    return "session:" + principal + ":" + credentials;
+    return "stock2u:session:" + principal + ":" + credentials;
   }
 
   private SessionUser getSessionUserKey(String key) {
