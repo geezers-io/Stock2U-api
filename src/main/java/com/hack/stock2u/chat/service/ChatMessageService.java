@@ -19,9 +19,11 @@ import com.hack.stock2u.utils.JsonSerializer;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
@@ -59,7 +61,7 @@ public class ChatMessageService {
   private ChatMessage saveMessage(
       Reservation reservation, User user, String message,
       List<String> imageUrls, ChatMessageType type) {
-
+    log.debug("저장되는 데이터{}, {}, {}, {}", user, message, imageUrls, type);
     return messageRepository.save(ChatMessage.builder()
         .type(type)
         .roomId(reservation.getId())
@@ -86,7 +88,6 @@ public class ChatMessageService {
     Long opUserId = getOpUserId(purchaser.getId(), reservation);
     Long sellerId = reservation.getSeller().getId();
 
-    // FIX: 이거 판매자, 구매자 둘 중 한명한테는 메세지 안가는 로직처럼 보여요. by 은기
     //자동 메세지 발송
     String message = messageHandler.publishAutoMessageSend(
         reservation,
@@ -101,6 +102,7 @@ public class ChatMessageService {
         null,
         ChatMessageType.TEXT
     );
+    log.debug("chatMessage: {}", chatMessage);
     // 카운트와 메세지 알림 띄우기 위한 메세지
     chatPageMessageHandler.publishChatRoomCreationMessage(
         reservation,
@@ -116,28 +118,28 @@ public class ChatMessageService {
 
   public void saveAndSendAutoMessageApprove(ReservationApproveToMessage approveToMessage) {
     User u = sessionManager.getSessionUserByRdb();
-    Long opUserId = getOpUserId(u.getId(), approveToMessage.reservation());
+    Long oppositeUserId = getOpUserId(u.getId(), approveToMessage.reservation());
     //자동 메세지 발송
-    String s = messageHandler.publishAutoMessageSend(approveToMessage.reservation(), opUserId,
+    String s = messageHandler.publishAutoMessageSend(approveToMessage.reservation(), oppositeUserId,
         AutoMessageTemplate.SALE_APPROVED);
     //메세지 저장
     saveMessage(approveToMessage.reservation(), u, s, null, ChatMessageType.TEXT);
     // 카운트와 메세지 알림 띄우기 위한 메세지
-    chatPageMessageHandler.publishIdAndMessage(approveToMessage.reservation(), u, opUserId, s,
+    chatPageMessageHandler.publishIdAndMessage(approveToMessage.reservation(), u, oppositeUserId, s,
         ChatAlertType.PROGRESS, ChatMessageType.TEXT);
 
   }
 
   public void saveAndSendAutoMessageCancel(Reservation reservation) {
     User u = sessionManager.getSessionUserByRdb();
-    Long opUserId = getOpUserId(u.getId(), reservation);
+    Long oppositeUserId = getOpUserId(u.getId(), reservation);
     //자동 메세지 발송
-    String s = messageHandler.publishAutoMessageSend(reservation, opUserId,
+    String s = messageHandler.publishAutoMessageSend(reservation, oppositeUserId,
         AutoMessageTemplate.RESERVATION_CANCELLED);
     //메세지 저장
     saveMessage(reservation, u, s, null, ChatMessageType.TEXT);
     // 카운트와 메세지 알림 띄우기 위한 메세지
-    chatPageMessageHandler.publishIdAndMessage(reservation, u, opUserId, s,
+    chatPageMessageHandler.publishIdAndMessage(reservation, u, oppositeUserId, s,
         ChatAlertType.CANCEL, ChatMessageType.TEXT);
   }
 }
