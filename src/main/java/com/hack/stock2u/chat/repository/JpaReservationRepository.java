@@ -28,6 +28,6 @@ public interface JpaReservationRepository extends JpaRepository<Reservation, Lon
       @Param("pid") Long pid, @Param("sid") Long sid, @Param("productId") Long productId
   );
 
-  Optional<Reservation> findByProduct(Product product);
+  Optional<Reservation> findByProductAndPurchaserId(Product product, Long pid);
 
 }

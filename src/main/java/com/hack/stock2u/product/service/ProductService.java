@@ -74,7 +74,9 @@ public class ProductService {
     SellerDetails sellerDetails = sellerService.getSellerDetails(seller);
     List<Attach> images = attachRepository.findByProduct(p);
 
-    Optional<Reservation> reservation = reservationRepository.findByProduct(p);
+    Optional<Reservation> reservation = reservationRepository.findByProductAndPurchaserId(
+        p, purchaserId
+    );
 
     boolean isSubscribe = subscriptionRepository.findBySubscriberId(purchaserId).isPresent();
 
