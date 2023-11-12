@@ -143,4 +143,3 @@ public class ChatMessageService {
         ChatAlertType.CANCEL, ChatMessageType.TEXT);
   }
 }
-
