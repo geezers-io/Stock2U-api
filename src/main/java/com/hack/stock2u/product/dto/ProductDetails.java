@@ -5,10 +5,12 @@ import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.file.dto.SimpleFile;
 import com.hack.stock2u.models.Attach;
 import com.hack.stock2u.models.Product;
+import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.user.dto.SellerDetails;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import lombok.Builder;
 
 @Builder
@@ -31,7 +33,11 @@ public record ProductDetails(
     List<SimpleFile> productImages
 ) {
   public static ProductDetails create(
-      Product p, SellerDetails sellerDetails, List<Attach> attaches, boolean isSubscribe
+      Product p,
+      SellerDetails sellerDetails,
+      List<Attach> attaches,
+      boolean isSubscribe,
+      Optional<Reservation> reservation
   ) {
     List<SimpleFile> simpleFiles = attaches.stream().map(SimpleFile::attach).toList();
     return ProductDetails.builder()
@@ -40,6 +46,7 @@ public record ProductDetails(
         .name(p.getName())
         .price(p.getPrice())
         .type(p.getType())
+        .status(reservation.map(Reservation::getStatus).orElse(null))
         .description(p.getDescription())
         .expiredAt(p.getExpiredAt())
         .productCount(p.getProductCount())
