@@ -72,9 +72,7 @@ public class ProductService {
     Product p = getProduct(id);
     User seller = p.getSeller();
     SellerDetails sellerDetails = sellerService.getSellerDetails(seller);
-    List<Attach> images = p.getProductImages().stream()
-        .map(ProductImage::getAttach)
-        .toList();
+    List<Attach> images = attachRepository.findByProduct(p);
 
     Optional<Reservation> reservation = reservationRepository.findByProduct(p);
 
