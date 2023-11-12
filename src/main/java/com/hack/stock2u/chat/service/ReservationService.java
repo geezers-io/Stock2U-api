@@ -30,6 +30,7 @@ import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,11 +70,15 @@ public class ReservationService {
     Date currentDate = new Date();
     Long sellerId = product.getSeller().getId();
 
-    boolean reservationExists =
-        reservationRepository.findByBothUserId(purchaser.getId(), sellerId, productId).isPresent();
+    Optional<Reservation> reservationOptional =
+        reservationRepository.findByBothUserId(purchaser.getId(), sellerId, productId);
+    boolean reservationExists = reservationOptional.isPresent();
 
     if (reservationExists) {
-      throw ReservationException.ALREADY_EXISTS.create();
+      boolean isCancel = ReservationStatus.CANCEL.equals(reservationOptional.get().getStatus());
+      if (!isCancel) {
+        throw ReservationException.ALREADY_EXISTS.create();
+      }
     }
 
     if (!(product.getExpiredAt().after(currentDate))) {
