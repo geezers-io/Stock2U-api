@@ -7,8 +7,8 @@ import com.hack.stock2u.chat.dto.request.SendChatMessage;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
 import com.hack.stock2u.constant.AutoMessageTemplate;
+import com.hack.stock2u.constant.ChatAlertType;
 import com.hack.stock2u.constant.ChatMessageType;
-import com.hack.stock2u.constant.ReservationStatusForChatList;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.ChatMessage;
 import com.hack.stock2u.models.Reservation;
@@ -52,7 +52,7 @@ public class ChatMessageService {
     saveMessage(currentRoom, u, request.message(), request.imageUrls(), type);
     // 카운트와 메세지 알림 띄우기 위한 메세지
     chatPageMessageHandler.publishIdAndMessage(
-        currentRoom, u, opUserId, s, ReservationStatusForChatList.MESSAGE, type);
+        currentRoom, u, opUserId, s, ChatAlertType.MESSAGE, type);
 
   }
 
@@ -84,14 +84,33 @@ public class ChatMessageService {
     Reservation reservation = rpp.reservation();
     User purchaser = rpp.purchaser();
     Long opUserId = getOpUserId(purchaser.getId(), reservation);
+    Long sellerId = reservation.getSeller().getId();
+
+    // FIX: 이거 판매자, 구매자 둘 중 한명한테는 메세지 안가는 로직처럼 보여요. by 은기
     //자동 메세지 발송
-    String s = messageHandler.publishAutoMessageSend(reservation, opUserId,
-        AutoMessageTemplate.PURCHASE_REQUEST);
+    String message = messageHandler.publishAutoMessageSend(
+        reservation,
+        opUserId,
+        AutoMessageTemplate.PURCHASE_REQUEST
+    );
     //메세지 저장
-    ChatMessage chatMessage = saveMessage(reservation, purchaser, s, null, ChatMessageType.TEXT);
+    ChatMessage chatMessage = saveMessage(
+        reservation,
+        purchaser,
+        message,
+        null,
+        ChatMessageType.TEXT
+    );
     // 카운트와 메세지 알림 띄우기 위한 메세지
-    chatPageMessageHandler.publishIdAndMessageIfCreation(reservation, purchaser, opUserId, s,
-        ReservationStatusForChatList.CREATION, ChatMessageType.TEXT, chatMessage);
+    chatPageMessageHandler.publishChatRoomCreationMessage(
+        reservation,
+        purchaser,
+        sellerId,
+        message,
+        ChatAlertType.CREATION,
+        ChatMessageType.TEXT,
+        chatMessage
+    );
 
   }
 
@@ -105,7 +124,7 @@ public class ChatMessageService {
     saveMessage(approveToMessage.reservation(), u, s, null, ChatMessageType.TEXT);
     // 카운트와 메세지 알림 띄우기 위한 메세지
     chatPageMessageHandler.publishIdAndMessage(approveToMessage.reservation(), u, opUserId, s,
-        ReservationStatusForChatList.PROGRESS, ChatMessageType.TEXT);
+        ChatAlertType.PROGRESS, ChatMessageType.TEXT);
 
   }
 
@@ -119,7 +138,7 @@ public class ChatMessageService {
     saveMessage(reservation, u, s, null, ChatMessageType.TEXT);
     // 카운트와 메세지 알림 띄우기 위한 메세지
     chatPageMessageHandler.publishIdAndMessage(reservation, u, opUserId, s,
-        ReservationStatusForChatList.CANCEL, ChatMessageType.TEXT);
+        ChatAlertType.CANCEL, ChatMessageType.TEXT);
   }
 }
 

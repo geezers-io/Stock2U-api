@@ -5,14 +5,8 @@ import com.hack.stock2u.constant.ChatMessageType;
 import lombok.Builder;
 
 @Builder
-public record AlertIdAndMessage(
+public record ChatRoomCreation(
     ChatAlertType type,
-    String userName,
-    Long userId,
-    Long reservationId,
-    String message,
-    Long imageId,
-    ChatMessageType chatMessageType
-
-) {
-}
+    ChatMessageType chatMessageType,
+    ChatRoomSummary chatRoomSummary
+) {}
