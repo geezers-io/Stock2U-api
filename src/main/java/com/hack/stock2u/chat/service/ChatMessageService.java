@@ -61,14 +61,15 @@ public class ChatMessageService {
   private ChatMessage saveMessage(
       Reservation reservation, User user, String message,
       List<String> imageUrls, ChatMessageType type) {
-    log.debug("저장되는 데이터{}, {}, {}, {}", user, message, imageUrls, type);
+
     return messageRepository.save(ChatMessage.builder()
         .type(type)
         .roomId(reservation.getId())
         .userName(user.getName())
         .message(message)
         .createdAt(new Date())
-        .imageUrls(imageUrls)
+        .imageIds(imageUrls)
+
         .build());
   }
 

@@ -35,12 +35,13 @@ public class ChatMessage {
   @Field(name = "message")
   private String message;
 
-  @Field(name = "image_urls")
-  private List<String> imageUrls;
+  @Field(name = "image_ids")
+  private List<String> imageIds;
 
   @Field(name = "timestamp")
   private Date createdAt;
 
   @Field(name = "message_read")
   private boolean read;
+
 }

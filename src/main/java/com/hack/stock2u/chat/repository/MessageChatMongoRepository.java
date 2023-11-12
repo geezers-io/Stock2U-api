@@ -17,4 +17,5 @@ public interface MessageChatMongoRepository extends MongoRepository<ChatMessage,
   long countByRoomIdAndReadIsFalseAndUserNameNot(Long roomId, String userName);
 
   Optional<ChatMessage> findTopByRoomIdOrderByCreatedAtDesc(Long id);
+
 }

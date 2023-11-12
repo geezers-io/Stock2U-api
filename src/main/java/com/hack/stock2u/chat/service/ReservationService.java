@@ -137,11 +137,13 @@ public class ReservationService {
 
   public Short report(ReportRequest request) {
 
-
     User u = sessionManager.getSessionUserByRdb();
     Reservation reservation = reservationRepository.findById(request.roomId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
     User target = getWhoIsTarget(u.getRole().getName(), reservation);
+    //이미 신고했으면 410 에러
+    reportRepository.findByTargetIdAndReporterId(target.getId(), u.getId())
+            .orElseThrow(ReservationException.ALREADY_REPORTED::create);
 
     target.setReportCount();
 
@@ -260,9 +262,10 @@ public class ReservationService {
 
     SimpleReservation reservationSummary = SimpleReservation.create(
         reservation, simpleThumbnailImage);
+    long countOfMessage = getCountOfMessage(userName, id);
 
     return new ChatRoomSummary(
-        latestChat, reservationSummary, getCountOfMessage(userName, id));
+        latestChat, reservationSummary, countOfMessage);
   }
 
   public long getCountOfMessage(String userName, Long roomId) {
