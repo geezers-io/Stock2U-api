@@ -1,12 +1,14 @@
 package com.hack.stock2u.product.service;
 
 import com.hack.stock2u.authentication.service.SessionManager;
+import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.file.repository.JpaAttachRepository;
 import com.hack.stock2u.global.dto.GlobalResponse;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.Attach;
 import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.ProductImage;
+import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.dto.MainProductSet;
 import com.hack.stock2u.product.dto.ProductCondition;
@@ -21,6 +23,7 @@ import com.hack.stock2u.user.dto.SellerDetails;
 import com.hack.stock2u.user.repository.JpaSubscriptionRepository;
 import com.hack.stock2u.user.service.SellerService;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,6 +42,7 @@ public class ProductService {
   private final SessionManager sessionManager;
   private final SellerService sellerService;
   private final JpaSubscriptionRepository subscriptionRepository;
+  private final JpaReservationRepository reservationRepository;
 
   // TODO: AI 기반 서칭, 마감 임박 순, 인근 위치 순 구현하기
   public MainProductSet getMainProductSet(ProductCondition condition, PageRequest pageable) {
@@ -72,9 +76,11 @@ public class ProductService {
         .map(ProductImage::getAttach)
         .toList();
 
+    Optional<Reservation> reservation = reservationRepository.findByProduct(p);
+
     boolean isSubscribe = subscriptionRepository.findBySubscriberId(purchaserId).isPresent();
 
-    return ProductDetails.create(p, sellerDetails, images, isSubscribe);
+    return ProductDetails.create(p, sellerDetails, images, isSubscribe, reservation);
   }
 
   public GlobalResponse.Id create(ProductRequest.Create createRequest) {
@@ -108,7 +114,13 @@ public class ProductService {
     SellerDetails sellerDetails = sellerService.getSellerDetails(user);
     boolean isSubscribe = subscriptionRepository.findBySubscriberId(purchaserId).isPresent();
 
-    return ProductDetails.create(product, sellerDetails, images, isSubscribe);
+    return ProductDetails.create(
+        product,
+        sellerDetails,
+        images,
+        isSubscribe,
+        Optional.empty()
+    );
   }
 
   protected Attach getAttachById(Long id) {

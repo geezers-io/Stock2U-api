@@ -1,5 +1,6 @@
 package com.hack.stock2u.chat.repository;
 
+import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.Reservation;
 import java.util.List;
 import java.util.Optional;
@@ -26,5 +27,7 @@ public interface JpaReservationRepository extends JpaRepository<Reservation, Lon
   Optional<Reservation> findByBothUserId(
       @Param("pid") Long pid, @Param("sid") Long sid, @Param("productId") Long productId
   );
+
+  Optional<Reservation> findByProduct(Product product);
 
 }
