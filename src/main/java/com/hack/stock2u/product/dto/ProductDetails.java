@@ -23,6 +23,7 @@ public record ProductDetails(
     String name,
     String description,
     int productCount,
+    Long reservationId,
     Date expiredAt,
     @Schema(description = "예약 상태(예약 한 건만 받기 체크 && 예약 진행 중일 시 표기 됨)", nullable = true)
     ReservationStatus status,
@@ -48,6 +49,7 @@ public record ProductDetails(
         .type(p.getType())
         .status(reservation.map(Reservation::getStatus).orElse(null))
         .description(p.getDescription())
+        .reservationId(reservation.map(Reservation::getId).orElse(null))
         .expiredAt(p.getExpiredAt())
         .productCount(p.getProductCount())
         .seller(sellerDetails)
