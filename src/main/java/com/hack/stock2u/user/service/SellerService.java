@@ -118,18 +118,21 @@ public class SellerService {
           Date expiredAt = reservation.getProduct().getExpiredAt();
           return removedAt != null && expiredAt.before(currentTime);
         });
+    //검색어만 존재할때
     if (title != null && !title.isEmpty()) {
       filteredReservations =
           filteredReservations.filter(
               reservation -> reservation.getProduct().getTitle().contains(title)
           );
     }
+    //1.예약완료된거 찾을때, 2.예약완료된거 찾을때 + 검색어 존재
     if (isCompletedProduct) {
       filteredReservations =
           filteredReservations.filter(
               reservation -> reservation.getStatus().equals(ReservationStatus.COMPLETION)
           );
     }
+    //1.예약된거 찾을때, 2.예약된거 찾을때 + 검색어 존재
     if (isReservedProduct) {
       filteredReservations =
           filteredReservations.filter(
