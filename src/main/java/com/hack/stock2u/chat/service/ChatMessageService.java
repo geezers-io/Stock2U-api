@@ -13,14 +13,10 @@ import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.ChatMessage;
 import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
-import com.hack.stock2u.product.repository.JpaProductRepository;
-import com.hack.stock2u.user.repository.JpaUserRepository;
-import com.hack.stock2u.utils.JsonSerializer;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -29,29 +25,26 @@ import org.springframework.stereotype.Service;
 public class ChatMessageService {
   private final JpaReservationRepository reservationRepository;
   private final MessageChatMongoRepository messageRepository;
-  private final JpaUserRepository userRepository;
-  private final SimpMessagingTemplate messagingTemplate;
-  private final JpaProductRepository productRepository;
   private final SessionManager sessionManager;
-  private final JsonSerializer jsonSerializer;
   private final MessageHandler messageHandler;
   private final ChatPageMessageHandler chatPageMessageHandler;
+  private final ChatAnalyzer chatAnalyzer = new ChatAnalyzer();
   // 메시지 저장
 
-  public void saveAndSendMessage(SendChatMessage request, Long roomId) {
-    Reservation currentRoom = reservationRepository.findById(roomId)
+  public void saveAndSendMessage(SendChatMessage payload) {
+    Reservation currentRoom = reservationRepository.findById(payload.roomId())
+
         .orElseThrow(GlobalException.NOT_FOUND::create);
-    User u = sessionManager.getSessionUserByRdb();
-    ChatMessageType type = ChatMessageType.TEXT;
+    User u = sessionManager.getUserById(payload.userId());
+    ChatMessageType type = chatAnalyzer.getMessageType(payload);
     Long opUserId = getOpUserId(u.getId(), currentRoom);
-    if (request.message() == null) {
-      type = ChatMessageType.IMAGE;
-    }
+
     //일반 채팅 메세지 사용자들끼리 보낼때 사용
     String s = messageHandler.publishMessageSend(
-        currentRoom, opUserId, request.message(), type, request.imageIds());
+        currentRoom, opUserId, payload.message(), type, payload.imageIds()
+    );
     //메세지 저장
-    saveMessage(currentRoom, u, request.message(), request.imageIds(), type);
+    saveMessage(currentRoom, u, payload.message(), payload.imageIds(), type);
     // 카운트와 메세지 알림 띄우기 위한 메세지
     chatPageMessageHandler.publishIdAndMessage(
         currentRoom, u, opUserId, s, ChatAlertType.MESSAGE, type);
@@ -69,7 +62,6 @@ public class ChatMessageService {
         .message(message)
         .createdAt(new Date())
         .imageIds(imageIds)
-
         .build());
   }
 
@@ -103,7 +95,7 @@ public class ChatMessageService {
         null,
         ChatMessageType.TEXT
     );
-    log.debug("chatMessage: {}", chatMessage);
+
     // 카운트와 메세지 알림 띄우기 위한 메세지
     chatPageMessageHandler.publishChatRoomCreationMessage(
         reservation,

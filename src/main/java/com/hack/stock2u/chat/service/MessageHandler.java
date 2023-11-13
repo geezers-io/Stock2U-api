@@ -42,6 +42,7 @@ public class MessageHandler {
       ChatMessageType type, List<Long> imageIds) {
     Object serialize = jsonSerializer.serialize(
         ChatMessageObjectForSerialize.builder()
+
         .type(type)
         .username(reservation.getPurchaser().getName())
         .message(message)
