@@ -10,6 +10,7 @@ import com.hack.stock2u.constant.AutoMessageTemplate;
 import com.hack.stock2u.constant.ChatAlertType;
 import com.hack.stock2u.constant.ChatMessageType;
 import com.hack.stock2u.global.exception.GlobalException;
+import com.hack.stock2u.global.service.SequenceGeneratorService;
 import com.hack.stock2u.models.ChatMessage;
 import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
@@ -27,6 +28,7 @@ public class ChatMessageService {
   private final MessageChatMongoRepository messageRepository;
   private final SessionManager sessionManager;
   private final MessageHandler messageHandler;
+  private final SequenceGeneratorService sequenceGeneratorService;
   private final ChatPageMessageHandler chatPageMessageHandler;
   private final ChatAnalyzer chatAnalyzer = new ChatAnalyzer();
   // 메시지 저장
@@ -56,6 +58,7 @@ public class ChatMessageService {
       List<Long> imageIds, ChatMessageType type) {
 
     return messageRepository.save(ChatMessage.builder()
+        .id(sequenceGeneratorService.generateSequence(ChatMessage.SEQUENCE_NAME))
         .type(type)
         .roomId(reservation.getId())
         .userName(user.getName())
