@@ -39,7 +39,7 @@ public class ChatMessageService {
   // 메시지 저장
 
   public void saveAndSendMessage(SendChatMessage request, Long roomId) {
-    Reservation currentRoom = reservationRepository.findById(request.roomId())
+    Reservation currentRoom = reservationRepository.findById(roomId)
         .orElseThrow(GlobalException.NOT_FOUND::create);
     User u = sessionManager.getSessionUserByRdb();
     ChatMessageType type = ChatMessageType.TEXT;

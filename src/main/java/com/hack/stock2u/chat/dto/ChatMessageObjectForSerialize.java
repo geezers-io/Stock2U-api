@@ -13,7 +13,7 @@ public record ChatMessageObjectForSerialize(
     String message,
     Date createdAt,
     Long imageId,
-    List<String> imageUrl
+    List<Long> imageUrl
 ) {
 
 }

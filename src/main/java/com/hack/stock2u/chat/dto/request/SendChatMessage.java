@@ -12,9 +12,6 @@ import lombok.Setter;
 
 //채팅 보내는 dto
 public record SendChatMessage(
-    @Schema(required = true, description = "chatmessage에 id")
-    @NotNull
-    Long roomId,
     @Schema(required = true, description = "보내는 사용자 id")
     @NotNull
     Long userId,
