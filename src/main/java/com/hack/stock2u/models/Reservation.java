@@ -39,12 +39,12 @@ public class Reservation {
   private Product product;
 
   @Comment("판매자(사업자) id")
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "seller_id")
   private User seller;
 
   @Comment("구매자 id")
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "purchaser_id")
   private User purchaser;
 

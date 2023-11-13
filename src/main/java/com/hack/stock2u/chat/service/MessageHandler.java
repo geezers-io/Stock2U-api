@@ -40,13 +40,13 @@ public class MessageHandler {
   public String publishMessageSend(
       Reservation reservation, Long id, String message,
       ChatMessageType type, List<Long> imageIds) {
-    Object serialize = jsonSerializer.serialize(ChatMessageObjectForSerialize.builder()
-
-        .username(reservation.getPurchaser().getName())
-        .message(message)
-        .createdAt(reservation.getBasicDate().getCreatedAt())
-        .imageId(reservation.getPurchaser().getAvatarId())
-        .build()
+    Object serialize = jsonSerializer.serialize(
+        ChatMessageObjectForSerialize.builder()
+          .username(reservation.getPurchaser().getName())
+          .message(message)
+          .createdAt(reservation.getBasicDate().getCreatedAt())
+          .imageId(reservation.getPurchaser().getAvatarId())
+          .build()
     );
     String destination = "/topic/chat/room/" + reservation.getId();
     publisher.convertAndSend(destination + id, serialize);
