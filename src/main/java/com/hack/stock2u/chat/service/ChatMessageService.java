@@ -49,9 +49,9 @@ public class ChatMessageService {
     }
     //일반 채팅 메세지 사용자들끼리 보낼때 사용
     String s = messageHandler.publishMessageSend(
-        currentRoom, opUserId, request.message(), type, request.imageUrls());
+        currentRoom, opUserId, request.message(), type, request.imageIds());
     //메세지 저장
-    saveMessage(currentRoom, u, request.message(), request.imageUrls(), type);
+    saveMessage(currentRoom, u, request.message(), request.imageIds(), type);
     // 카운트와 메세지 알림 띄우기 위한 메세지
     chatPageMessageHandler.publishIdAndMessage(
         currentRoom, u, opUserId, s, ChatAlertType.MESSAGE, type);
@@ -60,7 +60,7 @@ public class ChatMessageService {
 
   private ChatMessage saveMessage(
       Reservation reservation, User user, String message,
-      List<String> imageUrls, ChatMessageType type) {
+      List<Long> imageIds, ChatMessageType type) {
 
     return messageRepository.save(ChatMessage.builder()
         .type(type)
@@ -68,7 +68,7 @@ public class ChatMessageService {
         .userName(user.getName())
         .message(message)
         .createdAt(new Date())
-        .imageIds(imageUrls)
+        .imageIds(imageIds)
 
         .build());
   }

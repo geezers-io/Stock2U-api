@@ -36,7 +36,7 @@ public class ChatMessage {
   private String message;
 
   @Field(name = "image_ids")
-  private List<String> imageIds;
+  private List<Long> imageIds;
 
   @Field(name = "timestamp")
   private Date createdAt;

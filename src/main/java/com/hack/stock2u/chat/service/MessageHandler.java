@@ -39,7 +39,7 @@ public class MessageHandler {
   //사용자들끼리 일반 채팅할때 사용
   public String publishMessageSend(
       Reservation reservation, Long id, String message,
-      ChatMessageType type, List<String> imageUrls) {
+      ChatMessageType type, List<Long> imageIds) {
     Object serialize = jsonSerializer.serialize(ChatMessageObjectForSerialize.builder()
 
         .username(reservation.getPurchaser().getName())
