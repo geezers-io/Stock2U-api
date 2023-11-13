@@ -230,15 +230,23 @@ public class ReservationService {
 
     if (request.status().equals(ReservationStatus.CANCEL.getName())) {
       reservation.setRemoveAt(new Date());
-    } else {
+    }
+    if (request.status().equals(ReservationStatus.PROGRESS.getName())) {
       //글로벌 알림
+      reservationMessageHandler.publishReservation(
+          MessageTemplate.RESERVATION_APPORVE,
+          reservation.getProduct().getTitle(),
+          reservation.getPurchaser().getId(),
+          reservation.getSeller().getId()
+      );
+    }
+    if (request.status().equals(ReservationStatus.COMPLETION.getName())) {
       reservationMessageHandler.publishReservation(
           MessageTemplate.RESERVATION_SUCCESS,
           reservation.getProduct().getTitle(),
           reservation.getPurchaser().getId(),
           reservation.getSeller().getId()
       );
-      reservation.setRemoveAt(null);
     }
     reservation.changeStatus(ReservationStatus.valueOf(request.status()));
 
@@ -313,7 +321,7 @@ public class ReservationService {
         id, pageable).getContent();
   }
 
-  private List<Reservation> getReservationBySellerId(Long id, Pageable pageable) {
+  public List<Reservation> getReservationBySellerId(Long id, Pageable pageable) {
     return reservationRepository.findBySellerIdOrderByBasicDateCreatedAtDesc(
         id, pageable).getContent();
   }

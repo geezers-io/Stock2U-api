@@ -63,6 +63,10 @@ public class Reservation {
     basicDate.setCreatedAt(date);
   }
 
+  public Date getRemovedAt() {
+    return this.basicDate.getRemovedAt();
+  }
+
   @Builder
   public Reservation(Product product,
                       User seller, User purchaser) {
