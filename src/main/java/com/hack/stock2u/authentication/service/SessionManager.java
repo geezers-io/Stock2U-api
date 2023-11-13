@@ -31,13 +31,13 @@ public class SessionManager {
     return getSessionUserKey(key);
   }
 
+  public SessionUser getSessionUser(String key) {
+    return getSessionUserKey(key);
+  }
+  
   public User getUserById(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(GlobalException.NOT_FOUND::create);
-  }
-
-  public SessionUser getSessionUser(String key) {
-    return getSessionUserKey(key);
   }
 
   public User getSessionUserByRdb() {
