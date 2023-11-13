@@ -22,6 +22,7 @@ import com.hack.stock2u.user.dto.SellerDetails;
 import com.hack.stock2u.user.repository.JpaSubscriptionRepository;
 import com.hack.stock2u.user.service.SellerService;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,9 +51,7 @@ public class ProductService {
   }
 
   public Page<ProductSummaryProjection> getProducts(ProductCondition condition, Pageable pageable) {
-    log.debug("getProduct condition: {}", condition);
-    Long totalCount = getCount(condition);
-    log.debug("totalCount: {}", totalCount);
+    int totalCount = getCount(condition);
     List<ProductSummaryProjection> products = productRepository.findProducts(
         condition.getLatitude(),
         condition.getLongitude(),
@@ -63,7 +62,12 @@ public class ProductService {
         pageable.getPageSize(),
         pageable.getOffset()
     );
-    return new PageImpl<>(products, pageable, totalCount);
+
+    log.debug("pageable: {}", pageable);
+    int totalPage = getTotalPages(pageable.getPageSize(), totalCount);
+    log.debug("getPageSize: {}, totalCount: {}", pageable.getPageSize(), totalCount);
+    Pageable newPageable = Pageable.ofSize(totalPage);
+    return new PageImpl<>(products, newPageable, totalCount);
   }
 
   public ProductDetails getProductDetails(Long id) {
@@ -157,8 +161,7 @@ public class ProductService {
     }
   }
 
-  private Long getCount(ProductCondition condition) {
-    log.debug("get MinPrice: {}", condition.getMinPrice());
+  private int getCount(ProductCondition condition) {
     ProductCountProjection ret = productRepository.getCount(
         condition.getLatitude(),
         condition.getLongitude(),
@@ -168,11 +171,15 @@ public class ProductService {
         condition.getMaxPrice()
     );
     if (ret == null) {
-      return 0L;
+      return 0;
     }
-    log.debug("totalCount: {} distance:{}", ret.getTotalCount(), ret.getDistance());
 
+    log.error("count: {}", ret.getTotalCount());
     return ret.getTotalCount();
+  }
+
+  private int getTotalPages(int pageSize, int totalCount) {
+    return pageSize > totalCount ? 0 : totalCount / pageSize;
   }
 
 }
