@@ -17,7 +17,6 @@ import com.hack.stock2u.product.dto.ProductDetails;
 import com.hack.stock2u.product.dto.ProductRequest;
 import com.hack.stock2u.product.dto.ProductSummaryProjection;
 import com.hack.stock2u.product.exception.ProductException;
-import com.hack.stock2u.product.repository.JpaProductImageRepository;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.dto.SellerDetails;
 import com.hack.stock2u.user.repository.JpaSubscriptionRepository;
@@ -74,8 +73,8 @@ public class ProductService {
     SellerDetails sellerDetails = sellerService.getSellerDetails(seller);
     List<Attach> images = attachRepository.findByProduct(p);
 
-    Optional<Reservation> reservation = reservationRepository.findByProductAndPurchaserId(
-        p, purchaserId
+    Optional<Reservation> reservation = reservationRepository.findReservationWithoutCancel(
+        p.getId(), purchaserId
     );
 
     boolean isSubscribe = subscriptionRepository.findBySubscriberId(purchaserId).isPresent();

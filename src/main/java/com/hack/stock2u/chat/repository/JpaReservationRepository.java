@@ -1,8 +1,6 @@
 package com.hack.stock2u.chat.repository;
 
-import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.Reservation;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +20,25 @@ public interface JpaReservationRepository extends JpaRepository<Reservation, Lon
   @SuppressWarnings("checkstyle:Indentation")
   @Query("""
     select r from reservations r
-    where r.purchaser.id = :pid and r.seller.id = :sid and r.product.id = :productId
+    where r.purchaser.id = :pid
+      and r.seller.id = :sid
+      and r.product.id = :productId
+      and r.status != 'CANCEL'
   """)
-  Optional<Reservation> findByBothUserId(
+  Optional<Reservation> findByBothUserIdWithOutCancel(
       @Param("pid") Long pid, @Param("sid") Long sid, @Param("productId") Long productId
   );
 
-  Optional<Reservation> findByProductAndPurchaserId(Product product, Long pid);
+  @SuppressWarnings("checkstyle:Indentation")
+  @Query("""
+  select r from reservations r
+  where r.product.id = :productId
+    and r.purchaser.id = :purchaserId
+    and r.status != 'CANCEL'
+  """)
+  Optional<Reservation> findReservationWithoutCancel(
+      @Param("productId") Long productId,
+      @Param("purchaserId") Long purchaserId
+  );
 
 }

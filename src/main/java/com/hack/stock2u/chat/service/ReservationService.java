@@ -71,7 +71,7 @@ public class ReservationService {
     Long sellerId = product.getSeller().getId();
 
     Optional<Reservation> reservationOptional =
-        reservationRepository.findByBothUserId(purchaser.getId(), sellerId, productId);
+        reservationRepository.findByBothUserIdWithOutCancel(purchaser.getId(), sellerId, productId);
     boolean reservationExists = reservationOptional.isPresent();
 
     if (reservationExists) {
