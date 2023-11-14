@@ -4,6 +4,7 @@ import com.hack.stock2u.chat.dto.ChatMessageObjectForSerialize;
 import com.hack.stock2u.constant.AutoMessageTemplate;
 import com.hack.stock2u.constant.ChatMessageType;
 import com.hack.stock2u.models.Reservation;
+import com.hack.stock2u.models.User;
 import com.hack.stock2u.utils.JsonSerializer;
 import java.text.MessageFormat;
 import java.util.List;
@@ -48,12 +49,14 @@ public class MessageHandler {
       String message,
       String profileImageUrl,
       ChatMessageType type,
-      List<Long> imageIds) {
+      List<Long> imageIds,
+      User u
+  ) {
 
     Object serialize = jsonSerializer.serialize(
         ChatMessageObjectForSerialize.builder()
         .type(type)
-        .username(reservation.getPurchaser().getName())
+        .username(u.getName())
         .message(message)
         .createdAt(reservation.getBasicDate().getCreatedAt())
         .profileImageUrl(profileImageUrl)
