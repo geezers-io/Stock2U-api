@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MessageChatMongoRepository extends MongoRepository<ChatMessage, String> {
 
-  long countByRoomIdAndReadIsFalseAndUserNameNot(Long roomId, String userName);
+  long countByRoomIdAndReadIsFalseAndUsernameNot(Long roomId, String userName);
 
   Optional<ChatMessage> findTopByRoomIdOrderByCreatedAtDesc(Long id);
 
