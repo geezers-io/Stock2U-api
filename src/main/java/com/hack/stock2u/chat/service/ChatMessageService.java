@@ -73,7 +73,7 @@ public class ChatMessageService {
         .id(sequenceGeneratorService.generateSequence(ChatMessage.SEQUENCE_NAME))
         .type(type)
         .roomId(reservation.getId())
-        .userName(user.getName())
+        .username(user.getName())
         .message(message)
         .createdAt(new Date())
         .imageIds(imageIds)
