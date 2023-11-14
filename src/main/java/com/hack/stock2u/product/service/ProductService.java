@@ -3,6 +3,7 @@ package com.hack.stock2u.product.service;
 import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.file.repository.JpaAttachRepository;
+import com.hack.stock2u.global.dto.CustomPageImpl;
 import com.hack.stock2u.global.dto.GlobalResponse;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.Attach;
@@ -51,7 +52,7 @@ public class ProductService {
   }
 
   public Page<ProductSummaryProjection> getProducts(ProductCondition condition, Pageable pageable) {
-    int totalCount = getCount(condition);
+    int totalCount = getCountAlternative(condition);
     List<ProductSummaryProjection> products = productRepository.findProducts(
         condition.getLatitude(),
         condition.getLongitude(),
@@ -63,11 +64,8 @@ public class ProductService {
         pageable.getOffset()
     );
 
-    log.debug("pageable: {}", pageable);
-    int totalPage = getTotalPages(pageable.getPageSize(), totalCount);
-    log.debug("getPageSize: {}, totalCount: {}", pageable.getPageSize(), totalCount);
-    Pageable newPageable = Pageable.ofSize(totalPage);
-    return new PageImpl<>(products, newPageable, totalCount);
+    log.error("count: {}", totalCount);
+    return new PageImpl<>(products, pageable, totalCount);
   }
 
   public ProductDetails getProductDetails(Long id) {
@@ -161,6 +159,18 @@ public class ProductService {
     }
   }
 
+  private int getCountAlternative(ProductCondition condition) {
+    List<ProductSummaryProjection> countAlternative = productRepository.getCountAlternative(
+        condition.getLatitude(),
+        condition.getLongitude(),
+        condition.getCategory(),
+        condition.getDistance(),
+        condition.getMinPrice(),
+        condition.getMaxPrice()
+    );
+    return countAlternative.size();
+  }
+
   private int getCount(ProductCondition condition) {
     ProductCountProjection ret = productRepository.getCount(
         condition.getLatitude(),
@@ -170,12 +180,12 @@ public class ProductService {
         condition.getMinPrice(),
         condition.getMaxPrice()
     );
+
     if (ret == null) {
       return 0;
     }
 
-    log.error("count: {}", ret.getTotalCount());
-    return ret.getTotalCount();
+    return ret.getTotalCount().intValue();
   }
 
   private int getTotalPages(int pageSize, int totalCount) {
