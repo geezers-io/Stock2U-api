@@ -5,7 +5,7 @@ import com.hack.stock2u.constant.ProductType;
 import java.util.Date;
 
 public interface ProductCountProjection {
-  Long getTotalCount();
+  Integer getTotalCount();
 
   Double getDistance();
 }
