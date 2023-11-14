@@ -64,6 +64,7 @@ public class MessageHandler {
         .imageUrls(imageUrls)
         .build()
     );
+
     String destination = "/topic/chat/room/" + reservation.getId();
     publisher.convertAndSend(destination, serialize);
     return message;

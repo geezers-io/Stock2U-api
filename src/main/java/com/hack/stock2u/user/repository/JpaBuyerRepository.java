@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 public interface JpaBuyerRepository extends JpaRepository<Buyer, Long> {
   //  @Query("select count() from buyers b where b.seller.id = :id")
+  @Query("select b from buyers b where b.createdAt BETWEEN ?1 AND ?2")
   int countBySeller(User user);
 
 }

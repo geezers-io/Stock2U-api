@@ -18,6 +18,7 @@ import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,10 +47,15 @@ public class ChatMessageService {
     ChatMessageType type = chatAnalyzer.getMessageType(payload);
     Long oppositeUserId = getOppositeUserId(u.getId(), currentRoom);
     String profileImageUrl = getProfileImageUrl(u.getAvatarId());
-    List<String> imageUrls = payload.imageIds()
-        .stream()
-        .map(this::getChatImageUrls)
-        .toList();
+
+    List<String> imageUrls = null;
+
+    if (payload.imageIds() != null) {
+      imageUrls = payload.imageIds()
+          .stream()
+          .map(this::getChatImageUrls)
+          .toList();
+    }
 
     //일반 채팅 메세지 사용자들끼리 보낼때 사용
     String s = messageHandler.publishMessageSend(
@@ -85,12 +91,12 @@ public class ChatMessageService {
   }
 
   private String getProfileImageUrl(Long avatarId) {
-    Optional<Attach> byId = attachRepository.findById(avatarId);
-    String profileImageUrl = null;
-    if (byId.isPresent()) {
-      profileImageUrl = byId.get().getUploadPath();
+    if (avatarId == null) {
+      return null;
     }
-    return profileImageUrl;
+    Attach avatar = attachRepository.findById(avatarId)
+        .orElseThrow(GlobalException.NOT_FOUND::create);
+    return avatar.getUploadPath();
   }
 
   private ChatMessage saveMessage(
