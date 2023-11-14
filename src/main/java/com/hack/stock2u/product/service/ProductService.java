@@ -3,7 +3,6 @@ package com.hack.stock2u.product.service;
 import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.file.repository.JpaAttachRepository;
-import com.hack.stock2u.global.dto.CustomPageImpl;
 import com.hack.stock2u.global.dto.GlobalResponse;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.Attach;
@@ -23,7 +22,6 @@ import com.hack.stock2u.user.dto.SellerDetails;
 import com.hack.stock2u.user.repository.JpaSubscriptionRepository;
 import com.hack.stock2u.user.service.SellerService;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -186,10 +184,6 @@ public class ProductService {
     }
 
     return ret.getTotalCount().intValue();
-  }
-
-  private int getTotalPages(int pageSize, int totalCount) {
-    return pageSize > totalCount ? 0 : totalCount / pageSize;
   }
 
 }
