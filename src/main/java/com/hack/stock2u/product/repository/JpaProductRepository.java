@@ -4,7 +4,6 @@ import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.dto.ProductCountProjection;
 import com.hack.stock2u.product.dto.ProductSummaryProjection;
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -59,7 +58,6 @@ OFFSET :offset
       @Param("distance") Double distance,
       @Param("minPrice") Integer minPrice,
       @Param("maxPrice") Integer maxPrice,
-      @Param("searchDate") LocalDate searchDate,
       @Param("pageSize") Integer pageSize,
       @Param("offset") Long offset
   );
