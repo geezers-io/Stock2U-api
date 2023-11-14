@@ -6,11 +6,9 @@ import com.hack.stock2u.user.dto.PurchasedHistory;
 import com.hack.stock2u.user.dto.PurchaserRequest;
 import com.hack.stock2u.user.dto.SearchDate;
 import com.hack.stock2u.user.service.MyService;
-import groovy.util.logging.Slf4j;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.awt.print.Pageable;
 import java.util.Date;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,9 +62,9 @@ public class MyApi {
   @GetMapping("/history")
   public ResponseEntity<Object> getPurchasedHistories(
       @Parameter(description = "필터 시작 날짜")
-      @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy/MM/dd") Date startDate,
+      @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy/MM/dd") Date startDate,
       @Parameter(description = "필터 끝 날짜")
-      @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy/MM/dd") Date endDate,
+      @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy/MM/dd") Date endDate,
       @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true, example = "0")
       @RequestParam("page") int page,
       @Parameter(description = "가져올 데이터 갯수 단위", required = true, example = "10")

@@ -6,6 +6,7 @@ import com.hack.stock2u.models.Buyer;
 import com.hack.stock2u.models.Product;
 import com.hack.stock2u.user.dto.PurchasedHistory;
 import com.hack.stock2u.user.dto.SearchDate;
+import com.hack.stock2u.user.repository.BuyerDslRepository;
 import com.hack.stock2u.user.repository.JpaBuyerRepository;
 import java.util.Date;
 import java.util.List;
@@ -18,14 +19,19 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class PurchasedHistoryService {
-  private final JpaBuyerRepository buyerRepository;
+  private final BuyerDslRepository buyerRepository;
   private final SessionManager sessionManager;
 
   public Page<PurchasedHistory> getHistories(SearchDate searchDate, Pageable pageable) {
     SessionUser user = sessionManager.getSessionUser();
-    Page<Buyer> buyers = buyerRepository.findByPurchaserId(user.id(), pageable);
+    List<Buyer> buyers = buyerRepository.findByPurchaserId(
+        user.id(),
+        searchDate.start(),
+        searchDate.end(), // search 2,
+        pageable
+    );
 
-    List<PurchasedHistory> histories = buyers.getContent().stream()
+    List<PurchasedHistory> histories = buyers.stream()
         .map(this::mapToHistory).toList();
 
     return new PageImpl<>(histories, pageable, histories.size());
