@@ -21,14 +21,20 @@ public class MessageHandler {
 
   //자동메세지 전용
   public String publishAutoMessageSend(
-      Reservation reservation, Long id, AutoMessageTemplate template) {
+      Reservation reservation,
+      AutoMessageTemplate template,
+      ChatMessageType type,
+      String profileImageUrl
+  ) {
     String message = MessageFormat.format(
         template.getTemplate(), reservation.getProduct().getTitle());
-    Object serialize = jsonSerializer.serialize(ChatMessageObjectForSerialize.builder()
+    Object serialize = jsonSerializer.serialize(
+        ChatMessageObjectForSerialize.builder()
+        .type(type)
         .username(reservation.getPurchaser().getName())
         .message(message)
         .createdAt(reservation.getBasicDate().getCreatedAt())
-        .imageId(reservation.getPurchaser().getAvatarId())
+        .profileImageUrl(profileImageUrl)
         .build()
     );
     String destination = "/topic/chat/room/" + reservation.getId();
@@ -38,16 +44,19 @@ public class MessageHandler {
 
   //사용자들끼리 일반 채팅할때 사용
   public String publishMessageSend(
-      Reservation reservation, Long id, String message,
-      ChatMessageType type, List<Long> imageIds) {
+      Reservation reservation,
+      String message,
+      String profileImageUrl,
+      ChatMessageType type,
+      List<Long> imageIds) {
+
     Object serialize = jsonSerializer.serialize(
         ChatMessageObjectForSerialize.builder()
-
         .type(type)
         .username(reservation.getPurchaser().getName())
         .message(message)
         .createdAt(reservation.getBasicDate().getCreatedAt())
-        .imageId(reservation.getPurchaser().getAvatarId())
+        .profileImageUrl(profileImageUrl)
         .imageUrl(imageIds)
         .build()
     );

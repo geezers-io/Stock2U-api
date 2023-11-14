@@ -24,6 +24,7 @@ public class ChatPageMessageHandler {
   private final SimpMessagingTemplate publisher;
   private final JsonSerializer jsonSerializer;
   private final ReservationService reservationService;
+  //알림 + 카운트
 
   public void publishIdAndMessage(
       Reservation reservation,
