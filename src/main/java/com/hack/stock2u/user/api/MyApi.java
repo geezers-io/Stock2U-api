@@ -62,9 +62,13 @@ public class MyApi {
   @GetMapping("/history")
   public ResponseEntity<Object> getPurchasedHistories(
       @Parameter(description = "필터 시작 날짜")
-      @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy/MM/dd") Date startDate,
+      @RequestParam(value = "startDate", required = false)
+      @DateTimeFormat(pattern = "yyyy/MM/dd")
+      Date startDate,
       @Parameter(description = "필터 끝 날짜")
-      @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy/MM/dd") Date endDate,
+      @RequestParam(value = "endDate", required = false)
+      @DateTimeFormat(pattern = "yyyy/MM/dd")
+      Date endDate,
       @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true, example = "0")
       @RequestParam("page") int page,
       @Parameter(description = "가져올 데이터 갯수 단위", required = true, example = "10")
