@@ -25,6 +25,6 @@ public record SendChatMessage(
     String message,
 
     @Schema(description = "이미지")
-    List<String> imageUrls
+    List<Long> imageIds
 ) {
 }

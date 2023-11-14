@@ -3,7 +3,7 @@ package com.hack.stock2u.constant;
 import lombok.Getter;
 
 @Getter
-public enum ReservationStatusForChatList {
+public enum ChatAlertType {
   CREATION("예약 생성"),
   MESSAGE("메세지"),
   PROGRESS("예약 승인"),
@@ -12,7 +12,7 @@ public enum ReservationStatusForChatList {
 
   private final String name;
 
-  ReservationStatusForChatList(String name) {
+  ChatAlertType(String name) {
     this.name = name;
   }
 }

@@ -70,6 +70,26 @@ public class AuthApi {
     return ResponseEntity.ok().body(signIn);
   }
 
+  @Operation(
+      summary = "로그인 API (개발용) Patt(Purchaser), Matt(Seller)",
+      description = "로그인을 수행합니다."
+  )
+  @PostMapping("/signin/dev")
+  public ResponseEntity<SignInResponse> mockSignInApi(
+      @Parameter(
+          description = "개발용 계정 중 어떤 것으로 로그인할 지 ex) Patt(Purchaser) Matt(Seller)",
+          required = true
+      )
+      @RequestParam(value = "who") String who,
+      HttpSession session
+  ) {
+    SignInResponse signIn = authService.signInDevAccount(who);
+    session.setAttribute("vendor", signIn.user().vendor().name());
+    session.setAttribute("userId", signIn.user().id());
+    session.setAttribute("role", signIn.user().role().name());
+    return ResponseEntity.ok().body(signIn);
+  }
+
   @Operation(summary = "구매자 회원가입 API", description = "구매자 회원가입을 수행합니다.")
   @PostMapping("/signup/purchaser")
   public ResponseEntity<UserDetails> signupPurchaserApi(

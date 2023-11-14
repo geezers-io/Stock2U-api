@@ -5,7 +5,7 @@ import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
 import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
-import com.hack.stock2u.chat.dto.response.PurchaserSellerReservationsResponse;
+import com.hack.stock2u.chat.dto.response.ChatRoomSummary;
 import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.service.ChatMessageService;
 import com.hack.stock2u.chat.service.ReservationService;
@@ -89,7 +89,7 @@ public class ReservationApi {
   @Operation(summary = "채팅방 조회 API, 채팅방 검색 조회 API",
       description = "사용자가 가진 채팅방 + 검색으로 조회한 채팅방")
   @GetMapping("/chats")
-  public ResponseEntity<Page<PurchaserSellerReservationsResponse>> getReservations(
+  public ResponseEntity<Page<ChatRoomSummary>> getReservations(
 
       @Parameter(description = "게시글 제목으로 검색")
       @RequestParam(value = "title", required = false) String title,
@@ -99,7 +99,7 @@ public class ReservationApi {
       @RequestParam("size") int size
   ) {
     PageRequest pageable = PageRequest.of(page, size);
-    Page<PurchaserSellerReservationsResponse> purchaserReservations =
+    Page<ChatRoomSummary> purchaserReservations =
         reservationService.getReservations(pageable, title);
     return ResponseEntity.status(HttpStatus.OK).body(purchaserReservations);
   }

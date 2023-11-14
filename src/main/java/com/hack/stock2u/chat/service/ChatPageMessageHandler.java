@@ -2,12 +2,12 @@ package com.hack.stock2u.chat.service;
 
 import com.hack.stock2u.chat.dto.response.AlertIdAndMessage;
 import com.hack.stock2u.chat.dto.response.ChatMessageResponse;
-import com.hack.stock2u.chat.dto.response.Creation;
-import com.hack.stock2u.chat.dto.response.PurchaserSellerReservationsResponse;
+import com.hack.stock2u.chat.dto.response.ChatRoomCreation;
+import com.hack.stock2u.chat.dto.response.ChatRoomSummary;
 import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.dto.response.SimpleThumbnailImage;
+import com.hack.stock2u.constant.ChatAlertType;
 import com.hack.stock2u.constant.ChatMessageType;
-import com.hack.stock2u.constant.ReservationStatusForChatList;
 import com.hack.stock2u.models.ChatMessage;
 import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
@@ -24,10 +24,16 @@ public class ChatPageMessageHandler {
   private final SimpMessagingTemplate publisher;
   private final JsonSerializer jsonSerializer;
   private final ReservationService reservationService;
+  //알림 + 카운트
 
   public void publishIdAndMessage(
-      Reservation reservation, User user, Long id, String message,
-      ReservationStatusForChatList status, ChatMessageType type) {
+      Reservation reservation,
+      User user,
+      Long id,
+      String message,
+      ChatAlertType status,
+      ChatMessageType type
+  ) {
     AlertIdAndMessage idAndMessage = AlertIdAndMessage.builder()
         .type(status)
         .userName(user.getName())
@@ -40,22 +46,31 @@ public class ChatPageMessageHandler {
     publisher.convertAndSend("/topic/chat/alert/" + id, idAndMessageByJson);
   }
 
-  public void publishIdAndMessageIfCreation(
-      Reservation reservation, User user, Long id, String message,
-      ReservationStatusForChatList status, ChatMessageType type, ChatMessage chatMessage) {
-    ChatMessageResponse messageResponse = ChatMessageResponse.create(chatMessage);
-    long count = reservationService.getCountOfMessage(user.getName(), reservation.getId());
+  public void publishChatRoomCreationMessage(
+      Reservation reservation,
+      User purchaser,
+      Long sellerId,
+      String message,
+      ChatAlertType type,
+      ChatMessageType messageType,
+      ChatMessage chatMessage
+  ) {
+    ChatMessageResponse latestChat = ChatMessageResponse.create(chatMessage);
+    long count = reservationService.getCountOfMessage(purchaser.getName(), reservation.getId());
     SimpleThumbnailImage thumbnailImage = reservationService.getThumbnailImage(reservation);
-    SimpleReservation simpleReservation = SimpleReservation.create(reservation, thumbnailImage);
-    Creation build = Creation.builder()
-        .simpleReservation(simpleReservation)
-        .chatMessageResponse(messageResponse)
-        .count(count)
-        .status(status)
+    SimpleReservation reservationSummary = SimpleReservation.create(reservation, thumbnailImage);
+    ChatRoomSummary chatRoomSummary = new ChatRoomSummary(latestChat, reservationSummary, count);
+
+    ChatRoomCreation creation = ChatRoomCreation.builder()
+        .chatRoomSummary(chatRoomSummary)
         .type(type)
+        .chatMessageType(messageType)
         .build();
-    Object object = jsonSerializer.serialize(build);
-    publisher.convertAndSend("/topic/chat/alert/" + id, object);
+
+    Object object = jsonSerializer.serialize(creation);
+    log.debug("purchaserId: {}, sellerId: {}", purchaser.getId(), sellerId);
+    publisher.convertAndSend("/topic/chat/alert/" + purchaser.getId(), object);
+    publisher.convertAndSend("/topic/chat/alert/" + sellerId, object);
   }
 
 }

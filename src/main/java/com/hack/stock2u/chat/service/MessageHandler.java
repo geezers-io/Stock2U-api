@@ -4,6 +4,7 @@ import com.hack.stock2u.chat.dto.ChatMessageObjectForSerialize;
 import com.hack.stock2u.constant.AutoMessageTemplate;
 import com.hack.stock2u.constant.ChatMessageType;
 import com.hack.stock2u.models.Reservation;
+import com.hack.stock2u.models.User;
 import com.hack.stock2u.utils.JsonSerializer;
 import java.text.MessageFormat;
 import java.util.List;
@@ -21,35 +22,50 @@ public class MessageHandler {
 
   //자동메세지 전용
   public String publishAutoMessageSend(
-      Reservation reservation, Long id, AutoMessageTemplate template) {
+      Reservation reservation,
+      AutoMessageTemplate template,
+      ChatMessageType type,
+      String profileImageUrl
+  ) {
     String message = MessageFormat.format(
         template.getTemplate(), reservation.getProduct().getTitle());
-    Object serialize = jsonSerializer.serialize(ChatMessageObjectForSerialize.builder()
+    Object serialize = jsonSerializer.serialize(
+        ChatMessageObjectForSerialize.builder()
+        .type(type)
         .username(reservation.getPurchaser().getName())
         .message(message)
         .createdAt(reservation.getBasicDate().getCreatedAt())
-        .imageId(reservation.getPurchaser().getAvatarId())
+        .profileImageUrl(profileImageUrl)
         .build()
     );
     String destination = "/topic/chat/room/" + reservation.getId();
-    publisher.convertAndSend(destination + id, serialize);
+    publisher.convertAndSend(destination, serialize);
     return message;
   }
 
   //사용자들끼리 일반 채팅할때 사용
   public String publishMessageSend(
-      Reservation reservation, Long id, String message,
-      ChatMessageType type, List<String> imageUrls) {
-    Object serialize = jsonSerializer.serialize(ChatMessageObjectForSerialize.builder()
+      Reservation reservation,
+      String message,
+      String profileImageUrl,
+      ChatMessageType type,
+      List<Long> imageIds,
+      User u
+  ) {
 
-        .username(reservation.getPurchaser().getName())
+    Object serialize = jsonSerializer.serialize(
+        ChatMessageObjectForSerialize.builder()
+        .type(type)
+        .username(u.getName())
         .message(message)
         .createdAt(reservation.getBasicDate().getCreatedAt())
-        .imageId(reservation.getPurchaser().getAvatarId())
+        .profileImageUrl(profileImageUrl)
+        .imageUrl(imageIds)
         .build()
     );
     String destination = "/topic/chat/room/" + reservation.getId();
-    publisher.convertAndSend(destination + id, serialize);
+    publisher.convertAndSend(destination, serialize);
     return message;
+
   }
 }

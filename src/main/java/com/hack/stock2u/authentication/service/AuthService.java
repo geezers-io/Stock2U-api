@@ -13,7 +13,9 @@ import com.hack.stock2u.constant.AuthVendor;
 import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.Product;
+import com.hack.stock2u.models.SellerDetails;
 import com.hack.stock2u.models.User;
+import com.hack.stock2u.models.embed.BasicDateColumn;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
@@ -75,6 +77,19 @@ public class AuthService {
         .exists(true)
         .email(email)
         .verification(oauthId)
+        .user(UserDetails.user(user))
+        .build();
+  }
+
+  public SignInResponse signInDevAccount(String who) {
+    boolean isNamePatt = who.equals("Patt");
+    long userId = isNamePatt ? 80 : 81;
+    User user = userRepository.findById(userId).orElseThrow(GlobalException.NOT_FOUND::create);
+    processLogin(user);
+    return SignInResponse.builder()
+        .exists(true)
+        .email(user.getEmail())
+        .verification("테스트")
         .user(UserDetails.user(user))
         .build();
   }

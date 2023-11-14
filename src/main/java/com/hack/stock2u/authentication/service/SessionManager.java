@@ -2,6 +2,7 @@ package com.hack.stock2u.authentication.service;
 
 import com.hack.stock2u.authentication.AuthException;
 import com.hack.stock2u.authentication.dto.SessionUser;
+import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.user.UserException;
 import com.hack.stock2u.user.repository.JpaUserRepository;
@@ -33,6 +34,11 @@ public class SessionManager {
   public SessionUser getSessionUser(String key) {
     return getSessionUserKey(key);
   }
+  
+  public User getUserById(Long userId) {
+    return userRepository.findById(userId)
+        .orElseThrow(GlobalException.NOT_FOUND::create);
+  }
 
   public User getSessionUserByRdb() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -51,7 +57,7 @@ public class SessionManager {
   }
 
   public String getKey(Object principal, Object credentials) {
-    return "session:" + principal + ":" + credentials;
+    return "stock2u:session:" + principal + ":" + credentials;
   }
 
   private SessionUser getSessionUserKey(String key) {

@@ -63,6 +63,50 @@ OFFSET :offset
       @Param("offset") Long offset
   );
 
+  @SuppressWarnings("checkstyle:Indentation")
+  @Query(value = """
+SELECT DISTINCT
+    p.id as id,
+    p.title as title,
+    p.price as price,
+    p.type as productType,
+    p.product_count as productCount,
+    p.expired_at as expiredAt,
+    (6371
+        *ACOS(COS(RADIANS(:lat))
+        *COS(RADIANS(sd.latitude))
+        *COS(RADIANS(sd.longitude)-RADIANS(:lng))
+        +SIN(RADIANS(:lat))*SIN(RADIANS(sd.latitude)))
+    ) / 10 as distance,
+    sd.latitude as latitude,
+    sd.longitude as longitude,
+    a.upload_path as thumbnailUrl,
+    p.created_at as createdAt
+FROM products p
+LEFT JOIN users u on p.user_id = u.id
+LEFT JOIN seller_details sd on u.seller_details_id = sd.id
+LEFT JOIN attachments a ON a.id = (
+    SELECT MIN(id) as id
+    FROM attachments a2
+    WHERE a2.user_id = p.user_id AND a2.product_id = p.id
+    GROUP BY id
+    LIMIT 1
+)
+WHERE p.removed_at IS NULL AND DATE(NOW()) < p.expired_at
+  AND p.price BETWEEN :minPrice AND :maxPrice
+  AND p.type in (:productTypes)
+HAVING distance <= :distance
+ORDER BY p.expired_at
+  """, nativeQuery = true)
+  List<ProductSummaryProjection> getCountAlternative(
+      @Param("lat") Double lat,
+      @Param("lng") Double lng,
+      @Param("productTypes") List<String> productTypes,
+      @Param("distance") Double distance,
+      @Param("minPrice") Integer minPrice,
+      @Param("maxPrice") Integer maxPrice
+  );
+
 @SuppressWarnings({"checkstyle:Indentation", "checkstyle:CommentsIndentation"})
 @Query(value = """
 SELECT COUNT(p.id) as totalCount,

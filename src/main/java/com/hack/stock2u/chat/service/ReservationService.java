@@ -1,8 +1,6 @@
 package com.hack.stock2u.chat.service;
 
 
-import com.hack.stock2u.authentication.AuthException;
-import com.hack.stock2u.authentication.dto.SessionUser;
 import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.dto.ReservationApproveToMessage;
 import com.hack.stock2u.chat.dto.ReservationProductPurchaser;
@@ -10,7 +8,7 @@ import com.hack.stock2u.chat.dto.request.ChangeStatusRequest;
 import com.hack.stock2u.chat.dto.request.ReportRequest;
 import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.response.ChatMessageResponse;
-import com.hack.stock2u.chat.dto.response.PurchaserSellerReservationsResponse;
+import com.hack.stock2u.chat.dto.response.ChatRoomSummary;
 import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.dto.response.SimpleThumbnailImage;
 import com.hack.stock2u.chat.exception.ReservationException;
@@ -72,11 +70,15 @@ public class ReservationService {
     Date currentDate = new Date();
     Long sellerId = product.getSeller().getId();
 
-    boolean reservationExists =
-        reservationRepository.findByBothUserId(purchaser.getId(), sellerId, productId).isPresent();
+    Optional<Reservation> reservationOptional =
+        reservationRepository.findByBothUserIdWithOutCancel(purchaser.getId(), sellerId, productId);
+    boolean reservationExists = reservationOptional.isPresent();
 
     if (reservationExists) {
-      throw ReservationException.ALREADY_EXISTS.create();
+      boolean isCancel = ReservationStatus.CANCEL.equals(reservationOptional.get().getStatus());
+      if (!isCancel) {
+        throw ReservationException.ALREADY_EXISTS.create();
+      }
     }
 
     if (!(product.getExpiredAt().after(currentDate))) {
@@ -94,6 +96,7 @@ public class ReservationService {
         .build();
     reservation.setCreateAt(new Date());
     reservationRepository.save(reservation);
+
     //글로벌 알림
     reservationMessageHandler.publishReservation(
         MessageTemplate.RESERVATION_REQUEST,
@@ -139,11 +142,13 @@ public class ReservationService {
 
   public Short report(ReportRequest request) {
 
-
     User u = sessionManager.getSessionUserByRdb();
     Reservation reservation = reservationRepository.findById(request.roomId())
         .orElseThrow(GlobalException.NOT_FOUND::create);
     User target = getWhoIsTarget(u.getRole().getName(), reservation);
+    //이미 신고했으면 410 에러
+    reportRepository.findByTargetIdAndReporterId(target.getId(), u.getId())
+            .orElseThrow(ReservationException.ALREADY_REPORTED::create);
 
     target.setReportCount();
 
@@ -173,8 +178,8 @@ public class ReservationService {
         .orElseThrow(GlobalException.NOT_FOUND::create);
   }
 
-  public Page<PurchaserSellerReservationsResponse> getReservations(Pageable pageable,
-                                                                   String title) {
+  public Page<ChatRoomSummary> getReservations(Pageable pageable,
+                                               String title) {
     User u = sessionManager.getSessionUserByRdb();
 
 
@@ -189,7 +194,7 @@ public class ReservationService {
           );
     }
 
-    List<PurchaserSellerReservationsResponse> responses = filteredReservations
+    List<ChatRoomSummary> responses = filteredReservations
         .map(reservation -> createLatestMessageAndThumbnailAndSimpleReservation(
             reservation.getId(), u.getName()))
         .toList();
@@ -251,7 +256,7 @@ public class ReservationService {
 
 
 
-  private PurchaserSellerReservationsResponse
+  private ChatRoomSummary
       createLatestMessageAndThumbnailAndSimpleReservation(Long id, String userName) {
 
     ChatMessageResponse latestChat = latestMessage(id);
@@ -262,13 +267,14 @@ public class ReservationService {
 
     SimpleReservation reservationSummary = SimpleReservation.create(
         reservation, simpleThumbnailImage);
+    long countOfMessage = getCountOfMessage(userName, id);
 
-    return new PurchaserSellerReservationsResponse(
-        latestChat, reservationSummary, getCountOfMessage(userName, id));
+    return new ChatRoomSummary(
+        latestChat, reservationSummary, countOfMessage);
   }
 
   public long getCountOfMessage(String userName, Long roomId) {
-    return chatMongoRepository.countByRoomIdAndReadIsFalseAndUserNameNot(roomId, userName);
+    return chatMongoRepository.countByRoomIdAndReadIsFalseAndUsernameNot(roomId, userName);
   }
 
 

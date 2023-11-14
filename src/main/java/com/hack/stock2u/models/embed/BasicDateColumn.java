@@ -1,5 +1,6 @@
 package com.hack.stock2u.models.embed;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -11,6 +12,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
@@ -19,10 +21,12 @@ import org.springframework.data.annotation.LastModifiedDate;
 @Embeddable
 public class BasicDateColumn implements Serializable {
 
+  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", locale = "Asia/Seoul")
   @CreatedDate
   @Column(name = "created_at")
   private Date createdAt;
 
+  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", locale = "Asia/Seoul")
   @Column(name = "removed_at")
   private Date removedAt;
 
