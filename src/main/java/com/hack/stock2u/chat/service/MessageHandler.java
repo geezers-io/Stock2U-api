@@ -32,7 +32,7 @@ public class MessageHandler {
         .build()
     );
     String destination = "/topic/chat/room/" + reservation.getId();
-    publisher.convertAndSend(destination + id, serialize);
+    publisher.convertAndSend(destination, serialize);
     return message;
   }
 
@@ -52,7 +52,7 @@ public class MessageHandler {
         .build()
     );
     String destination = "/topic/chat/room/" + reservation.getId();
-    publisher.convertAndSend(destination + id, serialize);
+    publisher.convertAndSend(destination, serialize);
     return message;
 
   }
