@@ -34,7 +34,7 @@ public class ChatMessage {
   private Long roomId;
 
   @Field(name = "user_name")
-  private String userName;
+  private String username;
 
   @Field(name = "type")
   private ChatMessageType type;
