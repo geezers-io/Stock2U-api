@@ -59,7 +59,6 @@ OFFSET :offset
       @Param("distance") Double distance,
       @Param("minPrice") Integer minPrice,
       @Param("maxPrice") Integer maxPrice,
-      @Param("searchDate") LocalDate searchDate,
       @Param("pageSize") Integer pageSize,
       @Param("offset") Long offset
   );
