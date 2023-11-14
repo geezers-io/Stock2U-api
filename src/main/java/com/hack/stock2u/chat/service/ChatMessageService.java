@@ -46,7 +46,7 @@ public class ChatMessageService {
     String profileImageUrl = getProfileImageUrl(u.getAvatarId());
     //일반 채팅 메세지 사용자들끼리 보낼때 사용
     String s = messageHandler.publishMessageSend(
-        currentRoom, profileImageUrl, payload.message(), type, payload.imageIds()
+        currentRoom, payload.message(), profileImageUrl, type, payload.imageIds()
     );
     //메세지 저장
     saveMessage(currentRoom, u, payload.message(), payload.imageIds(), type);
