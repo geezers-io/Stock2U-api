@@ -25,14 +25,15 @@ public class MessageHandler {
       Reservation reservation,
       AutoMessageTemplate template,
       ChatMessageType type,
-      String profileImageUrl
+      String profileImageUrl,
+      User user
   ) {
     String message = MessageFormat.format(
         template.getTemplate(), reservation.getProduct().getTitle());
     Object serialize = jsonSerializer.serialize(
         ChatMessageObjectForSerialize.builder()
         .type(type)
-        .username(reservation.getPurchaser().getName())
+        .username(user.getName())
         .message(message)
         .createdAt(reservation.getBasicDate().getCreatedAt())
         .profileImageUrl(profileImageUrl)
@@ -49,7 +50,7 @@ public class MessageHandler {
       String message,
       String profileImageUrl,
       ChatMessageType type,
-      List<Long> imageIds,
+      List<String> imageUrls,
       User u
   ) {
 
@@ -60,7 +61,7 @@ public class MessageHandler {
         .message(message)
         .createdAt(reservation.getBasicDate().getCreatedAt())
         .profileImageUrl(profileImageUrl)
-        .imageUrl(imageIds)
+        .imageUrls(imageUrls)
         .build()
     );
     String destination = "/topic/chat/room/" + reservation.getId();
