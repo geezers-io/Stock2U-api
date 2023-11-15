@@ -24,7 +24,11 @@ public class ReservationProductDslRepository {
   private final JPAQueryFactory queryFactory;
   private final DistanceOperator distanceOperator;
 
-  public ProductSummary getProductSummaryByReservationId(Long reservationId) {
+  public ProductSummary getProductSummaryByReservationId(
+      Long reservationId,
+      Double lat,
+      Double lng
+  ) {
     QProduct product = QProduct.product;
     QSellerDetails sellerDetails = QSellerDetails.sellerDetails;
     QUser user = QUser.user;
@@ -32,12 +36,7 @@ public class ReservationProductDslRepository {
     QAttach subAttach = QAttach.attach;
     QReservation reservation = QReservation.reservation;
 
-    SellerDetailsLatLng sellerProjection = getSellerDetailsLatLngByReservationId(reservationId);
-    log.debug(sellerProjection.toString());
-    NumberExpression<Double> distanceExp = distanceOperator.getOperator(
-        sellerProjection.latitude(),
-        sellerProjection.longitude()
-    );
+    NumberExpression<Double> distanceExp = distanceOperator.getOperator(lat, lng);
 
     return queryFactory.select(
         new QProductSummary(
@@ -55,7 +54,7 @@ public class ReservationProductDslRepository {
         .from(product)
         .leftJoin(reservation).on(reservation.id.eq(reservationId))
         .leftJoin(user).on(user.id.eq(reservation.seller.id))
-        .leftJoin(sellerDetails).on(sellerDetails.id.eq(sellerProjection.id()))
+        .leftJoin(sellerDetails).on(sellerDetails.id.eq(reservation.seller.sellerDetails.id))
         .leftJoin(attach).on(
             attach.id.eq(
                 JPAExpressions.select(attach.id.min())

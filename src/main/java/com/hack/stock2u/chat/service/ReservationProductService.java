@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 public class ReservationProductService {
   private final ReservationProductDslRepository reservationProductRepository;
 
-  public ProductSummary getProductByReservationId(Long reservationId) {
-    return reservationProductRepository.getProductSummaryByReservationId(reservationId);
+  public ProductSummary getProductByReservationId(Long reservationId, Double lat, Double lng) {
+    return reservationProductRepository.getProductSummaryByReservationId(reservationId, lat, lng);
   }
 
 }

@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -138,10 +139,12 @@ public class ReservationApi {
   @Operation(summary = "예약 정보로 재고 조회 API", description = "예약 ID로 재고 정보를 조회합니다")
   @GetMapping("/product/{reservationId}")
   public ResponseEntity<ProductSummary> getProductByReservationApi(
-      @PathVariable("reservationId") Long reservationId
+      @PathVariable("reservationId") Long reservationId,
+      @RequestParam("lat") Double lat,
+      @RequestParam("lng") Double lng
   ) {
     ProductSummary productSummary =
-        reservationProductService.getProductByReservationId(reservationId);
+        reservationProductService.getProductByReservationId(reservationId, lat, lng);
     return ResponseEntity.ok(productSummary);
   }
 
