@@ -42,9 +42,9 @@ public class SellerDetailsLatLng {
       return false;
     }
     var that = (SellerDetailsLatLng) obj;
-    return Objects.equals(this.id, that.id) &&
-        Objects.equals(this.latitude, that.latitude) &&
-        Objects.equals(this.longitude, that.longitude);
+    return Objects.equals(this.id, that.id)
+        && Objects.equals(this.latitude, that.latitude)
+        && Objects.equals(this.longitude, that.longitude);
   }
 
   @Override

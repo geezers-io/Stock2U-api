@@ -88,15 +88,15 @@ public final class ProductSummary {
       return false;
     }
     var that = (ProductSummary) obj;
-    return Objects.equals(this.id, that.id) &&
-        Objects.equals(this.title, that.title) &&
-        this.price == that.price &&
-        Objects.equals(this.type, that.type) &&
-        Objects.equals(this.expiredAt, that.expiredAt) &&
-        Objects.equals(this.distance, that.distance) &&
-        Objects.equals(this.latitude, that.latitude) &&
-        Objects.equals(this.longitude, that.longitude) &&
-        Objects.equals(this.thumbnailUrl, that.thumbnailUrl);
+    return Objects.equals(this.id, that.id)
+        && Objects.equals(this.title, that.title)
+        && this.price == that.price
+        && Objects.equals(this.type, that.type)
+        && Objects.equals(this.expiredAt, that.expiredAt)
+        && Objects.equals(this.distance, that.distance)
+        && Objects.equals(this.latitude, that.latitude)
+        && Objects.equals(this.longitude, that.longitude)
+        && Objects.equals(this.thumbnailUrl, that.thumbnailUrl);
   }
 
   @Override
@@ -105,17 +105,4 @@ public final class ProductSummary {
         thumbnailUrl);
   }
 
-  @Override
-  public String toString() {
-    return "ProductSummary[" +
-        "id=" + id + ", " +
-        "title=" + title + ", " +
-        "price=" + price + ", " +
-        "type=" + type + ", " +
-        "expiredAt=" + expiredAt + ", " +
-        "distance=" + distance + ", " +
-        "latitude=" + latitude + ", " +
-        "longitude=" + longitude + ", " +
-        "thumbnailUrl=" + thumbnailUrl + ']';
-  }
 }
