@@ -8,11 +8,13 @@ import com.hack.stock2u.chat.dto.request.ReservationApproveRequest;
 import com.hack.stock2u.chat.dto.response.ChatRoomSummary;
 import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.service.ChatMessageService;
+import com.hack.stock2u.chat.service.ReservationProductService;
 import com.hack.stock2u.chat.service.ReservationService;
 import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.constant.UserRole;
 import com.hack.stock2u.global.dto.GlobalResponse;
 import com.hack.stock2u.models.Reservation;
+import com.hack.stock2u.product.dto.ProductSummary;
 import com.hack.stock2u.utils.RoleGuard;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +24,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +46,7 @@ public class ReservationApi {
   private final ReservationService reservationService;
 
   private final ChatMessageService chatMessageService;
+  private final ReservationProductService reservationProductService;
 
   @RoleGuard(roles = UserRole.PURCHASER)
   @Operation(summary = "예약 생성 API", description = "클라이언트가 구매 예약 요청을 보냈을때 예약을"
@@ -131,4 +135,17 @@ public class ReservationApi {
   ) {
     return ResponseEntity.status(HttpStatus.OK).body(reservationService.changeStatus(request));
   }
+
+  @Operation(summary = "예약 정보로 재고 조회 API", description = "예약 ID로 재고 정보를 조회합니다")
+  @GetMapping("/product/{reservationId}")
+  public ResponseEntity<ProductSummary> getProductByReservationApi(
+      @PathVariable("reservationId") Long reservationId,
+      @RequestParam("lat") Double lat,
+      @RequestParam("lng") Double lng
+  ) {
+    ProductSummary productSummary =
+        reservationProductService.getProductByReservationId(reservationId, lat, lng);
+    return ResponseEntity.ok(productSummary);
+  }
+
 }
