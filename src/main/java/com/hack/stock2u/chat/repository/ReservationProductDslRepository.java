@@ -1,6 +1,6 @@
 package com.hack.stock2u.chat.repository;
 
-import com.hack.stock2u.global.repository.DistanceOperator;
+import com.hack.stock2u.global.repository.ProductDslUtils;
 import com.hack.stock2u.models.QAttach;
 import com.hack.stock2u.models.QProduct;
 import com.hack.stock2u.models.QReservation;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class ReservationProductDslRepository {
   private final JPAQueryFactory queryFactory;
-  private final DistanceOperator distanceOperator;
+  private final ProductDslUtils productDslUtils;
 
   public ProductSummary getProductSummaryByReservationId(
       Long reservationId,
@@ -36,7 +36,7 @@ public class ReservationProductDslRepository {
     QAttach subAttach = QAttach.attach;
     QReservation reservation = QReservation.reservation;
 
-    NumberExpression<Double> distanceExp = distanceOperator.getOperator(lat, lng);
+    NumberExpression<Double> distanceExp = productDslUtils.getDistanceExpression(lat, lng);
 
     return queryFactory.select(
         new QProductSummary(
@@ -57,14 +57,9 @@ public class ReservationProductDslRepository {
         .leftJoin(sellerDetails).on(sellerDetails.id.eq(reservation.seller.sellerDetails.id))
         .leftJoin(attach).on(
             attach.id.eq(
-                JPAExpressions.select(attach.id.min())
-                    .from(attach)
-                    .where(
-                        attach.user.id.eq(reservation.seller.id),
-                        attach.product.id.eq(product.id)
-                    )
-                    .groupBy(attach.id)
-                    .limit(1)
+                productDslUtils.getProductPresentAttachExpression(
+                    attach, reservation.seller.id, product.id
+                )
             )
         )
         .where(product.seller.id.eq(reservation.seller.id))
