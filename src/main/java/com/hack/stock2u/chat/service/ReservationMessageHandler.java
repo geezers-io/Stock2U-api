@@ -31,21 +31,18 @@ public class ReservationMessageHandler {
   }
 
   public void publishMessage(
+      MessageTemplate template,
       String message,
       String userName,
       Long id,
-      ChatMessageType type,
-      ChatAlertType status) {
-    Object serialize = jsonSerializer.serialize(
-        MessageAlert.builder()
-            .type(type)
-            .message(message)
-            .userName(userName)
-            .status(status)
-            .build()
-    );
+      ChatMessageType type) {
+    String ms =  MessageFormat.format(template.getMessage(), userName+"\n"+message);
+    if (type.equals(ChatMessageType.IMAGE)) {
+      ms = MessageFormat.format(template.getMessage(), userName+"\n"+"사진");
+    }
+
     String dest = "/topic/alert/";
-    publisher.convertAndSend(dest + id, serialize);
+    publisher.convertAndSend(dest + id, ms);
   }
 
 }

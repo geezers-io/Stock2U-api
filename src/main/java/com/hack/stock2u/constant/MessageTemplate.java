@@ -12,8 +12,10 @@ public enum MessageTemplate {
   """),
   RESERVATION_SUCCESS("""
   "{0}" 구매가 확정되었습니다.
+  """),
+  ALERT_MESSAGE("""
+  "{0}"
   """);
-
   private final String message;
 
   MessageTemplate(String message) {

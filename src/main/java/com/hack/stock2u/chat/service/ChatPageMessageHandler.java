@@ -43,14 +43,15 @@ public class ChatPageMessageHandler {
         .chatMessageType(type)
         .build();
     Object idAndMessageByJson = jsonSerializer.serialize(idAndMessage);
-    publisher.convertAndSend("/topic/chat/alert/" + oppositeUserId, idAndMessageByJson);
+    String dest= "/topic/chat/alert/";
+    publisher.convertAndSend(dest + oppositeUserId, idAndMessageByJson);
+
   }
 
   public void publishChatRoomCreationMessage(
       Reservation reservation,
       User purchaser,
       Long sellerId,
-      String message,
       ChatAlertType type,
       ChatMessageType messageType,
       ChatMessage chatMessage

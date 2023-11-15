@@ -9,6 +9,7 @@ import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
 import com.hack.stock2u.constant.AutoMessageTemplate;
 import com.hack.stock2u.constant.ChatAlertType;
 import com.hack.stock2u.constant.ChatMessageType;
+import com.hack.stock2u.constant.MessageTemplate;
 import com.hack.stock2u.file.repository.JpaAttachRepository;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.global.service.SequenceGeneratorService;
@@ -51,7 +52,7 @@ public class ChatMessageService {
         .map(this::getChatImageUrls)
         .toList();
 
-    //일반 채팅 메세지 사용자들끼리 보낼때 사용
+    //일반 채팅 메세지 사용자 들끼리 보낼때 사용
     String s = messageHandler.publishMessageSend(
         currentRoom, payload.message(), profileImageUrl, type, imageUrls, u
     );
@@ -67,11 +68,11 @@ public class ChatMessageService {
         type
     );
     reservationMessageHandler.publishMessage(
+        MessageTemplate.ALERT_MESSAGE,
         payload.message(),
         u.getName(),
         oppositeUserId,
-        type,
-        ChatAlertType.MESSAGE
+        type
     );
   }
 
@@ -146,7 +147,6 @@ public class ChatMessageService {
         reservation,
         purchaser,
         sellerId,
-        message,
         ChatAlertType.CREATION,
         ChatMessageType.AUTO,
         chatMessage
