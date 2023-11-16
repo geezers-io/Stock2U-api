@@ -4,17 +4,22 @@ import com.hack.stock2u.authentication.service.SessionManager;
 import com.hack.stock2u.chat.dto.response.SimpleReservation;
 import com.hack.stock2u.chat.dto.response.SimpleThumbnailImage;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
+import com.hack.stock2u.chat.repository.ReservationDslRepository;
 import com.hack.stock2u.chat.service.ReservationService;
+import com.hack.stock2u.constant.ProductType;
 import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.file.repository.JpaAttachRepository;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.models.Attach;
+import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.SellerDetails;
 import com.hack.stock2u.models.User;
-import com.hack.stock2u.product.dto.SimpleProductManage;
+import com.hack.stock2u.product.repository.JpaProductRepository;
+import com.hack.stock2u.product.repository.ProductDslRepository;
 import com.hack.stock2u.user.dto.AvatarId;
 import com.hack.stock2u.user.dto.SellerManagementSummary;
+import com.hack.stock2u.user.dto.SellerProducts;
 import com.hack.stock2u.user.dto.SellerRequest;
 import com.hack.stock2u.user.dto.SellerResponse;
 import com.hack.stock2u.user.dto.SellerSummary;
@@ -22,8 +27,10 @@ import com.hack.stock2u.user.repository.JpaBuyerRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
 import com.hack.stock2u.user.repository.SellerDslRepository;
 import com.hack.stock2u.user.repository.UserDslRepository;
+import com.querydsl.core.Tuple;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,6 +49,8 @@ public class SellerService {
   private final JpaAttachRepository attachRepository;
   private final JpaReservationRepository reservationRepository;
   private final ReservationService reservationService;
+  private final ProductDslRepository productDslRepository;
+  private final ReservationDslRepository reservationDslRepository;
 
   public SellerSummary getDetails() {
     User user = sessionManager.getSessionUserByRdb();
@@ -105,56 +114,63 @@ public class SellerService {
 
   public Page<SellerManagementSummary> getManagements(
       PageRequest pageable,
-      String title,
+      Long productId,
       boolean isReservedProduct,
-      boolean isCompletedProduct) {
-    User u = sessionManager.getSessionUserByRdb();
-    Date currentTime = new Date();
-    List<Reservation> reservations =
-        reservationService.getReservationBySellerId(u.getId(), pageable);
-    Stream<Reservation> filteredReservations = reservations.stream()
-        .filter(reservation -> {
-          Date removedAt = reservation.getRemovedAt();
-          Date expiredAt = reservation.getProduct().getExpiredAt();
-          return removedAt != null && expiredAt.before(currentTime);
-        });
-    //검색어만 존재할때
-    if (title != null && !title.isEmpty()) {
-      filteredReservations =
-          filteredReservations.filter(
-              reservation -> reservation.getProduct().getTitle().contains(title)
-          );
-    }
-    //1.예약완료된거 찾을때, 2.예약완료된거 찾을때 + 검색어 존재
-    if (isCompletedProduct) {
-      filteredReservations =
-          filteredReservations.filter(
-              reservation -> reservation.getStatus().equals(ReservationStatus.COMPLETION)
-          );
-    }
-    //1.예약된거 찾을때, 2.예약된거 찾을때 + 검색어 존재
-    if (isReservedProduct) {
-      filteredReservations =
-          filteredReservations.filter(
-              reservation -> reservation.getStatus().equals(ReservationStatus.PROGRESS)
-          );
-    }
+      boolean isCompletedProduct,
+      boolean isCanceledProduct) {
 
-    List<SellerManagementSummary> responses = filteredReservations
-        .map(reservation -> createSellerManagementSummary(reservation.getId()))
+    List<Reservation> reservations = reservationDslRepository.findByProductId(
+        productId,
+        pageable,
+        isReservedProduct,
+        isCompletedProduct,
+        isCanceledProduct);
+
+    List<SellerManagementSummary> responses = reservations.stream()
+        .map(this::createSellerManagementSummary)
         .toList();
     return new PageImpl<>(responses);
   }
 
-  private SellerManagementSummary createSellerManagementSummary(Long id) {
-    Reservation reservation = reservationRepository.findById(id)
-        .orElseThrow(GlobalException.NOT_FOUND::create);
-    SimpleThumbnailImage simpleThumbnailImage = reservationService.getThumbnailImage(reservation);
-    SimpleReservation simpleReservation =
-        SimpleReservation.create(reservation, simpleThumbnailImage);
-    SimpleProductManage simpleProductManage = SimpleProductManage.create(reservation);
-    return new SellerManagementSummary(simpleProductManage,
-        simpleReservation, reservation.getPurchaser().getName());
+  private SellerManagementSummary createSellerManagementSummary(Reservation reservation) {
+
+    return new SellerManagementSummary(
+        reservation.getId(),
+        reservation.getStatus(),
+        reservation.getPurchaser().getName());
 
   }
+
+  public Page<SellerProducts> getProducts(
+      PageRequest pageable,
+      String title,
+      boolean isExpired,
+      boolean isSelling) {
+
+    User u = sessionManager.getSessionUserByRdb();
+    List<Tuple> products =
+        productDslRepository.getProductBySellerId(
+            u.getId(),
+            pageable,
+            title,
+            isExpired,
+            isSelling);
+    List<SellerProducts> sellerProducts =
+        products.stream()
+            .map(this::createSellerProducts).toList();
+    return new PageImpl<>(sellerProducts);
+  }
+
+  private SellerProducts createSellerProducts(Tuple tuple) {
+    SimpleThumbnailImage thumbnailImage = reservationService.getThumbnailImage(
+        tuple.get(0, Long.class));
+    return SellerProducts.builder()
+        .productId(tuple.get(0, Long.class))
+        .title(tuple.get(1, String.class))
+        .createAt(tuple.get(2, Date.class))
+        .type(tuple.get(3, ProductType.class))
+        .thumbnailImage(thumbnailImage.uploadPath())
+        .build();
+  }
+
 }

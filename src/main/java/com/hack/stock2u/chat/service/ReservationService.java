@@ -15,6 +15,7 @@ import com.hack.stock2u.chat.exception.ReservationException;
 import com.hack.stock2u.chat.repository.JpaReportRepository;
 import com.hack.stock2u.chat.repository.JpaReservationRepository;
 import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
+import com.hack.stock2u.chat.repository.ReservationDslRepository;
 import com.hack.stock2u.constant.MessageTemplate;
 import com.hack.stock2u.constant.ReservationStatus;
 import com.hack.stock2u.constant.UserRole;
@@ -28,6 +29,7 @@ import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.repository.JpaProductRepository;
 import com.hack.stock2u.user.repository.JpaUserRepository;
+import com.querydsl.core.Tuple;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +58,7 @@ public class ReservationService {
   private final SessionManager sessionManager;
   private final JpaReportRepository reportRepository;
   private final ReservationMessageHandler reservationMessageHandler;
-  private final MongoTemplate mongoTemplate;
+  private final ReservationDslRepository reservationDslRepository;
   /**
    * 예약 엔티티를 생성합니다.
    */
@@ -196,7 +198,7 @@ public class ReservationService {
 
     List<ChatRoomSummary> responses = filteredReservations
         .map(reservation -> createLatestMessageAndThumbnailAndSimpleReservation(
-            reservation.getId(), u.getName()))
+            reservation, u.getName()))
         .toList();
 
     return new PageImpl<>(responses);
@@ -206,20 +208,12 @@ public class ReservationService {
       PageRequest pageable, Date startDate, Date endDate) {
 
     User u = sessionManager.getSessionUserByRdb();
-    List<Reservation> reservations = getSellerAndPurchaser(
-        u.getId(), u.getRole().getName(), pageable);
-
+    List<Tuple> reservations =
+        reservationDslRepository.findByDate(u.getId(), u.getRole(), pageable, startDate, endDate);
     List<SimpleReservation> responses =
         reservations.stream()
-        .filter(reservation -> {
-          Date creatAt = reservation.getBasicDate().getCreatedAt();
-          return creatAt.after(startDate) && creatAt.before(endDate);
-        })
-        .filter(reservation -> reservation.getStatus() == ReservationStatus.PROGRESS)
-        .map(Reservation::getId)
         .map(this::creatSimpleReservation)
         .toList();
-
     return new PageImpl<>(responses);
   }
 
@@ -254,28 +248,34 @@ public class ReservationService {
     return reservation.getStatus();
   }
 
-  private SimpleReservation creatSimpleReservation(Long id) {
-    Reservation reservation = getReservationId(id);
+  private SimpleReservation creatSimpleReservation(Tuple tuple) {
+    Long productId = tuple.get(4, Long.class);
+    SimpleThumbnailImage simpleThumbnailImage = getThumbnailImage(productId);
 
-    SimpleThumbnailImage simpleThumbnailImage = getThumbnailImage(reservation);
-
-    return SimpleReservation.create(reservation, simpleThumbnailImage);
+    return SimpleReservation.builder()
+        .id(tuple.get(0, Long.class))
+        .title(tuple.get(1, String.class))
+        .name(tuple.get(2, String.class))
+        .status(tuple.get(3, ReservationStatus.class))
+        .uploadUrl(simpleThumbnailImage.uploadPath())
+        .build();
   }
 
 
 
   private ChatRoomSummary
-      createLatestMessageAndThumbnailAndSimpleReservation(Long id, String userName) {
+      createLatestMessageAndThumbnailAndSimpleReservation(
+          Reservation reservation,
+          String userName) {
 
-    ChatMessageResponse latestChat = latestMessage(id);
+    ChatMessageResponse latestChat = latestMessage(reservation.getId());
 
-    Reservation reservation = getReservationId(id);
-
-    SimpleThumbnailImage simpleThumbnailImage = getThumbnailImage(reservation);
+    Long productId = reservation.getProduct().getId();
+    SimpleThumbnailImage simpleThumbnailImage = getThumbnailImage(productId);
 
     SimpleReservation reservationSummary = SimpleReservation.create(
         reservation, simpleThumbnailImage);
-    long countOfMessage = getCountOfMessage(userName, id);
+    long countOfMessage = getCountOfMessage(userName, reservation.getId());
 
     return new ChatRoomSummary(
         latestChat, reservationSummary, countOfMessage);
@@ -302,10 +302,10 @@ public class ReservationService {
     return ChatMessageResponse.create(chatMessage);
   }
 
-  public SimpleThumbnailImage getThumbnailImage(Reservation reservation) {
+  public SimpleThumbnailImage getThumbnailImage(Long productId) {
 
     Attach thumbnail = attachRepository.findFirstByProductIdOrderById(
-        reservation.getProduct().getId());
+        productId);
     return SimpleThumbnailImage.builder()
         .uploadPath(thumbnail.getUploadPath())
         .build();

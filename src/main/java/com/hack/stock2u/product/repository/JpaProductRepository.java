@@ -4,7 +4,11 @@ import com.hack.stock2u.models.Product;
 import com.hack.stock2u.models.User;
 import com.hack.stock2u.product.dto.ProductCountProjection;
 import com.hack.stock2u.product.dto.ProductSummaryProjection;
+import java.net.ContentHandler;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -91,5 +95,7 @@ SELECT COUNT(p.id) as totalCount,
 
   @Query("select p from products p where p.seller.id = :userId")
   List<Product> findIdsByUserId(Long userId);
+  
+
 
 }
