@@ -21,12 +21,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Embeddable
 public class BasicDateColumn implements Serializable {
 
-  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", locale = "Asia/Seoul")
   @CreatedDate
   @Column(name = "created_at")
   private Date createdAt;
 
-  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", locale = "Asia/Seoul")
   @Column(name = "removed_at")
   private Date removedAt;
 

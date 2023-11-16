@@ -9,6 +9,7 @@ import com.hack.stock2u.chat.repository.MessageChatMongoRepository;
 import com.hack.stock2u.constant.AutoMessageTemplate;
 import com.hack.stock2u.constant.ChatAlertType;
 import com.hack.stock2u.constant.ChatMessageType;
+import com.hack.stock2u.constant.MessageTemplate;
 import com.hack.stock2u.file.repository.JpaAttachRepository;
 import com.hack.stock2u.global.exception.GlobalException;
 import com.hack.stock2u.global.service.SequenceGeneratorService;
@@ -18,6 +19,7 @@ import com.hack.stock2u.models.Reservation;
 import com.hack.stock2u.models.User;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,8 @@ public class ChatMessageService {
   private final SequenceGeneratorService sequenceGeneratorService;
   private final ChatPageMessageHandler chatPageMessageHandler;
   private final JpaAttachRepository attachRepository;
+  private final ReservationMessageHandler reservationMessageHandler;
+
   private final ChatAnalyzer chatAnalyzer = new ChatAnalyzer();
   // 메시지 저장
 
@@ -42,27 +46,58 @@ public class ChatMessageService {
         .orElseThrow(GlobalException.NOT_FOUND::create);
     User u = sessionManager.getUserById(payload.userId());
     ChatMessageType type = chatAnalyzer.getMessageType(payload);
-    Long opUserId = getOpUserId(u.getId(), currentRoom);
+    Long oppositeUserId = getOppositeUserId(u.getId(), currentRoom);
     String profileImageUrl = getProfileImageUrl(u.getAvatarId());
-    //일반 채팅 메세지 사용자들끼리 보낼때 사용
+
+    List<String> imageUrls = null;
+
+    if (payload.imageIds() != null) {
+      imageUrls = payload.imageIds()
+          .stream()
+          .map(this::getChatImageUrls)
+          .toList();
+    }
+
+    //일반 채팅 메세지 사용자 들끼리 보낼때 사용
     String s = messageHandler.publishMessageSend(
-        currentRoom, payload.message(), profileImageUrl, type, payload.imageIds(), u
+        currentRoom, payload.message(), profileImageUrl, type, imageUrls, u
     );
     //메세지 저장
     saveMessage(currentRoom, u, payload.message(), payload.imageIds(), type);
     // 카운트와 메세지 알림 띄우기 위한 메세지
     chatPageMessageHandler.publishIdAndMessage(
-        currentRoom, u, opUserId, s, ChatAlertType.MESSAGE, type);
+        currentRoom,
+        u,
+        oppositeUserId,
+        s,
+        ChatAlertType.MESSAGE,
+        type
+    );
+    reservationMessageHandler.publishMessage(
+        MessageTemplate.ALERT_MESSAGE,
+        payload.message(),
+        u.getName(),
+        oppositeUserId,
+        type
+    );
+  }
 
+  private String getChatImageUrls(Long imageId) {
+    Optional<Attach> byId = attachRepository.findById(imageId);
+    String imageUrl = null;
+    if (byId.isPresent()) {
+      imageUrl = byId.get().getUploadPath();
+    }
+    return imageUrl;
   }
 
   private String getProfileImageUrl(Long avatarId) {
-    Optional<Attach> byId = attachRepository.findById(avatarId);
-    String profileImageUrl = null;
-    if (byId.isPresent()) {
-      profileImageUrl = byId.get().getUploadPath();
+    if (avatarId == null) {
+      return null;
     }
-    return profileImageUrl;
+    Attach avatar = attachRepository.findById(avatarId)
+        .orElseThrow(GlobalException.NOT_FOUND::create);
+    return avatar.getUploadPath();
   }
 
   private ChatMessage saveMessage(
@@ -80,7 +115,7 @@ public class ChatMessageService {
         .build());
   }
 
-  private Long getOpUserId(Long id, Reservation reservation) {
+  private Long getOppositeUserId(Long id, Reservation reservation) {
     Long opUserId = null;
     User seller = reservation.getSeller();
     User purchaser = reservation.getPurchaser();
@@ -101,7 +136,8 @@ public class ChatMessageService {
         reservation,
         AutoMessageTemplate.PURCHASE_REQUEST,
         ChatMessageType.AUTO,
-        profileImageUrl
+        profileImageUrl,
+        seller
     );
     //메세지 저장
     ChatMessage chatMessage = saveMessage(
@@ -117,7 +153,6 @@ public class ChatMessageService {
         reservation,
         purchaser,
         sellerId,
-        message,
         ChatAlertType.CREATION,
         ChatMessageType.AUTO,
         chatMessage
@@ -127,15 +162,15 @@ public class ChatMessageService {
 
   public void saveAndSendAutoMessageApprove(ReservationApproveToMessage approveToMessage) {
     User user = sessionManager.getSessionUserByRdb();
-    Long oppositeUserId = getOpUserId(user.getId(), approveToMessage.reservation());
+    Long oppositeUserId = getOppositeUserId(user.getId(), approveToMessage.reservation());
     String profileImageUrl = getProfileImageUrl(user.getAvatarId());
     //자동 메세지 발송
     String s = messageHandler.publishAutoMessageSend(
         approveToMessage.reservation(),
         AutoMessageTemplate.SALE_APPROVED,
         ChatMessageType.AUTO,
-        profileImageUrl
-
+        profileImageUrl,
+        user
     );
     //메세지 저장
     saveMessage(approveToMessage.reservation(), user, s, null, ChatMessageType.AUTO);
@@ -151,19 +186,27 @@ public class ChatMessageService {
   }
 
   public void saveAndSendAutoMessageCancel(Reservation reservation) {
-    User u = sessionManager.getSessionUserByRdb();
-    Long oppositeUserId = getOpUserId(u.getId(), reservation);
-    String profileImageUrl = getProfileImageUrl(u.getAvatarId());
+    User user = sessionManager.getSessionUserByRdb();
+    Long oppositeUserId = getOppositeUserId(user.getId(), reservation);
+    String profileImageUrl = getProfileImageUrl(user.getAvatarId());
     //자동 메세지 발송
     String s = messageHandler.publishAutoMessageSend(
         reservation,
         AutoMessageTemplate.RESERVATION_CANCELLED,
         ChatMessageType.AUTO,
-        profileImageUrl);
+        profileImageUrl,
+        user
+    );
     //메세지 저장
-    saveMessage(reservation, u, s, null, ChatMessageType.AUTO);
+    saveMessage(reservation, user, s, null, ChatMessageType.AUTO);
     // 카운트와 메세지 알림 띄우기 위한 메세지
-    chatPageMessageHandler.publishIdAndMessage(reservation, u, oppositeUserId, s,
-        ChatAlertType.CANCEL, ChatMessageType.AUTO);
+    chatPageMessageHandler.publishIdAndMessage(
+        reservation,
+        user,
+        oppositeUserId,
+        s,
+        ChatAlertType.CANCEL,
+        ChatMessageType.AUTO
+    );
   }
 }

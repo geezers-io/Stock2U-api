@@ -11,7 +11,6 @@ public class SellerDslRepository {
 
   private final JPAQueryFactory queryFactory;
 
-
   public Long getSalesCount(Long sellerId) {
     return queryFactory.select(QBuyer.buyer.count())
         .from(QBuyer.buyer)

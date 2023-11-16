@@ -29,7 +29,7 @@ public class ChatPageMessageHandler {
   public void publishIdAndMessage(
       Reservation reservation,
       User user,
-      Long id,
+      Long oppositeUserId,
       String message,
       ChatAlertType status,
       ChatMessageType type
@@ -43,14 +43,15 @@ public class ChatPageMessageHandler {
         .chatMessageType(type)
         .build();
     Object idAndMessageByJson = jsonSerializer.serialize(idAndMessage);
-    publisher.convertAndSend("/topic/chat/alert/" + id, idAndMessageByJson);
+    String dest= "/topic/chat/alert/";
+    publisher.convertAndSend(dest + oppositeUserId, idAndMessageByJson);
+
   }
 
   public void publishChatRoomCreationMessage(
       Reservation reservation,
       User purchaser,
       Long sellerId,
-      String message,
       ChatAlertType type,
       ChatMessageType messageType,
       ChatMessage chatMessage
