@@ -282,7 +282,7 @@ public class ReservationService {
   }
 
   public long getCountOfMessage(String userName, Long roomId) {
-    return chatMongoRepository.countByRoomIdAndReadIsFalseAndUserNameNot(roomId, userName);
+    return chatMongoRepository.countByRoomIdAndReadIsFalseAndUsernameNot(roomId, userName);
   }
 
 

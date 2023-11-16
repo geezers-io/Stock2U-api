@@ -50,9 +50,7 @@ public class ProductService {
   }
 
   public Page<ProductSummaryProjection> getProducts(ProductCondition condition, Pageable pageable) {
-    log.debug("getProduct condition: {}", condition);
-    Long totalCount = getCount(condition);
-    log.debug("totalCount: {}", totalCount);
+    int totalCount = getCountAlternative(condition);
     List<ProductSummaryProjection> products = productRepository.findProducts(
         condition.getLatitude(),
         condition.getLongitude(),
@@ -63,6 +61,8 @@ public class ProductService {
         pageable.getPageSize(),
         pageable.getOffset()
     );
+
+    log.error("count: {}", totalCount);
     return new PageImpl<>(products, pageable, totalCount);
   }
 
@@ -157,8 +157,19 @@ public class ProductService {
     }
   }
 
-  private Long getCount(ProductCondition condition) {
-    log.debug("get MinPrice: {}", condition.getMinPrice());
+  private int getCountAlternative(ProductCondition condition) {
+    List<ProductSummaryProjection> countAlternative = productRepository.getCountAlternative(
+        condition.getLatitude(),
+        condition.getLongitude(),
+        condition.getCategory(),
+        condition.getDistance(),
+        condition.getMinPrice(),
+        condition.getMaxPrice()
+    );
+    return countAlternative.size();
+  }
+
+  private int getCount(ProductCondition condition) {
     ProductCountProjection ret = productRepository.getCount(
         condition.getLatitude(),
         condition.getLongitude(),
@@ -167,12 +178,12 @@ public class ProductService {
         condition.getMinPrice(),
         condition.getMaxPrice()
     );
-    if (ret == null) {
-      return 0L;
-    }
-    log.debug("totalCount: {} distance:{}", ret.getTotalCount(), ret.getDistance());
 
-    return ret.getTotalCount();
+    if (ret == null) {
+      return 0;
+    }
+
+    return ret.getTotalCount().intValue();
   }
 
 }

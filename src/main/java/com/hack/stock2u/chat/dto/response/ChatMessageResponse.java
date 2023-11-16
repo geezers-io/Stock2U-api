@@ -18,7 +18,7 @@ public record ChatMessageResponse(
   public static ChatMessageResponse create(
       ChatMessage chatMessage) {
     return ChatMessageResponse.builder()
-        .username(chatMessage.getUserName())
+        .username(chatMessage.getUsername())
         .message(chatMessage.getMessage())
         .createdAt(chatMessage.getCreatedAt())
         .read(chatMessage.isRead())
