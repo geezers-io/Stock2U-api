@@ -39,6 +39,9 @@ public class ChatMessage {
   @Field(name = "type")
   private ChatMessageType type;
 
+  @Field(name = "profile_image_url")
+  private String profileImageUrl;
+
   @Field(name = "message")
   private String message;
 
