@@ -7,10 +7,10 @@ import com.hack.stock2u.models.Product;
 import com.hack.stock2u.user.dto.PurchasedHistory;
 import com.hack.stock2u.user.dto.SearchDate;
 import com.hack.stock2u.user.repository.BuyerDslRepository;
-import com.hack.stock2u.user.repository.JpaBuyerRepository;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.LocalDateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +44,7 @@ public class PurchasedHistoryService {
         .title(product.getTitle())
         .name(product.getName())
         .thumbnailUrl("")
-        .createdAt(new Date())
+        .createdAt(new LocalDateTime().toDate())
         .build();
   }
 

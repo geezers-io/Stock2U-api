@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BuyerDslRepository {
   private final JPAQueryFactory queryFactory;
+
 
   public List<Buyer> findByPurchaserId(
       Long userId,
@@ -26,8 +29,24 @@ public class BuyerDslRepository {
     JPAQuery<Buyer> query = queryFactory.selectFrom(buyer)
         .where(buyer.purchaser.id.eq(userId));
 
+    LocalDateTime startLocalDate = new LocalDateTime(start);
+    LocalDateTime endLocalDate = new LocalDateTime(end);
+
+    boolean isDateSame = startLocalDate.equals(endLocalDate);
+
+    if (isDateSame) {
+      DateTime time = new DateTime()
+          .withYear(startLocalDate.getYear())
+          .withMonthOfYear(endLocalDate.getMonthOfYear())
+          .withDayOfMonth(endLocalDate.getDayOfMonth())
+          .withHourOfDay(23)
+          .withMinuteOfHour(59)
+          .withSecondOfMinute(59);
+      endLocalDate = new LocalDateTime(time);
+    }
+
     if (start != null && end != null) {
-      query.where(buyer.createdAt.between(start, end));
+      query.where(buyer.createdAt.between(startLocalDate.toDate(), endLocalDate.toDate()));
     }
 
     return query
@@ -36,7 +55,7 @@ public class BuyerDslRepository {
         .fetch();
   }
 
-  private String convertDate(Date date) {
+  private String convertDate(LocalDateTime date) {
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     return formatter.format(date);
   }
