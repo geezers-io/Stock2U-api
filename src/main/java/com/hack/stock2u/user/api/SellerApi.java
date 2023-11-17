@@ -1,6 +1,9 @@
 package com.hack.stock2u.user.api;
 
 import com.hack.stock2u.constant.UserRole;
+import com.hack.stock2u.product.exception.ProductException;
+import com.hack.stock2u.user.dto.SellerManagementSummary;
+import com.hack.stock2u.user.dto.SellerProducts;
 import com.hack.stock2u.user.dto.SellerRequest;
 import com.hack.stock2u.user.dto.SellerResponse;
 import com.hack.stock2u.user.dto.SellerSummary;
@@ -8,10 +11,13 @@ import com.hack.stock2u.user.service.SellerService;
 import com.hack.stock2u.user.validator.BankName;
 import com.hack.stock2u.utils.RoleGuard;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -74,6 +80,74 @@ public class SellerApi {
   ) {
     sellerService.updateBank(bankName, account);
     return ResponseEntity.status(HttpStatus.OK).build();
+  }
+
+  @RoleGuard(roles = UserRole.SELLER)
+  @Operation(
+      summary = "판매자 판매관리 API",
+      description = "판매자가 올린 게시글을 조회하여 상세이동, 예약 확인, 삭제에 기능을 수행합니다."
+  )
+  @GetMapping("/products/management")
+  public ResponseEntity<Page<SellerManagementSummary>> getManagementsApi(
+      @Parameter(description = "제품 ID로 product 정보가져와서 modal", required = true)
+      @RequestParam("productId")
+      Long productId,
+      @Parameter(description = "예약 상품 보기")
+      @RequestParam(value = "isReservedProduct", defaultValue = "false")
+      boolean isReservedProduct,
+      @Parameter(description = "판매 완료 상품 보기")
+      @RequestParam(value = "isCompletedProduct", defaultValue = "false")
+      boolean isCompletedProduct,
+      @Parameter(description = "예약 취소 상품 보기")
+      @RequestParam(value = "isCanceledProduct", defaultValue = "false")
+      boolean isCanceledProduct,
+      @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
+      @RequestParam("page") int page,
+      @Parameter(description = "가져올 데이터 갯수 단위", required = true)
+      @RequestParam("size") int size
+  ) {
+
+    PageRequest pageable = PageRequest.of(page, size);
+    Page<SellerManagementSummary> summary =
+        sellerService.getManagements(
+            pageable,
+            productId,
+            isReservedProduct,
+            isCompletedProduct,
+            isCanceledProduct);
+
+    return ResponseEntity.status(HttpStatus.OK).body(summary);
+  }
+
+  @RoleGuard(roles = UserRole.SELLER)
+  @Operation(
+      summary = "판매자 판매 관리 API",
+      description = "판매자가 올린 상품들을 판매자 관리 페이지에서 한번에 가져오는 API"
+  )
+  @GetMapping("/products")
+  public ResponseEntity<Page<SellerProducts>> getProductsApi(
+      @Parameter(description = "게시글 제목으로 검색")
+      @RequestParam(value = "title", required = false)
+      String title,
+      @RequestParam(value = "isExpired", defaultValue = "false")
+      boolean isExpired,
+      @RequestParam(value = "isSelling", defaultValue = "false")
+      boolean isSelling,
+      @Parameter(description = "조회할 페이지 넘버(0부터 시작)", required = true)
+      @RequestParam("page") int page,
+      @Parameter(description = "가져올 데이터 갯수 단위", required = true)
+      @RequestParam("size") int size
+  ) {
+    if (isExpired && isSelling) {
+      throw ProductException.CANNOT_CHECK_BOTH.create();
+    }
+    PageRequest pageable = PageRequest.of(page, size);
+    Page<SellerProducts> products = sellerService.getProducts(
+        pageable,
+        title,
+        isExpired,
+        isSelling);
+    return ResponseEntity.status(HttpStatus.OK).body(products);
   }
 
 }

@@ -127,4 +127,7 @@ public class Product {
     productCount--;
   }
 
+  public Date getCreateAt() {
+    return this.basicDate.getCreatedAt();
+  }
 }

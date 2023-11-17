@@ -58,7 +58,8 @@ public class ChatPageMessageHandler {
   ) {
     ChatMessageResponse latestChat = ChatMessageResponse.create(chatMessage);
     long count = reservationService.getCountOfMessage(purchaser.getName(), reservation.getId());
-    SimpleThumbnailImage thumbnailImage = reservationService.getThumbnailImage(reservation);
+    Long productId = reservation.getProduct().getId();
+    SimpleThumbnailImage thumbnailImage = reservationService.getThumbnailImage(productId);
     SimpleReservation reservationSummary = SimpleReservation.create(reservation, thumbnailImage);
     ChatRoomSummary chatRoomSummary = new ChatRoomSummary(latestChat, reservationSummary, count);
 

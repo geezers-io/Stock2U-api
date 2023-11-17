@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ProductException implements BasicErrorCase {
-  FILE_UPLOAD_LIMIT(HttpStatus.BAD_REQUEST, "FILE_UPLOAD_LIMIT", "이미지는 업로드는 최대 5개입니다.");
-
+  FILE_UPLOAD_LIMIT(HttpStatus.BAD_REQUEST, "FILE_UPLOAD_LIMIT", "이미지는 업로드는 최대 5개입니다."),
+  CANNOT_CHECK_BOTH(HttpStatus.BAD_REQUEST, "CANNOT_CHECK_BOTH", "체크 박스 동시에 체크 불가");
   private final HttpStatus httpStatus;
   private final String errorCode;
   private final String message;
